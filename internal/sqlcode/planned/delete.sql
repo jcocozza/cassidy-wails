@@ -1,0 +1,1 @@
+-- not implemented because the database has a trigger that will delete on activity deletion
