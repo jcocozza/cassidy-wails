@@ -24,8 +24,14 @@
 
     let is_loading: boolean = false;
 
-    function loadPage(url: string) {
-        goto(url);
+    function loadPage(direction: string) {
+        if (direction == "next") {
+            start_date = next_previous.next_start_date;
+            end_date = next_previous.next_end_date;
+        } else if (direction == "previous") {
+            start_date = next_previous.previous_start_date;
+            end_date = next_previous.previous_end_date;
+        }
     }
 
     async function updateMicrocycle() {
@@ -92,8 +98,8 @@
     </div>
 
     <div class="d-flex justify-content-between" style="padding: 0%;">
-        <button class="btn btn-primary" on:click={() => {loadPage("/microcycle/"+next_previous.previous_start_date+"/"+next_previous.previous_end_date)}}> Previous </button>
-        <button class="btn btn-primary" on:click={() => {loadPage("/microcycle/"+next_previous.next_start_date +"/"+next_previous.next_end_date)}}> Next </button>
+        <button class="btn btn-primary" on:click={() => {loadPage("previous")}}> Previous </button>
+        <button class="btn btn-primary" on:click={() => {loadPage("next")}}> Next </button>
     </div>
     <div class="row">
         {#if microcycle.cycle_activities.length > 0}
