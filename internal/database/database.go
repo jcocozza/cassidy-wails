@@ -4,11 +4,14 @@ import (
 	"database/sql"
 	"fmt"
 	"log/slog"
+
+	"github.com/jcocozza/cassidy-wails/internal/model"
 )
 
 // A database object that implements DbOperations interface
 type Database struct {
 	DB *sql.DB
+	AppUser *model.User
 }
 // Execute sql without returning rows.
 //

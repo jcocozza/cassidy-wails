@@ -1,12 +1,12 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { overrideItemIdKeyNameBeforeInitialisingDndZones } from "svelte-dnd-action";
     import { ConvertDuration, } from '$lib/model/date';
     import { goto } from '$app/navigation';
-    import { model } from '../../../../wailsjs/go/models';
-    import { GetMicrocycleCurrentDates } from '../../../../wailsjs/go/controllers/UserHandler'
+    import { model } from '../../wailsjs/go/models';
+    import { GetMicrocycleCurrentDates } from '../../wailsjs/go/controllers/UserHandler'
     import ActivityList from '../activity/ActivityList.svelte';
 
+    import { overrideItemIdKeyNameBeforeInitialisingDndZones } from "svelte-dnd-action";
     overrideItemIdKeyNameBeforeInitialisingDndZones("uuid");
 
     export let activity_type_list: model.ActivityTypeWithSubtypes[];
@@ -24,7 +24,7 @@
     }
 
     async function gotoToday() {
-        let d = await GetMicrocycleCurrentDates(usr)
+        let d = await GetMicrocycleCurrentDates()
         let l = "/microcycle/" + d.start_date + "/" + d.end_date
         goto(l)
     }

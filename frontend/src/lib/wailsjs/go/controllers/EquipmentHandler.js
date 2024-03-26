@@ -6,8 +6,8 @@ export function CreateActivityEquipment(arg1) {
   return window['go']['controllers']['EquipmentHandler']['CreateActivityEquipment'](arg1);
 }
 
-export function CreateEquipment(arg1, arg2) {
-  return window['go']['controllers']['EquipmentHandler']['CreateEquipment'](arg1, arg2);
+export function CreateEquipment(arg1) {
+  return window['go']['controllers']['EquipmentHandler']['CreateEquipment'](arg1);
 }
 
 export function DeleteActivityEquipment(arg1) {
@@ -18,8 +18,8 @@ export function DeleteEquipment(arg1) {
   return window['go']['controllers']['EquipmentHandler']['DeleteEquipment'](arg1);
 }
 
-export function List(arg1) {
-  return window['go']['controllers']['EquipmentHandler']['List'](arg1);
+export function List() {
+  return window['go']['controllers']['EquipmentHandler']['List']();
 }
 
 export function ListEquipmentTypes() {

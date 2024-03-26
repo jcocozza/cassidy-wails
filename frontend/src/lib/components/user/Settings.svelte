@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { model } from "../../../../wailsjs/go/models";
+    import type { model } from "../../wailsjs/go/models";
 
-    export let usr: model.User
+    let usr: model.User
     let is_editing = false;
 
     function toggleEdit() {

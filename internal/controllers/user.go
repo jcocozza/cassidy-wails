@@ -15,14 +15,14 @@ import (
 
 type UserHandler struct {
 	UserRepository userrepo.UserRepository
+	User *model.User
 }
-
-func NewUserHandler(db database.DbOperations) *UserHandler {
+func NewUserHandler(db database.DbOperations, user *model.User) *UserHandler {
 	return &UserHandler{
 		UserRepository: userrepo.NewIUserRespository(db),
+		User: user,
 	}
 }
-
 // Create a user
 func (uh *UserHandler) CreateUser(createRequest *model.User) (*model.User, error) {
 	_, err := uh.UserRepository.Read(createRequest.Username)
@@ -45,13 +45,11 @@ func (uh *UserHandler) CreateUser(createRequest *model.User) (*model.User, error
 		return nil, fmt.Errorf("user already exists")
 	}
 }
-
 // the frontend will send this struct to us
 type authRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
-
 // authenticate a user
 func (uh *UserHandler) AuthenticateUser(authRequest authRequest) (*model.User, error) {
 	usr, err1 := uh.UserRepository.Read(authRequest.Username)
@@ -68,25 +66,32 @@ func (uh *UserHandler) AuthenticateUser(authRequest authRequest) (*model.User, e
 		return nil, fmt.Errorf("unknown authorization failure")
 	}
 }
+
+type MCCurrentDate struct {
+	StartDate string `json:"start_date"`
+	EndDate string `json:"end_date"`
+}
 // Return the start date and end date of the current microcycle
-func (uh *UserHandler) GetMicrocycleCurrentDates(user *model.User) map[string]string {
+func (uh *UserHandler) GetMicrocycleCurrentDates() *MCCurrentDate {
 	currentDate := time.Now().Format(dateutil.Layout)
 	var mc []*dateutil.DateObject
-	if user.CycleDays == 7 {
-		mc = dateutil.GetDateMicrocycle(currentDate, user.CycleStart, user.CycleDays)
+	if uh.User.CycleDays == 7 {
+		mc = dateutil.GetDateMicrocycle(currentDate, uh.User.CycleStart, uh.User.CycleDays)
 	} else {
-		mc = dateutil.GetCurrentCycleFromInitialDate(user.InitialCycleStart, user.CycleDays)
+		mc = dateutil.GetCurrentCycleFromInitialDate(uh.User.InitialCycleStart, uh.User.CycleDays)
 	}
 
-	mp := map[string]string{
-		"start_date": mc[0].Date,
-		"end_date":   mc[len(mc)-1].Date,
+	mp := &MCCurrentDate{
+		StartDate: mc[0].Date,
+		EndDate:   mc[len(mc)-1].Date,
 	}
+
+	fmt.Println("CURRENT MICROCYCLE DATES:", mp)
+
 	return mp
 }
-
 // Update the user preferences
-func (uh *UserHandler) UpdateUser(updateRequest *model.User) (*model.User, error){
+func (uh *UserHandler) UpdateUser(updateRequest *model.User) (*model.User, error) {
 	err := uh.UserRepository.Update(updateRequest)
 	if err != nil {
 		return nil, err

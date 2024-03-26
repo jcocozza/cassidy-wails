@@ -4,11 +4,11 @@
     import edit from '$lib/static/edit-3-svgrepo-com.svg?raw'
     import { ValidateDuration } from "$lib/model/duration";
     import { ConvertDuration, FormatDurationSimple } from "$lib/model/date";
-    import type { model } from "../../../../wailsjs/go/models";
+    import type { model } from "../../wailsjs/go/models";
     import { EmptyActivityEquipment, HandleActivityEquipmentList } from "$lib/model/equipment";
 
-    import { CreateActivity, UpdateActivity } from '../../../../wailsjs/go/controllers/ActivityHandler'
-    import { DeleteActivityEquipment } from "../../../../wailsjs/go/controllers/EquipmentHandler";
+    import { CreateActivity, UpdateActivity } from '../../wailsjs/go/controllers/ActivityHandler'
+    import { DeleteActivityEquipment } from "../../wailsjs/go/controllers/EquipmentHandler";
 
     export let equipment_choices: model.Equipment[];
     export let activity_type_list: model.ActivityTypeWithSubtypes[];
@@ -16,7 +16,6 @@
     export let is_hovering: boolean = false;
     export let total_num_date_activities: number = 0;
     export let edit_type: string; // either "update" or "create"
-    export let usr: model.User;
 
     let is_hidden: boolean = false;
     let edited_activity: model.Activity = activity;
@@ -101,7 +100,7 @@
         activity = edited_activity
         if (edit_type == "create") {
             (async () => {
-                await CreateActivity(usr, activity).then((data) => {
+                await CreateActivity(activity).then((data) => {
                     if (data !== null) {
                         activity = data
                     }
@@ -125,7 +124,7 @@
             })();
         } else if (edit_type == "update") {
             (async () => {
-                await UpdateActivity(usr, activity)
+                await UpdateActivity(activity)
 
                 await HandleActivityEquipmentList(activity.equipment_list)
                 await HandleActivityEquipmentList(new_activity_equipment_list)

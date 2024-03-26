@@ -1,6 +1,6 @@
 <script lang="ts">
     import { EmptyLength } from "$lib/model/distance";
-    import { model } from "../../../../wailsjs/go/models";
+    import { model } from "../../wailsjs/go/models";
     import BaseActivityModal from "./BaseActivityModal.svelte";
     import { createEventDispatcher } from "svelte";
 
@@ -9,7 +9,6 @@
     export let date: string;
     export let activity_list: model.Activity[];
     export let is_hovering: boolean = false;
-    export let usr: model.User;
 
     let a = {activity_type: {id: -1, name: ""},
 		date: date,
@@ -37,7 +36,6 @@
     bind:is_hovering={is_hovering}
     bind:activity={new_activity}
     bind:total_num_date_activities={activity_list.length}
-    bind:usr={usr}
     edit_type={"create"}
     on:new={() => {dispatch("new")}}
 />

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import type { model } from "../../../../wailsjs/go/models";
-    import { DeleteEquipment, UpdateEquipment } from "../../../../wailsjs/go/controllers/EquipmentHandler";
+    import type { model } from "../../wailsjs/go/models";
+    import { DeleteEquipment, UpdateEquipment } from "../../wailsjs/go/controllers/EquipmentHandler";
 
 
     export let equipment: model.Equipment;

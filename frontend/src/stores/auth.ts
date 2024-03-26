@@ -1,6 +1,6 @@
 import { get, writable, type Writable } from "svelte/store";
 import { page } from "$app/stores";
-import type { model } from "../../wailsjs/go/models";
+import type { model } from "$lib/wailsjs/go/models";
 
 // The user data object can be found at:
 // get(page).data.session.user.uuid

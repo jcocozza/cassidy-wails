@@ -3,6 +3,6 @@
 import {model} from '../models';
 import {controllers} from '../models';
 
-export function GetNCycleSummary(arg1:string,arg2:string,arg3:model.User):Promise<model.NCycleSummary>;
+export function GetNCycleSummary(arg1:string,arg2:string):Promise<model.NCycleSummary>;
 
 export function GetNextPrevious(arg1:string,arg2:string):Promise<controllers.NextPrevious>;

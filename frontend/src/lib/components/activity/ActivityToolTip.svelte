@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { model } from "../../../../wailsjs/go/models";
+    import type { model } from "../../wailsjs/go/models";
 
     export let activity: model.Activity;
 </script>

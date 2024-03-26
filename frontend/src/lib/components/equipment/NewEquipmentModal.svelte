@@ -1,8 +1,8 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import type { model } from "../../../../wailsjs/go/models";
+    import type { model } from "../../wailsjs/go/models";
     import { NewEquipment } from "$lib/model/equipment";
-    import { CreateEquipment } from "../../../../wailsjs/go/controllers/EquipmentHandler";
+    import { CreateEquipment } from "../../wailsjs/go/controllers/EquipmentHandler";
 
     export let usr: model.User
     export let equipment_type_list: model.EquipmentType[];
@@ -15,7 +15,7 @@
 
     const dispatch = createEventDispatcher();
     async function submit(new_equipment: model.Equipment) {
-        await CreateEquipment(usr ,new_equipment)
+        await CreateEquipment(new_equipment)
         new_equipment = NewEquipment(usr)
         toggleHidden()
         dispatch('update')

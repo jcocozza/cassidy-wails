@@ -1,5 +1,19 @@
 export namespace controllers {
 	
+	export class MCCurrentDate {
+	    start_date: string;
+	    end_date: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new MCCurrentDate(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.start_date = source["start_date"];
+	        this.end_date = source["end_date"];
+	    }
+	}
 	export class NextPrevious {
 	    next_start_date: string;
 	    next_end_date: string;

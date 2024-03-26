@@ -1,6 +1,9 @@
 package controllers
 
-import "github.com/jcocozza/cassidy-wails/internal/database"
+import (
+	"github.com/jcocozza/cassidy-wails/internal/database"
+	"github.com/jcocozza/cassidy-wails/internal/model"
+)
 
 type Controllers struct {
 	UserHandler *UserHandler
@@ -10,14 +13,20 @@ type Controllers struct {
 	MicrocycleHandler *MicrocycleHandler
 	MiscHandler *MiscHandler
 }
-
-func NewControllers(db database.DbOperations) *Controllers {
+func NewControllers(db database.DbOperations, user *model.User) *Controllers {
 	return &Controllers{
-		UserHandler: NewUserHandler(db),
-		ActivityHandler: NewActivityHandler(db),
+		UserHandler: NewUserHandler(db, user),
+		ActivityHandler: NewActivityHandler(db, user),
 		ActivityTypeHandler: NewActivityTypeHandler(db),
-		EquipmentHandler: NewEquipmentHandler(db),
-		MicrocycleHandler: NewMicrocycleHandler(db),
-		MiscHandler: NewMiscHandler(db),
+		EquipmentHandler: NewEquipmentHandler(db, user),
+		MicrocycleHandler: NewMicrocycleHandler(db, user),
+		MiscHandler: NewMiscHandler(db, user),
 	}
+}
+func (c *Controllers) SetUser(user *model.User) {
+	c.UserHandler.User = user
+	c.ActivityHandler.User = user
+	c.EquipmentHandler.User = user
+	c.MicrocycleHandler.User = user
+	c.MiscHandler.User = user
 }

@@ -2,15 +2,14 @@
     import { onMount } from "svelte";
     import EquipmentCard from "./EquipmentCard.svelte";
     import NewEquipmentModal from "./NewEquipmentModal.svelte";
-    import type { model } from "../../../../wailsjs/go/models";
-    import { List } from '../../../../wailsjs/go/controllers/EquipmentHandler'
+    import type { model } from "../../wailsjs/go/models";
+    import { List } from '../../wailsjs/go/controllers/EquipmentHandler'
 
-    export let usr: model.User;
     export let equipment_list: model.Equipment[];
     export let equipment_type_list: model.EquipmentType[];
 
     async function refreshEquipment() {
-        equipment_list = await List(usr)
+        equipment_list = await List()
     }
 
     onMount(() => {
@@ -32,7 +31,6 @@
 
     <NewEquipmentModal
         bind:equipment_type_list={equipment_type_list}
-        bind:usr={usr}
         on:update={async () => {await refreshEquipment()}}
     />
 </div>

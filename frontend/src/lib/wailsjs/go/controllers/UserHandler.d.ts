@@ -7,6 +7,6 @@ export function AuthenticateUser(arg1:controllers.authRequest):Promise<model.Use
 
 export function CreateUser(arg1:model.User):Promise<model.User>;
 
-export function GetMicrocycleCurrentDates(arg1:model.User):Promise<{[key: string]: string}>;
+export function GetMicrocycleCurrentDates():Promise<controllers.MCCurrentDate>;
 
 export function UpdateUser(arg1:model.User):Promise<model.User>;

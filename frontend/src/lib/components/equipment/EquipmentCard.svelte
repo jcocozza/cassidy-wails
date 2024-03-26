@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import EquipmentModal from "./EquipmentModal.svelte";
-    import type { model } from "../../../../wailsjs/go/models";
+    import type { model } from "../../wailsjs/go/models";
 
 
     export let equipment: model.Equipment;

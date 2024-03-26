@@ -3,8 +3,8 @@
     import NewActivityModal from "$lib/components/activity/NewActivityModal.svelte";
     import { createEventDispatcher } from "svelte";
     import { dndzone, type DndEvent } from "svelte-dnd-action";
-    import type { model } from "../../../../wailsjs/go/models";
-    import { UpdateActivity } from "../../../../wailsjs/go/controllers/ActivityHandler";
+    import type { model } from "../../wailsjs/go/models";
+    import { UpdateActivity } from "../../wailsjs/go/controllers/ActivityHandler";
 
     export let user: model.User
     export let date: string;

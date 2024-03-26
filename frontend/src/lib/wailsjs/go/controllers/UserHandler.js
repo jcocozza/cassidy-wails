@@ -10,8 +10,8 @@ export function CreateUser(arg1) {
   return window['go']['controllers']['UserHandler']['CreateUser'](arg1);
 }
 
-export function GetMicrocycleCurrentDates(arg1) {
-  return window['go']['controllers']['UserHandler']['GetMicrocycleCurrentDates'](arg1);
+export function GetMicrocycleCurrentDates() {
+  return window['go']['controllers']['UserHandler']['GetMicrocycleCurrentDates']();
 }
 
 export function UpdateUser(arg1) {

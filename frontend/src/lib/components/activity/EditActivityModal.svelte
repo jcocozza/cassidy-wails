@@ -1,14 +1,13 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import BaseActivityModal from "./BaseActivityModal.svelte";
-    import type { model } from "../../../../wailsjs/go/models";
+    import type { model } from "../../wailsjs/go/models";
 
     export let equipment_choices: model.Equipment[];
     export let activity_type_list: model.ActivityTypeWithSubtypes[];
     export let total_num_date_activities: number;
     export let is_hovering: boolean = false;
     export let activity: model.Activity;
-    export let usr: model.User;
 
     const dispatch = createEventDispatcher()
 </script>
@@ -19,7 +18,6 @@
     bind:is_hovering={is_hovering}
     bind:activity={activity}
     bind:total_num_date_activities={total_num_date_activities}
-    bind:usr={usr}
     edit_type={"update"}
     on:update={() => {dispatch("update")}}
 />

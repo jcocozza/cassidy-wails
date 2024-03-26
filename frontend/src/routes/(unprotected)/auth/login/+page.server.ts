@@ -1,7 +1,7 @@
 import { redirect, type Actions } from '@sveltejs/kit'
 import { auth_store } from '../../../../stores/auth';
 import { MAX_AGE } from '../../../../config';
-import { AuthenticateUser } from '../../../../../wailsjs/go/controllers/UserHandler';
+import { AuthenticateUser } from '$lib/wailsjs/go/controllers/UserHandler';
 export const actions: Actions = {
     login: async ({ cookies, request }) => {
 

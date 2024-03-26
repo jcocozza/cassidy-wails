@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import Chart from "chart.js/auto";
     import { ConvertDuration } from "../../model/date";
-    import type { model } from "../../../../wailsjs/go/models";
+    import type { model } from "../../wailsjs/go/models";
 
     export let microcycle: model.Microcycle;
     $: start_date = microcycle.start_date;

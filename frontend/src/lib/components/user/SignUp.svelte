@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { model } from "../../../../wailsjs/go/models";
+    import { model } from "../../wailsjs/go/models";
     import type { ActionData } from "../../../routes/(unprotected)/auth/signup/$types";
     import { auth_store } from "../../../stores/auth";
 

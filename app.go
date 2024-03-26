@@ -19,7 +19,7 @@ type App struct {
 // NewApp creates a new App application struct
 func NewApp() *App {
 	DB := database.InitTestDB()
-	handlers := controllers.NewControllers(DB)
+	handlers := controllers.NewControllers(DB, model.EmptyUser())
 
 	return &App{
 		DB: DB,
@@ -27,7 +27,7 @@ func NewApp() *App {
 	}
 }
 
-func (a *App) GetUser() *model.User {
+func (a *App) LoadUser() *model.User {
 	return &a.UserSettings
 }
 
@@ -42,4 +42,6 @@ func (a *App) startup(ctx context.Context) {
 	}
 
 	a.UserSettings = *userSettings
+	a.DB.AppUser = userSettings
+	a.Handlers.SetUser(userSettings)
 }

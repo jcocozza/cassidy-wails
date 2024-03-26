@@ -25,12 +25,14 @@ func prependMicrocycle(lst []*model.Microcycle, mc *model.Microcycle) []*model.M
 type MicrocycleHandler struct {
 	MicrocycleRepository microcyclerepo.MicrocycleRepository
 	ConversionRepository conversionrepo.MeasurementRepository
+	User *model.User
 }
 
-func NewMicrocycleHandler(db database.DbOperations) *MicrocycleHandler {
+func NewMicrocycleHandler(db database.DbOperations, user *model.User) *MicrocycleHandler {
 	return &MicrocycleHandler{
 		MicrocycleRepository: microcyclerepo.NewIMicrocycleRepository(db),
 		ConversionRepository: conversionrepo.NewIMeasurementRepository(),
+		User: user,
 	}
 }
 
@@ -38,13 +40,13 @@ func NewMicrocycleHandler(db database.DbOperations) *MicrocycleHandler {
 //
 // @param start_date
 // @param end_date
-func (mh *MicrocycleHandler) GetMicrocycle(startDate, endDate string, user *model.User) (*model.Microcycle, error) {
-	microcycle, err := mh.MicrocycleRepository.ReadMicrocycle(startDate, endDate, user.Uuid, user.Units)
+func (mh *MicrocycleHandler) GetMicrocycle(startDate, endDate string) (*model.Microcycle, error) {
+	microcycle, err := mh.MicrocycleRepository.ReadMicrocycle(startDate, endDate, mh.User.Uuid, mh.User.Units)
 	if err != nil {
 		return nil, err
 	}
 
-	err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, microcycle, user.Units)
+	err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, microcycle, mh.User.Units)
 	if err1 != nil {
 		return nil, err1
 	}
@@ -54,8 +56,8 @@ func (mh *MicrocycleHandler) GetMicrocycle(startDate, endDate string, user *mode
 //
 // @param: start_date
 // @param: end_date
-func (mh *MicrocycleHandler) GetCalendar(startDate, endDate string, user *model.User) ([]*model.Microcycle, error) {
-	centerMicrocycle, err := mh.MicrocycleRepository.ReadMicrocycle(startDate, endDate, user.Uuid, user.Units)
+func (mh *MicrocycleHandler) GetCalendar(startDate, endDate string) ([]*model.Microcycle, error) {
+	centerMicrocycle, err := mh.MicrocycleRepository.ReadMicrocycle(startDate, endDate, mh.User.Uuid, mh.User.Units)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +67,7 @@ func (mh *MicrocycleHandler) GetCalendar(startDate, endDate string, user *model.
 	var forwardCycles []*model.Microcycle
 	for i := 0; i < forward; i++ {
 		tmpStartFwd, tmpEndFwd = dateutil.GetNextCycle(tmpStartFwd, tmpEndFwd)
-		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStartFwd, tmpEndFwd, user.Uuid, user.Units)
+		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStartFwd, tmpEndFwd, mh.User.Uuid, mh.User.Units)
 		if err != nil {
 			return nil, err
 		}
@@ -77,7 +79,7 @@ func (mh *MicrocycleHandler) GetCalendar(startDate, endDate string, user *model.
 	var backwardCycles []*model.Microcycle
 	for i := 0; i < backward; i++ {
 		tmpStartBwd, tmpEndBwd = dateutil.GetPreviousCycle(tmpStartBwd, tmpEndBwd)
-		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStartBwd, tmpEndBwd, user.Uuid, user.Units)
+		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStartBwd, tmpEndBwd, mh.User.Uuid, mh.User.Units)
 		if err != nil {
 			return nil, err
 		}
@@ -91,7 +93,7 @@ func (mh *MicrocycleHandler) GetCalendar(startDate, endDate string, user *model.
 	calendarMicrocycleList = append(calendarMicrocycleList, forwardCycles...)
 
 	for _, mc := range calendarMicrocycleList {
-		err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, mc, user.Units)
+		err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, mc, mh.User.Units)
 		if err1 != nil {
 			return nil, err1
 		}
@@ -104,13 +106,13 @@ func (mh *MicrocycleHandler) GetCalendar(startDate, endDate string, user *model.
 // @param: start_date
 // @param: end_date
 // @param: number
-func (mh *MicrocycleHandler) GetNextNMicrocycles(startDate, endDate string, numberCycles int, user *model.User) ([]*model.Microcycle, error) {
+func (mh *MicrocycleHandler) GetNextNMicrocycles(startDate, endDate string, numberCycles int) ([]*model.Microcycle, error) {
 	var tmpStart = startDate
 	var tmpEnd = endDate
 	var microcycleList = []*model.Microcycle{}
 	for i := 0; i < numberCycles; i++ {
 		tmpStart, tmpEnd = dateutil.GetNextCycle(tmpStart, tmpEnd)
-		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStart, tmpEnd, user.Uuid, user.Units)
+		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStart, tmpEnd, mh.User.Uuid, mh.User.Units)
 		if err != nil {
 			return nil, err
 		}
@@ -118,7 +120,7 @@ func (mh *MicrocycleHandler) GetNextNMicrocycles(startDate, endDate string, numb
 	}
 
 	for _, mc := range microcycleList {
-		err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, mc, user.Units)
+		err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, mc, mh.User.Units)
 		if err1 != nil {
 			return nil, err1
 		}
@@ -126,19 +128,18 @@ func (mh *MicrocycleHandler) GetNextNMicrocycles(startDate, endDate string, numb
 
 	return microcycleList, nil
 }
-
 // Get the previous number of microcycles
 //
 // @param: start_date
 // @param: end_date
 // @param: number
-func (mh *MicrocycleHandler) GetPreviousNMicrocycles(startDate, endDate string, numberCycles int, user *model.User) ([]*model.Microcycle, error) {
+func (mh *MicrocycleHandler) GetPreviousNMicrocycles(startDate, endDate string, numberCycles int) ([]*model.Microcycle, error) {
 	var tmpStart = startDate
 	var tmpEnd = endDate
 	var microcycleList = []*model.Microcycle{}
 	for i := 0; i < numberCycles; i++ {
 		tmpStart, tmpEnd = dateutil.GetPreviousCycle(tmpStart, tmpEnd)
-		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStart, tmpEnd, user.Uuid, user.Units)
+		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStart, tmpEnd, mh.User.Uuid, mh.User.Units)
 		if err != nil {
 			return nil, err
 		}
@@ -146,7 +147,7 @@ func (mh *MicrocycleHandler) GetPreviousNMicrocycles(startDate, endDate string, 
 	}
 
 	for _, mc := range microcycleList {
-		err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, mc, user.Units)
+		err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, mc, mh.User.Units)
 		if err1 != nil {
 			return nil, err1
 		}

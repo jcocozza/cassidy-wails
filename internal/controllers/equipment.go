@@ -12,21 +12,23 @@ import (
 type EquipmentHandler struct {
 	EquipmentRepository  equipmentrepo.EquipmentRepository
 	ConversionRepository conversionrepo.MeasurementRepository
+	User *model.User
 }
-func NewEquipmentHandler(db database.DbOperations) *EquipmentHandler {
+func NewEquipmentHandler(db database.DbOperations, user *model.User) *EquipmentHandler {
 	return &EquipmentHandler{
 		EquipmentRepository:  equipmentrepo.NewIEquipmentRepository(db),
 		ConversionRepository: conversionrepo.NewIMeasurementRepository(),
+		User: user,
 	}
 }
 // Create equipment
-func (eh *EquipmentHandler) CreateEquipment(user *model.User, createRequest *model.Equipment) (*model.Equipment, error) {
+func (eh *EquipmentHandler) CreateEquipment(createRequest *model.Equipment) (*model.Equipment, error) {
 	err0 := eh.ConversionRepository.ConvertEquipment(conversionrepo.Incoming, createRequest)
 	if err0 != nil {
 		return nil, fmt.Errorf("equipment failed to convert incoming: %w", err0)
 	}
 
-	createRequest.UserUuid = user.Uuid
+	createRequest.UserUuid = eh.User.Uuid
 	err1 := createRequest.Validate()
 	if err1 != nil {
 		return nil, err1
@@ -74,8 +76,8 @@ func (eh *EquipmentHandler) DeleteEquipment(equipmentId int) error {
 	return nil
 }
 // List all equipment
-func (eh *EquipmentHandler) List(user *model.User) ([]*model.Equipment, error) {
-	equipmentList, err := eh.EquipmentRepository.List(user.Uuid)
+func (eh *EquipmentHandler) List() ([]*model.Equipment, error) {
+	equipmentList, err := eh.EquipmentRepository.List(eh.User.Uuid)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get equipment list: %w", err)
 	}

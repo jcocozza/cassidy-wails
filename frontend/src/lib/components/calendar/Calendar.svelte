@@ -8,9 +8,9 @@
     import ActivityList from '../activity/ActivityList.svelte';
     import { CreateObserver } from '../../../functions/infiniteScroll';
     import { ConvertDuration, IsToday } from '../../model/date';
-    import type { model } from '../../../../wailsjs/go/models';
-    import { GetMicrocycle, GetCalendar, GetNextNMicrocycles, GetPreviousNMicrocycles } from '../../../../wailsjs/go/controllers/MicrocycleHandler'
-    import { ListActivityTypes } from '../../../../wailsjs/go/controllers/ActivityTypeHandler'
+    import type { model } from '../../wailsjs/go/models';
+    import { GetMicrocycle, GetCalendar, GetNextNMicrocycles, GetPreviousNMicrocycles } from '../../wailsjs/go/controllers/MicrocycleHandler'
+    import { ListActivityTypes } from '../../wailsjs/go/controllers/ActivityTypeHandler'
 
     export let initial_start_date: string;
     export let initial_end_date: string;
@@ -40,7 +40,7 @@
 
     async function replaceMicrocycle(microcycle: model.Microcycle, index: number) {
         try {
-            const updatedMicrocycle = await GetMicrocycle(microcycle.start_date, microcycle.end_date, usr);
+            const updatedMicrocycle = await GetMicrocycle(microcycle.start_date, microcycle.end_date);
             microcycle_list = [...microcycle_list.slice(0, index), updatedMicrocycle, ...microcycle_list.slice(index + 1)];
         } catch (error) {
             console.log(error)
@@ -53,7 +53,7 @@
 
     onMount(async () => {
         activity_type_list = await ListActivityTypes()
-        microcycle_list = await GetCalendar(initial_start_date, initial_end_date, usr);
+        microcycle_list = await GetCalendar(initial_start_date, initial_end_date);
     })
 
     $: {
@@ -68,7 +68,7 @@
                     is_loading = true;
 
                     let before_scroll_height = scroller.scrollHeight;
-                    await GetPreviousNMicrocycles(start_date, end_date, number_new_cycles_per_pull, usr).then(async (data) => {
+                    await GetPreviousNMicrocycles(start_date, end_date, number_new_cycles_per_pull).then(async (data) => {
                         microcycle_list = [...data, ...microcycle_list]
                         console.log(microcycle_list)
                         await new Promise(r => setTimeout(r, 100)); // the browers needs just a fraction of a second to catch up
@@ -95,7 +95,7 @@
 
                 if (!is_loading) {
                     is_loading = true;
-                    await GetNextNMicrocycles(start_date, end_date, number_new_cycles_per_pull, usr).then((data) => {
+                    await GetNextNMicrocycles(start_date, end_date, number_new_cycles_per_pull).then((data) => {
                         microcycle_list = [...microcycle_list, ...data];
                         is_loading = false;
                     })

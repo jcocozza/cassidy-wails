@@ -4,18 +4,15 @@
     import trashbin from '$lib/static/trash-bin-trash-svgrepo-com.svg?raw'
     import { ConvertDuration } from "../../model/date";
     import { createEventDispatcher } from "svelte";
-    import { get } from "svelte/store";
-    import { page } from "$app/stores";
 
-    import { DeleteActivity } from '../../../../wailsjs/go/controllers/ActivityHandler'
-    import type { model } from "../../../../wailsjs/go/models";
+    import { DeleteActivity } from '../../wailsjs/go/controllers/ActivityHandler'
+    import type { model } from "../../wailsjs/go/models";
 
     export let activity: model.Activity;
     export let activity_type_list: model.ActivityTypeWithSubtypes[]
     export let equipment_choices: model.Equipment[];
     export let display_completion: boolean = false;
     export let total_num_date_activities: number;
-    export let usr: model.User;
 
     let visibility = "hidden"
 

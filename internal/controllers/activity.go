@@ -13,18 +13,18 @@ import (
 type ActivityHandler struct {
 	ActivityRepository   activityrepo.ActivityRepository
 	ConversionRepository conversionrepo.MeasurementRepository
+	User *model.User
 }
-
-func NewActivityHandler(db database.DbOperations) *ActivityHandler {
+func NewActivityHandler(db database.DbOperations, user *model.User) *ActivityHandler {
 	return &ActivityHandler{
 		ActivityRepository:   activityrepo.NewIActivityRepository(db),
 		ConversionRepository: conversionrepo.NewIMeasurementRepository(),
+		User: user,
 	}
 }
-
 // Create an activity
-func (ah *ActivityHandler) CreateActivity(user *model.User, createRequest *model.Activity) (*model.Activity, error) {
-	err0 := ah.ConversionRepository.ConvertActivity(conversionrepo.Incoming, createRequest, user.Units)
+func (ah *ActivityHandler) CreateActivity(createRequest *model.Activity) (*model.Activity, error) {
+	err0 := ah.ConversionRepository.ConvertActivity(conversionrepo.Incoming, createRequest, ah.User.Units)
 	if err0 != nil {
 		return nil, err0
 	}
@@ -37,11 +37,11 @@ func (ah *ActivityHandler) CreateActivity(user *model.User, createRequest *model
 		return nil, fmt.Errorf("activity failed to validate: %w", err)
 	}
 
-	err2 := ah.ActivityRepository.Create(user.Uuid, createRequest)
+	err2 := ah.ActivityRepository.Create(ah.User.Uuid, createRequest)
 	if err2 != nil {
 		return nil, fmt.Errorf("failed to create activity: %w", err2)
 	} else {
-		err3 := ah.ConversionRepository.ConvertActivity(conversionrepo.Outgoing, createRequest, user.Units)
+		err3 := ah.ConversionRepository.ConvertActivity(conversionrepo.Outgoing, createRequest, ah.User.Units)
 		if err3 != nil {
 			return nil, fmt.Errorf("activity failed to convert: %w", err3)
 		}
@@ -49,8 +49,8 @@ func (ah *ActivityHandler) CreateActivity(user *model.User, createRequest *model
 	}
 }
 // Update an activity
-func (ah *ActivityHandler) UpdateActivity(user *model.User, updateRequest *model.Activity) (*model.Activity, error) {
-	err0 := ah.ConversionRepository.ConvertActivity(conversionrepo.Incoming, updateRequest, user.Units)
+func (ah *ActivityHandler) UpdateActivity(updateRequest *model.Activity) (*model.Activity, error) {
+	err0 := ah.ConversionRepository.ConvertActivity(conversionrepo.Incoming, updateRequest, ah.User.Units)
 	if err0 != nil {
 		return nil, fmt.Errorf("activity failed to convert incoming: %w", err0)
 	}
@@ -60,7 +60,7 @@ func (ah *ActivityHandler) UpdateActivity(user *model.User, updateRequest *model
 		return nil, fmt.Errorf("failed to update: %w", err)
 	}
 	// return updated object
-	err3 := ah.ConversionRepository.ConvertActivity(conversionrepo.Outgoing, updateRequest, user.Units)
+	err3 := ah.ConversionRepository.ConvertActivity(conversionrepo.Outgoing, updateRequest, ah.User.Units)
 	if err3 != nil {
 		return nil, fmt.Errorf("activity failed to convert outgoing: %w", err3)
 	}

@@ -2,13 +2,12 @@
     import Chart from "chart.js/auto";
     import { afterUpdate, onMount } from "svelte";
     import { ConvertDuration } from "../../model/date";
-    import { model } from "../../../../wailsjs/go/models";
-    import { GetMicrocycleCurrentDates } from "../../../../wailsjs/go/controllers/UserHandler";
-    import { GetNCycleSummary } from '../../../../wailsjs/go/controllers/MiscHandler'
+    import { model } from "../../wailsjs/go/models";
+    import { GetMicrocycleCurrentDates } from "../../wailsjs/go/controllers/UserHandler";
+    import { GetNCycleSummary } from '../../wailsjs/go/controllers/MiscHandler'
 
     export let start_date: string = "";
     export let end_date: string = "";
-    export let usr: model.User;
 
     let chart_type: string = "distance"
     let ctx;
@@ -143,10 +142,10 @@
 
     onMount(async () => {
         if (start_date == "" || end_date == "") {
-            let d = await GetMicrocycleCurrentDates(usr)
-            n_cycle_summary = await GetNCycleSummary(d.start_date, d.end_date, usr);
+            let d = await GetMicrocycleCurrentDates()
+            n_cycle_summary = await GetNCycleSummary(d.start_date, d.end_date);
         } else {
-            n_cycle_summary = await GetNCycleSummary(start_date, end_date, usr)
+            n_cycle_summary = await GetNCycleSummary(start_date, end_date)
         }
         initChart()
     })
@@ -157,7 +156,7 @@
 
         (async () => {
         try {
-            n_cycle_summary = await GetNCycleSummary(start_date, end_date, usr);
+            n_cycle_summary = await GetNCycleSummary(start_date, end_date);
             if (chart) {
                 updateChart(chart_type);
             }

@@ -1,17 +1,16 @@
 <script lang="ts">
     import Calendar from "$lib/components/calendar/Calendar.svelte";
     import { onMount } from "svelte";
-    import type { model } from "../../../wailsjs/go/models";
-    import { List } from "../../../wailsjs/go/controllers/EquipmentHandler";
+    import type { model } from "../wailsjs/go/models";
+    import { List } from "../wailsjs/go/controllers/EquipmentHandler";
 
     export let initial_start_date: string;
     export let initial_end_date: string;
     export let usr: model.User;
-
     let equipment_choices: model.Equipment[] = [];
 
     onMount(async () => {
-        equipment_choices = await List(usr)
+        equipment_choices = await List()
     });
 </script>
 

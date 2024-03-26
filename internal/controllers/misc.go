@@ -12,26 +12,26 @@ import (
 type MiscHandler struct {
 	MiscRepository       miscrepo.MiscRepository
 	ConversionRepository conversionrepo.MeasurementRepository
+	User *model.User
 }
-
-func NewMiscHandler(db database.DbOperations) *MiscHandler {
+func NewMiscHandler(db database.DbOperations, user *model.User) *MiscHandler {
 	return &MiscHandler{
 		MiscRepository:       miscrepo.NewIMiscRepository(db),
 		ConversionRepository: conversionrepo.NewIMeasurementRepository(),
+		User: user,
 	}
 }
-
 // Get an n cycle summary
 //
 // @param: start_date
 // @param: end_date
-func (mh *MiscHandler) GetNCycleSummary(startDate, endDate string, user *model.User) (*model.NCycleSummary, error) {
-	ncycleSummary, err := mh.MiscRepository.ReadNCycleSummary(startDate, endDate, user.Uuid)
+func (mh *MiscHandler) GetNCycleSummary(startDate, endDate string) (*model.NCycleSummary, error) {
+	ncycleSummary, err := mh.MiscRepository.ReadNCycleSummary(startDate, endDate, mh.User.Uuid)
 	if err != nil {
 		return nil, err
 	}
 
-	err1 := mh.ConversionRepository.ConvertNCycleSummary(conversionrepo.Outgoing, ncycleSummary, user.Units)
+	err1 := mh.ConversionRepository.ConvertNCycleSummary(conversionrepo.Outgoing, ncycleSummary, mh.User.Units)
 	if err1 != nil {
 		return nil, err1
 	}
