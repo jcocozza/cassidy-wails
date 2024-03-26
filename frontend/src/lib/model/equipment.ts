@@ -1,7 +1,7 @@
-import { model } from "../wailsjs/go/models";
-import { EmptyLength, type Distance } from "./distance";
+import { model } from "../../../../frontend/src/lib/wailsjs/go/models";
+import { EmptyLength } from "./distance";
 
-import { CreateActivityEquipment, UpdateActivityEquipment } from '../wailsjs/go/controllers/EquipmentHandler'
+import { CreateActivityEquipment, UpdateActivityEquipment } from '../../../../frontend/src/lib/wailsjs/go/controllers/EquipmentHandler'
 
 /**
  * Create an empty equipment

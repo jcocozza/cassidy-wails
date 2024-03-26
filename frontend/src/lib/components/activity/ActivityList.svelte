@@ -75,6 +75,7 @@
                 <div class="col">
                     <!--{#if is_hovering} -->
                         <NewActivityModal
+                            bind:usr={user}
                             bind:equipment_choices={equipment_choices}
                             bind:date={activity_list.date_object.date}
                             bind:activity_list={activity_list.activity_list}

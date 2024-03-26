@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jcocozza/cassidy-wails/internal/controllers"
 	"github.com/jcocozza/cassidy-wails/internal/database"
@@ -28,6 +29,7 @@ func NewApp() *App {
 }
 
 func (a *App) LoadUser() *model.User {
+	fmt.Println("getting user: ", a.UserSettings)
 	return &a.UserSettings
 }
 

@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import type { model } from "../../wailsjs/go/models";
+    import { LoadUser } from "$lib/wailsjs/go/main/App";
 
     let usr: model.User
     let is_editing = false;
@@ -7,8 +9,13 @@
     function toggleEdit() {
         is_editing = !is_editing
     };
+
+    onMount(async () => {
+        usr = await LoadUser()
+    })
 </script>
 
+{#if usr}
 <div class="user-settings container">
     <form method="POST" action="?/update">
         <div class="form-group">
@@ -60,3 +67,4 @@
     </div>
 </div>
 -->
+{/if}

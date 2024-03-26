@@ -97,6 +97,7 @@
                                     {activity_list.date_object.day_of_week}
                                 {/if}
                                 <ActivityList
+                                    bind:user={usr}
                                     bind:activity_list={activity_list}
                                     bind:date={activity_list.date_object.date}
                                     bind:activity_type_list={activity_type_list}

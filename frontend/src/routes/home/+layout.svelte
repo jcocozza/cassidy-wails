@@ -3,7 +3,7 @@
       <a class="nav-link" aria-current="page" href="/home">Cassidy</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="/microcycle/current">
+        <a class="nav-link" href="/microcycle">
             Go to Log
         </a>
     </li>

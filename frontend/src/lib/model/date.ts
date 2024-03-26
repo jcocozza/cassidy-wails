@@ -1,6 +1,3 @@
-import { API_BASE_URL } from "../../config";
-import { GetUserUnits, GetUserUuid } from "../../stores/auth";
-
 /**
  * A date object is a date and its day of week
  */
