@@ -1,23 +1,23 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import type { model } from "../../wailsjs/go/models";
-    import { LoadUser } from "$lib/wailsjs/go/main/App";
+    import { UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
 
-    let usr: model.User
+    export let usr: model.User
     let is_editing = false;
 
     function toggleEdit() {
         is_editing = !is_editing
     };
 
-    onMount(async () => {
-        usr = await LoadUser()
-    })
+    async function update() {
+        usr = await UpdateUser(usr)
+        toggleEdit()
+    }
 </script>
 
 {#if usr}
 <div class="user-settings container">
-    <form method="POST" action="?/update">
+    <form>
         <div class="form-group">
             <label for="unit_class">Unit System:</label>
             <select class="form-control" id="unit_class" name="unit_class" bind:value={usr.units} disabled={!is_editing} required>
@@ -49,7 +49,7 @@
         </div>
 
         {#if is_editing}
-            <input type="submit">
+            <button class="btn btn-primary" on:click={async () => {await update()}}>Update</button>
         {/if}
     </form>
     {#if is_editing}

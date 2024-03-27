@@ -29,8 +29,13 @@ func NewApp() *App {
 }
 
 func (a *App) LoadUser() *model.User {
-	fmt.Println("getting user: ", a.UserSettings)
-	return &a.UserSettings
+	usr, err := a.Handlers.UserHandler.UserRepository.Read(a.UserSettings.Username)
+
+	if err != nil {
+		fmt.Println("warning: failed to load user")
+	}
+	a.UserSettings = *usr
+	return usr
 }
 
 // startup is called when the app starts. The context is saved

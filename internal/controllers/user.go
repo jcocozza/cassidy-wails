@@ -15,12 +15,12 @@ import (
 
 type UserHandler struct {
 	UserRepository userrepo.UserRepository
-	User *model.User
+	User           *model.User
 }
 func NewUserHandler(db database.DbOperations, user *model.User) *UserHandler {
 	return &UserHandler{
 		UserRepository: userrepo.NewIUserRespository(db),
-		User: user,
+		User:           user,
 	}
 }
 // Create a user
@@ -69,7 +69,7 @@ func (uh *UserHandler) AuthenticateUser(authRequest authRequest) (*model.User, e
 
 type MCCurrentDate struct {
 	StartDate string `json:"start_date"`
-	EndDate string `json:"end_date"`
+	EndDate   string `json:"end_date"`
 }
 // Return the start date and end date of the current microcycle
 func (uh *UserHandler) GetMicrocycleCurrentDates() *MCCurrentDate {

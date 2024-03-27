@@ -8,7 +8,6 @@
     import { DeleteActivity } from '../../wailsjs/go/controllers/ActivityHandler'
     import type { model } from "../../wailsjs/go/models";
 
-    
     export let activity: model.Activity;
     export let activity_type_list: model.ActivityTypeWithSubtypes[]
     export let equipment_choices: model.Equipment[];
