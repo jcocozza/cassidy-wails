@@ -37,11 +37,6 @@
             user
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/auth/logout">
-            logout
-        </a>
-    </li>
 </ul>
 <slot />
 

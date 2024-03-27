@@ -35,7 +35,7 @@
         activity_list.activity_list = sortedActivities; // Update the activities array with the sorted activities
 
         await Promise.all(activity_list.activity_list.map(async (act) => {
-            await UpdateActivity(user, act)
+            await UpdateActivity(act)
         }));
 
         dispatchChange()

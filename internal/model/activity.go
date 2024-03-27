@@ -7,6 +7,7 @@ import (
 	colorutil "github.com/jcocozza/cassidy-wails/internal/utils/colorUtil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
+	//gostructstringify "github.com/jcocozza/go_struct_stringify"
 )
 
 // Represents an activity type.
@@ -190,14 +191,17 @@ func (a *Activity) Validate() error {
 	}
 	return nil
 }
+
 // Add activity TypeSubtype object to the activity object
 func (a *Activity) AddActivityTypeSubtype(ats *ActivityTypeSubtype) {
 	a.TypeSubtypeList = append(a.TypeSubtypeList, ats)
 }
+
 // add activity equipment object to the activity object
 func (a *Activity) AddActivityEquipment(e *ActivityEquipment) {
 	a.EquipmentList = append(a.EquipmentList, e)
 }
+
 // Set the activity uuid of sub elements
 func (a *Activity) SetUuid(uuid string) {
 	a.Uuid = uuid
@@ -228,6 +232,7 @@ func (a *Activity) IsFuture() (bool, error) {
 
 	return f, nil
 }
+
 // Determine completion color of activity
 //
 // Based on duration, then distance
@@ -265,11 +270,13 @@ func (a *Activity) CompletionColor() (colorutil.Color, error) {
 	}
 	return colorutil.Grey, nil // default color is grey
 }
+
 // Represents a list of activities on a given day
 type ActivityList struct {
 	DateObject   *dateutil.DateObject `json:"date_object"`
 	ActivityList []*Activity          `json:"activity_list"`
 }
+
 // An empty activity list has an empty date object and no activities
 func EmptyActivityList() *ActivityList {
 	return &ActivityList{
@@ -277,6 +284,7 @@ func EmptyActivityList() *ActivityList {
 		ActivityList: []*Activity{},
 	}
 }
+
 // An empty dated activity list is an activity list with a date, but no activities in its list.
 func EmptyDatedActivityList(date string) (*ActivityList, error) {
 	d, err := dateutil.CreateFromDate(date)
@@ -288,6 +296,7 @@ func EmptyDatedActivityList(date string) (*ActivityList, error) {
 		ActivityList: []*Activity{},
 	}, nil
 }
+
 // Create a new activity list object for the passed date with an empty activity list
 func NewActivityList(date string) (*ActivityList, error) {
 	do, err := dateutil.CreateFromDate(date)
@@ -299,6 +308,7 @@ func NewActivityList(date string) (*ActivityList, error) {
 		ActivityList: []*Activity{},
 	}, nil
 }
+
 // add an activity to the activity list
 func (al *ActivityList) AddActivity(act *Activity) {
 	al.ActivityList = append(al.ActivityList, act)
@@ -306,6 +316,7 @@ func (al *ActivityList) AddActivity(act *Activity) {
 
 // A cycle is a list of activity lists.
 type Cycle []*ActivityList
+
 // Creata a new cycle based on start and end dates
 func NewCycle(startDate, endDate string) (*Cycle, error) {
 	dates, err := dateutil.GenerateDateRange(startDate, endDate)
@@ -323,6 +334,7 @@ func NewCycle(startDate, endDate string) (*Cycle, error) {
 	}
 	return &cycle, nil
 }
+
 // Add an activity to a cycle at the proper date.
 func (c *Cycle) AddActivity(act *Activity) error {
 	for _, actListOb := range *c {
@@ -344,6 +356,7 @@ func (c *Cycle) AddActivity(act *Activity) error {
 	*c = append(*c, newAl)
 	return nil
 }
+
 // Return a list of uuids lists for each day in the cycle.
 func (c *Cycle) CreateUuidLists() [][]string {
 	uuidLists := [][]string{}
@@ -356,6 +369,7 @@ func (c *Cycle) CreateUuidLists() [][]string {
 	}
 	return uuidLists
 }
+
 // Return a list of uuids for all activities in the cycle.
 func (c *Cycle) CreateUuidList() []string {
 	uuidList := []string{}
@@ -366,6 +380,7 @@ func (c *Cycle) CreateUuidList() []string {
 	}
 	return uuidList
 }
+
 // Calculate pace for each activity in the cycle
 func (c *Cycle) CalculatePaces(userUnitClass measurement.UnitClass) {
 	for _, actListObj := range *c {

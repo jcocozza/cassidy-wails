@@ -2,8 +2,6 @@
     import Microcycle from "$lib/components/calendar/Microcycle.svelte";
     import { onMount } from "svelte";
     import { type NextPrevious } from "../model/date";
-    import { goto } from "$app/navigation";
-    import { EmptyTotalsDifferences, EmptyTotal,} from "../model/microcycle";
     import Bar from "$lib/components/charts/Bar.svelte";
     import NCycleLineChart from "$lib/components/charts/NCycleLineChart.svelte";
     import { model } from "../wailsjs/go/models";

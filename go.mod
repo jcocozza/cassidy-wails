@@ -38,7 +38,7 @@ require (
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
-	github.com/jcocozza/go_struct_stringify v0.0.0-20240226211232-05b31a44c8c3
+	github.com/jcocozza/go_struct_stringify v0.0.0-20240327154137-9e580398c7c0
 	github.com/labstack/echo/v4 v4.10.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/leaanthony/go-ansi-parser v1.6.0 // indirect
