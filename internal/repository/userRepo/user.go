@@ -55,7 +55,7 @@ func (db *IUserRepository) Read(username string) (*model.User, error) {
 
 	usr := model.EmptyUser()
 
-	err := row.Scan(&usr.Uuid, &usr.Username, &usr.Password, &usr.Units, &usr.CycleStart, &usr.CycleDays)
+	err := row.Scan(&usr.Uuid, &usr.Username, &usr.Password, &usr.Units, &usr.CycleStart, &usr.CycleDays, &usr.InitialCycleStart)
 	if err != nil {
 		// in the case that no results are returned, we want to know that b/c that means there are no users with that username
 		if errors.Is(err, sql.ErrNoRows) {

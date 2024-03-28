@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from "$app/stores";
     import CalendarViewer from "$lib/pages/CalendarViewer.svelte";
     import { GetMicrocycleCurrentDates } from "$lib/wailsjs/go/controllers/UserHandler";
     import { LoadUser } from '$lib/wailsjs/go/main/App'

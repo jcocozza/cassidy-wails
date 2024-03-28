@@ -30,11 +30,12 @@ func NewApp() *App {
 
 func (a *App) LoadUser() *model.User {
 	usr, err := a.Handlers.UserHandler.UserRepository.Read(a.UserSettings.Username)
-
+	fmt.Println("GOT USER:", usr)
 	if err != nil {
 		fmt.Println("warning: failed to load user")
 	}
 	a.UserSettings = *usr
+	a.Handlers.SetUser(usr)
 	return usr
 }
 
