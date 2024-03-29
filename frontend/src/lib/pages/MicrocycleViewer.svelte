@@ -9,6 +9,7 @@
     import { GetNextPrevious } from '../wailsjs/go/controllers/MiscHandler'
     import { List } from "../wailsjs/go/controllers/EquipmentHandler";
     import { ListActivityTypes } from "../wailsjs/go/controllers/ActivityTypeHandler";
+    import { GetMicrocycleCurrentDates } from "$lib/wailsjs/go/controllers/UserHandler";
 
     export let start_date: string;
     export let end_date: string;
@@ -34,6 +35,12 @@
 
     async function updateMicrocycle() {
         microcycle = await GetMicrocycle(start_date, end_date)
+    }
+
+    async function getToday() {
+        let d = await GetMicrocycleCurrentDates()
+        start_date = d.start_date
+        end_date = d.end_date
     }
 
     $: (async () => {
@@ -92,6 +99,7 @@
             bind:activity_type_list={activity_type_list}
             bind:equipment_choices={equipment_choices}
             on:update={updateMicrocycle}
+            on:today={async() => await getToday()}
         />
     </div>
 
