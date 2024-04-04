@@ -3,48 +3,12 @@
     import 'bootstrap/dist/css/bootstrap.min.css';
     import 'bootstrap/dist/js/bootstrap.min.js';
     import '@popperjs/core/dist/umd/popper.min.js'
+    import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
 
-    import { onMount } from "svelte";
-    import { GetMicrocycleCurrentDates } from "$lib/wailsjs/go/controllers/UserHandler";
-    import { controllers } from "$lib/wailsjs/go/models";
-
-    let dates: controllers.MCCurrentDate = { start_date: '', end_date: '' }; // Initialize with empty values
-
-    onMount(async () => {
-        dates = await GetMicrocycleCurrentDates();
+    onMount(() => {
+        goto("/home")
     })
 </script>
 
-{#if dates.start_date && dates.end_date}
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="/home">
-            Cassidy
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href={`/calendar`}>
-            calendar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href={`/microcycle`}>
-            microcycle
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/equipment">
-            equipment
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/user">
-            user
-        </a>
-    </li>
-</ul>
 <slot />
-
-{:else}
-    loading...
-{/if}
