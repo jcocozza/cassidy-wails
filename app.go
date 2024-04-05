@@ -19,13 +19,9 @@ type App struct {
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	DB := database.InitTestDB()
-	handlers := controllers.NewControllers(DB, model.EmptyUser())
-
-	return &App{
-		DB: DB,
-		Handlers: handlers,
-	}
+	// ! Only use this for easy development
+	// DB := database.InitTestDB()
+	return &App{}
 }
 
 func (a *App) LoadUser() *model.User {
@@ -52,21 +48,11 @@ func (a *App) Logout() {
 	a.DB.AppUser = nil
 	a.Handlers.SetUser(nil)
 }
-
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	/*
-	userSettings, err := a.Handlers.UserHandler.UserRepository.Read("test1@test.com")
-	if err != nil {
-		panic("undefined user:" + err.Error())
-	}
-
-	a.SetUser(userSettings)
-	/*
-	a.UserSettings = *userSettings
-	a.DB.AppUser = userSettings
-	a.Handlers.SetUser(userSettings)
-	*/
+}
+func (a *App) shutdown(ctx context.Context) {
+	a.DB.DB.Close()
 }

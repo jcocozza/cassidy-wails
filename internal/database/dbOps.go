@@ -10,8 +10,6 @@ const (
 	completedSqlTransactionComponent = "********** Sql transaction component completed **********"
 )
 
-var BaseDir string = "/Users/josephcocozza/Repositories/unnamed-app/backend"
-
 // Methods for interacting with a database.
 type DbOperations interface {
 	// Execute sql without returning rows.
