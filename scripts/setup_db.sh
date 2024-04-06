@@ -4,7 +4,7 @@
 # It requires that the sqlite3 command is available
 
 CassidyDB=".cassidy.db"
-MACOS_BUILD_DB="../build/bin/cassidy.app/Contents/MacOS/$CassidyDB"
+MACOS_BUILD_DB="../build/bin/cassidy.app/Contents/Resources/$CassidyDB"
 schema_dir="../internal/sqlcode/schema"
 
 # Check if sqlite3 command is available

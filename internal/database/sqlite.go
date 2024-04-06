@@ -32,7 +32,20 @@ func connectToSQLite(path string) (*sql.DB, error) {
     slog.Debug("Connected to SQLite Database")
     return db, nil
 }
-
+func createDatabaseFile(dbPath string) error {
+    // Ensure the directory structure exists
+    dir := filepath.Dir(dbPath)
+    if err := os.MkdirAll(dir, 0755); err != nil {
+        return err
+    }
+    // Create the database file
+    _, err := os.Create(dbPath)
+    if err != nil {
+        return err
+    }
+    fmt.Println("Database file created at:", dbPath)
+    return nil
+}
 // Will attempt to connect to the application database that is packaged with the app.
 func ConnectToCassidyDB() (*Database, error) {
 	exePath, err := os.Executable()
@@ -40,9 +53,17 @@ func ConnectToCassidyDB() (*Database, error) {
 	if err != nil {
 		return nil, err
 	}
-	exeDir := filepath.Dir(exePath)
-	dbPath := filepath.Join(exeDir, cassidyDB)
+	exeDir := filepath.Dir(filepath.Dir(exePath))
+	dbPath := filepath.Join(exeDir,"Resources", cassidyDB)
 	fmt.Println("database dir: " + dbPath)
+
+	// Check if the database file exists, if not, create it
+    if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+        if err := createDatabaseFile(dbPath); err != nil {
+            return nil, err
+        }
+    }
+
 	db, err1 := connectToSQLite(dbPath)
 	if err1 != nil {
 		return nil, err1
