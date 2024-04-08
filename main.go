@@ -18,6 +18,7 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
+	//DB := database.InitTestDB()
 	DB, err0 := database.ConnectToCassidyDB()
 	if err0 != nil { // if we can't find the application database, something has gone very wrong
 		panic("app database not found" + err0.Error())

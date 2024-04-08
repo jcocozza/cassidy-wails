@@ -5,8 +5,8 @@ package sqlcode
 */
 const (
 	sqlPath = "/Users/josephcocozza/Repositories/unnamed-app/cassidy-wails/internal"
-	//Activity
 
+	//Activity
 	Activity_create = sqlPath + "/sqlcode/activity/create.sql"
 	Activity_update = sqlPath + "/sqlcode/activity/update.sql"
 	Activity_delete = sqlPath + "/sqlcode/activity/delete.sql"
@@ -58,6 +58,5 @@ const (
 
 	Microcycle_read_totals_date_range = sqlPath + "/sqlcode/microcycle/read_totals_date_range.sql"
 	// Misc
-
 	N_cycle_summary = sqlPath + "/sqlcode/misc/n_cycle_summary.sql"
 )

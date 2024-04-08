@@ -43,3 +43,6 @@ for file in "$schema_dir"/*; do
         create_schema "$file" "$MACOS_BUILD_DB"
     fi
 done
+
+# Insert necessary data into the database
+create_schema "$schema_dir/init/init.sql" "$MACOS_BUILD_DB"

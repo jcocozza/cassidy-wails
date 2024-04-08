@@ -9,11 +9,13 @@
     let equipment_type_list: model.EquipmentType[] = [];
     let usr: model.User;
     onMount(async () => {
-        usr = await LoadUser()
         equipment_list = await List()
         equipment_type_list = await ListEquipmentTypes()
+        usr = await LoadUser()
     })
 </script>
-{#if equipment_type_list.length > 0 && usr}
-    <EquipmentViewer bind:usr={usr} bind:equipment_list={equipment_list} equipment_type_list={equipment_type_list}></EquipmentViewer>
+{#if usr}
+    <EquipmentViewer bind:usr={usr} bind:equipment_list={equipment_list} bind:equipment_type_list={equipment_type_list} />
+{:else}
+    Loading EquipmentViewer...
 {/if}
