@@ -2,7 +2,7 @@
 # This will build the wails application and then run the setup db script
 # run this in the scripts directory
 cd ..
-wails build --clean
+wails build --clean #-platform darwin/amd64
 cd scripts
 sudo bash setup_db.sh
 cd ../build/bin
