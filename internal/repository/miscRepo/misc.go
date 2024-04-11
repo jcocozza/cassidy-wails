@@ -47,7 +47,7 @@ func (db *IMiscRepository) ReadNCycleSummary(startDate, endDate, userUuid string
 		startDateList = append(startDateList, cycle[0])
 	}
 
-	sql := utils.SQLReader(sqlcode.N_cycle_summary)
+	sql := sqlcode.SQLReader(sqlcode.N_cycle_summary)
 	rows, err2 := db.DB.Query(sql, cycleList[10][0].Date, cycleList[10][cycleLength-1].Date,
 		cycleList[9][0].Date, cycleList[9][cycleLength-1].Date,
 		cycleList[8][0].Date, cycleList[8][cycleLength-1].Date,

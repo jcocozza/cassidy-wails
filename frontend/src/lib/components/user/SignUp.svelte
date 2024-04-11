@@ -47,7 +47,7 @@
             <p style="color: red;">Username already exists</p>
         {/if}
         {#if other_error}
-            <p style="color: red;">An error occurred</p>
+            <p style="color: red;">An unknown error occurred</p>
         {/if}
         <input class="form-control" bind:value="{new_user.password}" type="password" name="password" placeholder="Password" required />
 

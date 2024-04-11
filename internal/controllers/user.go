@@ -36,7 +36,11 @@ func (uh *UserHandler) CreateUser(createRequest *model.User) (*model.User, error
 			if err2 != nil {
 				return nil, fmt.Errorf("user is invalid")
 			}
-			uh.UserRepository.Create(createRequest)
+			err3 := uh.UserRepository.Create(createRequest)
+			if err3 != nil {
+				fmt.Println("error creating user: " + err3.Error())
+				return nil, err3
+			}
 			return createRequest, nil
 		} else {
 			return nil, fmt.Errorf("something went wrong creating user: %w", err)

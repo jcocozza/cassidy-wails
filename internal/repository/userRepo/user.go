@@ -8,7 +8,6 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
-	"github.com/jcocozza/cassidy-wails/internal/utils"
 )
 
 // The methods for interacting with user objects
@@ -33,7 +32,7 @@ func NewIUserRespository(db database.DbOperations) *IUserRepository {
 
 // Insert the user object into the database.
 func (db *IUserRepository) Create(user *model.User) error {
-	sql := utils.SQLReader(sqlcode.User_create)
+	sql := sqlcode.SQLReader(sqlcode.User_create)
 
 	err1 := user.Validate()
 	if err1 != nil {
@@ -50,7 +49,7 @@ func (db *IUserRepository) Create(user *model.User) error {
 
 // Read user object from the database for a given username
 func (db *IUserRepository) Read(username string) (*model.User, error) {
-	query := utils.SQLReader(sqlcode.User_read)
+	query := sqlcode.SQLReader(sqlcode.User_read)
 	row := db.DB.QueryRow(query, username)
 
 	usr := model.EmptyUser()
@@ -72,7 +71,7 @@ func (db *IUserRepository) Read(username string) (*model.User, error) {
 
 // Read the user start date, number of cycle day preferences and initial start date
 func (db *IUserRepository) ReadPreferences(userUuid string) (string, int, string, error) {
-	sql := utils.SQLReader(sqlcode.User_preferences)
+	sql := sqlcode.SQLReader(sqlcode.User_preferences)
 	row := db.DB.QueryRow(sql, userUuid)
 
 	var cycleStart string
@@ -89,7 +88,7 @@ func (db *IUserRepository) ReadPreferences(userUuid string) (string, int, string
 
 // Update the user preferences
 func (db *IUserRepository) Update(user *model.User) error {
-	sql := utils.SQLReader(sqlcode.User_update)
+	sql := sqlcode.SQLReader(sqlcode.User_update)
 	err := db.DB.Execute(sql, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart, user.Uuid)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)

@@ -36,6 +36,8 @@ if [ -f "$MACOS_BUILD_DB" ]; then
 fi
 # Create a new database file
 touch "$MACOS_BUILD_DB" || { echo "Error: Failed to create database file '$MACOS_BUILD_DB'."; exit 1; }
+# Need to let the user write to the file
+chmod a+w "$MACOS_BUILD_DB" || { echo "Error: Failed to set write privileges for '$MACOS_BUILD_DB'."; exit 1; }
 
 # Setup the schema
 for file in "$schema_dir"/*; do

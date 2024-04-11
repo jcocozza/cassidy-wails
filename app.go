@@ -28,7 +28,7 @@ func (a *App) LoadUser() *model.User {
 	usr, err := a.Handlers.UserHandler.UserRepository.Read(a.UserSettings.Username)
 	fmt.Println("GOT USER:", usr)
 	if err != nil {
-		fmt.Println("warning: failed to load user")
+		fmt.Println("warning: failed to load user: " + err.Error())
 		return nil
 	}
 	a.UserSettings = usr
