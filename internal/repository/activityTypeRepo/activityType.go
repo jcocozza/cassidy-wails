@@ -6,7 +6,6 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
-	"github.com/jcocozza/cassidy-wails/internal/utils"
 )
 
 // Methods for Working with activity types
@@ -47,7 +46,7 @@ func findATWS(actId int, lst []*model.ActivityTypeWithSubtypes) (int, error) {
 
 // List all activity types with their subtypes.
 func (db *IActivityTypeRepository) List() ([]*model.ActivityTypeWithSubtypes, error) {
-	sql := utils.SQLReader(sqlcode.ActivityType_list_with_subtype)
+	sql := sqlcode.SQLReader(sqlcode.ActivityType_list_with_subtype)
 
 	rows, err := db.DB.Query(sql)
 	if err != nil {

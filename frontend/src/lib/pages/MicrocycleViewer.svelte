@@ -2,8 +2,6 @@
     import Microcycle from "$lib/components/calendar/Microcycle.svelte";
     import { onMount } from "svelte";
     import { type NextPrevious } from "../model/date";
-    import { goto } from "$app/navigation";
-    import { EmptyTotalsDifferences, EmptyTotal,} from "../model/microcycle";
     import Bar from "$lib/components/charts/Bar.svelte";
     import NCycleLineChart from "$lib/components/charts/NCycleLineChart.svelte";
     import { model } from "../wailsjs/go/models";
@@ -11,11 +9,11 @@
     import { GetNextPrevious } from '../wailsjs/go/controllers/MiscHandler'
     import { List } from "../wailsjs/go/controllers/EquipmentHandler";
     import { ListActivityTypes } from "../wailsjs/go/controllers/ActivityTypeHandler";
-    import { LoadUser } from "$lib/wailsjs/go/main/App";
+    import { GetMicrocycleCurrentDates } from "$lib/wailsjs/go/controllers/UserHandler";
 
     export let start_date: string;
     export let end_date: string;
-    let usr: model.User;
+    export let usr: model.User;
 
     let equipment_choices: model.Equipment[] = [];
 
@@ -25,12 +23,24 @@
 
     let is_loading: boolean = false;
 
-    function loadPage(url: string) {
-        goto(url);
+    function loadPage(direction: string) {
+        if (direction == "next") {
+            start_date = next_previous.next_start_date;
+            end_date = next_previous.next_end_date;
+        } else if (direction == "previous") {
+            start_date = next_previous.previous_start_date;
+            end_date = next_previous.previous_end_date;
+        }
     }
 
     async function updateMicrocycle() {
         microcycle = await GetMicrocycle(start_date, end_date)
+    }
+
+    async function getToday() {
+        let d = await GetMicrocycleCurrentDates()
+        start_date = d.start_date
+        end_date = d.end_date
     }
 
     $: (async () => {
@@ -39,7 +49,7 @@
     })();
 
     onMount(async () => {
-        usr = await LoadUser()
+        /*
         microcycle = new model.Microcycle({
             start_date: start_date,
             end_date:end_date,
@@ -56,49 +66,64 @@
                 totals_by_activity_type_and_date: []
             }
         });
-
+        */
         is_loading = true;
-        microcycle = await GetMicrocycle(start_date, end_date)
-        activity_type_list = await ListActivityTypes()
-        equipment_choices = await List()
-        next_previous = await GetNextPrevious(start_date, end_date);
+
+        const [
+        microcycleData,
+        activityTypes,
+        equipment,
+        nextPrev
+        ] = await Promise.all([
+            GetMicrocycle(start_date, end_date),
+            ListActivityTypes(),
+            List(),
+            GetNextPrevious(start_date, end_date)
+        ]);
+
+        microcycle = microcycleData;
+        activity_type_list = activityTypes;
+        equipment_choices = equipment;
+        next_previous = nextPrev;
         is_loading = false;
     });
 </script>
 
+
+{#if microcycle && usr && !is_loading}
 <div class="container microcycle-viewer">
-    {#if is_loading && microcycle}
-        loading...
-    {:else}
-        <div class="row">
-            <Microcycle
-                bind:usr={usr}
-                bind:microcycle={microcycle}
-                bind:activity_type_list={activity_type_list}
-                bind:equipment_choices={equipment_choices}
-                on:update={updateMicrocycle}
-            />
-        </div>
+    <div class="row">
+        <Microcycle
+            bind:usr={usr}
+            bind:microcycle={microcycle}
+            bind:activity_type_list={activity_type_list}
+            bind:equipment_choices={equipment_choices}
+            on:update={updateMicrocycle}
+            on:today={async() => await getToday()}
+        />
+    </div>
 
-        <div class="d-flex justify-content-between" style="padding: 0%;">
-            <button class="btn btn-primary" on:click={() => {loadPage("/microcycle/"+next_previous.previous_start_date+"/"+next_previous.previous_end_date)}}> Previous </button>
-            <button class="btn btn-primary" on:click={() => {loadPage("/microcycle/"+next_previous.next_start_date +"/"+next_previous.next_end_date)}}> Next </button>
-        </div>
-        <div class="row">
-            {#if microcycle.cycle_activities.length > 0}
-                <div class="col">
-                    <Bar bind:microcycle={microcycle}></Bar>
-                </div>
-            {/if}
-
+    <div class="d-flex justify-content-between" style="padding: 0%;">
+        <button class="btn btn-primary" on:click={() => {loadPage("previous")}}> Previous </button>
+        <button class="btn btn-primary" on:click={() => {loadPage("next")}}> Next </button>
+    </div>
+    <div class="row">
+        {#if microcycle.cycle_activities.length > 0}
             <div class="col">
-                <div class="container">
-                    <NCycleLineChart
-                        bind:start_date={microcycle.start_date}
-                        bind:end_date={microcycle.end_date}
-                    />
-                </div>
+                <Bar bind:microcycle={microcycle}></Bar>
+            </div>
+        {/if}
+
+        <div class="col">
+            <div class="container">
+                <NCycleLineChart
+                    bind:start_date={microcycle.start_date}
+                    bind:end_date={microcycle.end_date}
+                />
             </div>
         </div>
-    {/if}
+    </div>
 </div>
+{:else}
+    Loading mcviewer...
+{/if}

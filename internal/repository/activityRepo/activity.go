@@ -6,7 +6,6 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
-	"github.com/jcocozza/cassidy-wails/internal/utils"
 )
 
 // Functions for working with activity objects.
@@ -34,13 +33,13 @@ func NewIActivityRepository(db database.DbOperations) *IActivityRepository {
 //
 // The creates a new row in the activity table, planned table, completed table, and optionally in the activity equipment and activity type subtype tables.
 func (db *IActivityRepository) Create(userUuid string, activity *model.Activity) error {
-	sqlActivity := utils.SQLReader(sqlcode.Activity_create)
+	sqlActivity := sqlcode.SQLReader(sqlcode.Activity_create)
 	err := db.DB.Execute(sqlActivity, activity.Uuid, userUuid, activity.Date, activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides)
 	if err != nil {
 		return fmt.Errorf("failed to insert into activity table: %w", err)
 	}
 	// create planned for the new activity
-	sqlPlanned := utils.SQLReader(sqlcode.Planned_create)
+	sqlPlanned := sqlcode.SQLReader(sqlcode.Planned_create)
 	err1 := db.DB.Execute(sqlPlanned, activity.Planned.ActivityUuid,
 		activity.Planned.Distance.Length, activity.Planned.Distance.Unit,
 		activity.Planned.Duration,
@@ -49,7 +48,7 @@ func (db *IActivityRepository) Create(userUuid string, activity *model.Activity)
 		return fmt.Errorf("failed to insert into planned table: %w", err)
 	}
 	// create completed for the new activity
-	sqlCompleted := utils.SQLReader(sqlcode.Completed_create)
+	sqlCompleted := sqlcode.SQLReader(sqlcode.Completed_create)
 	err2 := db.DB.Execute(sqlCompleted, activity.Completed.ActivityUuid,
 		activity.Completed.Distance.Length, activity.Completed.Distance.Unit,
 		activity.Completed.Duration,
@@ -58,7 +57,7 @@ func (db *IActivityRepository) Create(userUuid string, activity *model.Activity)
 		return fmt.Errorf("failed to insert into completed table: %w", err)
 	}
 	// add activity equipment (if any)
-	sqlActivityEquipment := utils.SQLReader(sqlcode.ActivityEquipment_create)
+	sqlActivityEquipment := sqlcode.SQLReader(sqlcode.ActivityEquipment_create)
 	for _, ae := range activity.EquipmentList {
 		err3 := db.DB.Execute(sqlActivityEquipment, ae.ActivityUuid, ae.Equipment.Id, ae.AssignedMileage.Length, ae.AssignedMileage.Unit)
 		if err3 != nil {
@@ -66,7 +65,7 @@ func (db *IActivityRepository) Create(userUuid string, activity *model.Activity)
 		}
 	}
 	// add activity type subtype(s) (if any)
-	sqlActivityTypeSubtype := utils.SQLReader(sqlcode.ActivityTypeSubtype_create)
+	sqlActivityTypeSubtype := sqlcode.SQLReader(sqlcode.ActivityTypeSubtype_create)
 	for _, ats := range activity.TypeSubtypeList {
 		id, err4 := db.DB.ExecuteGetLast(sqlActivityTypeSubtype, ats.ActivityUuid, ats.ActivityType.Id, ats.ActivitySubtype.Id)
 		if err4 != nil {
@@ -83,21 +82,21 @@ func (db *IActivityRepository) Create(userUuid string, activity *model.Activity)
 //
 // Updates the activity and its planned/completed
 func (db *IActivityRepository) Update(activity *model.Activity) error {
-	sqlActivity := utils.SQLReader(sqlcode.Activity_update)
+	sqlActivity := sqlcode.SQLReader(sqlcode.Activity_update)
 	err := db.DB.Execute(sqlActivity, activity.Date, activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides, activity.Uuid)
 
 	if err != nil {
 		return fmt.Errorf("error updating activity in database: %w", err)
 	}
 
-	sqlPlanned := utils.SQLReader(sqlcode.Planned_update)
+	sqlPlanned := sqlcode.SQLReader(sqlcode.Planned_update)
 	err1 := db.DB.Execute(sqlPlanned, activity.Planned.Distance.Length, activity.Planned.Distance.Unit, activity.Planned.Duration, activity.Planned.Vertical.Length, activity.Planned.Vertical.Unit, activity.Planned.ActivityUuid)
 
 	if err1 != nil {
 		return fmt.Errorf("error updating planned in database: %w", err1)
 	}
 
-	sqlCompleted := utils.SQLReader(sqlcode.Completed_update)
+	sqlCompleted := sqlcode.SQLReader(sqlcode.Completed_update)
 	err2 := db.DB.Execute(sqlCompleted, activity.Completed.Distance.Length, activity.Completed.Distance.Unit, activity.Completed.Duration, activity.Completed.Vertical.Length, activity.Completed.Vertical.Unit, activity.Completed.ActivityUuid)
 
 	if err2 != nil {
@@ -105,14 +104,14 @@ func (db *IActivityRepository) Update(activity *model.Activity) error {
 	}
 
 	// TO update activity type subtypes, we delete them all and then recreate them.
-	sqlDeleteActivityTypes := utils.SQLReader(sqlcode.ActivityTypeSubtype_delete_all_by_activity_uuid)
+	sqlDeleteActivityTypes := sqlcode.SQLReader(sqlcode.ActivityTypeSubtype_delete_all_by_activity_uuid)
 	err3 := db.DB.Execute(sqlDeleteActivityTypes, activity.Uuid)
 	if err3 != nil {
 		return fmt.Errorf("error deleting type subtype for update of activity: %w", err3)
 	}
 
 	// add activity type subtype(s) (if any)
-	sqlActivityTypeSubtype := utils.SQLReader(sqlcode.ActivityTypeSubtype_create)
+	sqlActivityTypeSubtype := sqlcode.SQLReader(sqlcode.ActivityTypeSubtype_create)
 	for _, ats := range activity.TypeSubtypeList {
 		id, err4 := db.DB.ExecuteGetLast(sqlActivityTypeSubtype, ats.ActivityUuid, ats.ActivityType.Id, ats.ActivitySubtype.Id)
 		if err4 != nil {
@@ -128,7 +127,7 @@ func (db *IActivityRepository) Update(activity *model.Activity) error {
 // Note: A delete will trigger a procedure in the database that deletes other things
 // so we only need to worry about deleting the activity in the activity table.
 func (db *IActivityRepository) Delete(activityUuid string) error {
-	sql := utils.SQLReader(sqlcode.Activity_delete)
+	sql := sqlcode.SQLReader(sqlcode.Activity_delete)
 	err := db.DB.Execute(sql, activityUuid)
 	if err != nil {
 		return fmt.Errorf("error deleting activity: %w", err)

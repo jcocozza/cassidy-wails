@@ -1,5 +1,3 @@
-import { API_BASE_URL } from "../../config";
-import { GetUserUuid, GetUserUnits } from "../../stores/auth";
 import type { DateObject } from "./date"
 import type { Distance } from "./distance";
 /**

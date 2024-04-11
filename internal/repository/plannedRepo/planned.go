@@ -6,7 +6,6 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
-	"github.com/jcocozza/cassidy-wails/internal/utils"
 )
 
 // The methods for interacting with planned objects
@@ -24,7 +23,7 @@ type IPlannedRepository struct {
 
 // Insert the planned object into the database.
 func (db *IPlannedRepository) Create(planned *model.Planned) error {
-	sql := utils.SQLReader(sqlcode.Planned_create)
+	sql := sqlcode.SQLReader(sqlcode.Planned_create)
 
 	err1 := planned.Validate()
 	if err1 != nil {
@@ -41,7 +40,7 @@ func (db *IPlannedRepository) Create(planned *model.Planned) error {
 
 // Read planned object from the database for a given activity_uuid.
 func (db *IPlannedRepository) Read(activityUuid string) (*model.Planned, error) {
-	sql := utils.SQLReader(sqlcode.Planned_read)
+	sql := sqlcode.SQLReader(sqlcode.Planned_read)
 	row := db.DB.QueryRow(sql, activityUuid)
 
 	planned := model.EmptyPlanned()
@@ -64,7 +63,7 @@ func (db *IPlannedRepository) Update(planned *model.Planned) error {
 		return fmt.Errorf("planned update failed to validate: %w", err1)
 	}
 
-	sql := utils.SQLReader(sqlcode.Planned_update)
+	sql := sqlcode.SQLReader(sqlcode.Planned_update)
 	err := db.DB.Execute(sql, planned.Distance, planned.Distance.Length, planned.Duration, planned.Vertical, planned.Vertical.Length, planned.ActivityUuid)
 	if err != nil {
 		return fmt.Errorf("planned update failed: %w", err)

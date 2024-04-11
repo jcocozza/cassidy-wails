@@ -5,6 +5,7 @@
     import type { model } from "../../wailsjs/go/models";
     import { List } from '../../wailsjs/go/controllers/EquipmentHandler'
 
+    export let usr: model.User;
     export let equipment_list: model.Equipment[];
     export let equipment_type_list: model.EquipmentType[];
 
@@ -30,6 +31,7 @@
     </div>
 
     <NewEquipmentModal
+        bind:usr={usr}
         bind:equipment_type_list={equipment_type_list}
         on:update={async () => {await refreshEquipment()}}
     />

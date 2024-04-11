@@ -6,7 +6,6 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
-	"github.com/jcocozza/cassidy-wails/internal/utils"
 )
 
 // The methods for interacting with completed objects
@@ -24,7 +23,7 @@ type ICompletedRepository struct {
 
 // Insert the completed object into the database.
 func (db *ICompletedRepository) Create(completed *model.Completed) error {
-	sql := utils.SQLReader(sqlcode.Completed_create)
+	sql := sqlcode.SQLReader(sqlcode.Completed_create)
 
 	err1 := completed.Validate()
 	if err1 != nil {
@@ -41,7 +40,7 @@ func (db *ICompletedRepository) Create(completed *model.Completed) error {
 
 // Read completed object from the database for a given activity_uuid.
 func (db *ICompletedRepository) Read(activityUuid string) (*model.Completed, error) {
-	sql := utils.SQLReader(sqlcode.Completed_read)
+	sql := sqlcode.SQLReader(sqlcode.Completed_read)
 	row := db.DB.QueryRow(sql, activityUuid)
 
 	completed := model.EmptyCompleted()
@@ -64,7 +63,7 @@ func (db *ICompletedRepository) Update(completed *model.Completed) error {
 		return fmt.Errorf("completed update failed to validate: %w", err1)
 	}
 
-	sql := utils.SQLReader(sqlcode.Completed_update)
+	sql := sqlcode.SQLReader(sqlcode.Completed_update)
 	err := db.DB.Execute(sql, completed.Distance.Length, completed.Distance.Unit, completed.Duration, completed.Vertical.Length, completed.Vertical.Unit, completed.ActivityUuid)
 	if err != nil {
 		return fmt.Errorf("completed update failed: %w", err)

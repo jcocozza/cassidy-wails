@@ -1,4 +1,4 @@
-import type { model } from "../wailsjs/go/models";
+import type { model } from "../../../../frontend/src/lib/wailsjs/go/models";
 /**
  * A distance is a unit with a length
  */

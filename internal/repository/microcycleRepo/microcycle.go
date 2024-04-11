@@ -6,7 +6,6 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
-	"github.com/jcocozza/cassidy-wails/internal/utils"
 	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
 )
@@ -95,7 +94,7 @@ func (db *IMicrocycleRepository) ReadMicrocycle(startDate string, endDate string
 
 // Get all activity equipment for a given list of activity uuids
 func (db *IMicrocycleRepository) ReadActivityEquipmentList(activityUuidList []string) ([]*model.ActivityEquipment, error) {
-	sql := utils.SQLReader(sqlcode.ActivityEquipment_list)
+	sql := sqlcode.SQLReader(sqlcode.ActivityEquipment_list)
 
 	query := database.SQLListInsertion(sql, len(activityUuidList))
 	args := make([]interface{}, len(activityUuidList))
@@ -132,7 +131,7 @@ func (db *IMicrocycleRepository) ReadActivityEquipmentList(activityUuidList []st
 
 // Get all activity types for the activity uuid list
 func (db *IMicrocycleRepository) ReadActivityTypeSubtypeList(activityUuidList []string) ([]*model.ActivityTypeSubtype, error) {
-	sql := utils.SQLReader(sqlcode.ActivityTypeSubtype_list)
+	sql := sqlcode.SQLReader(sqlcode.ActivityTypeSubtype_list)
 
 	query := database.SQLListInsertion(sql, len(activityUuidList))
 	args := make([]interface{}, len(activityUuidList))
@@ -168,7 +167,7 @@ func (db *IMicrocycleRepository) ReadActivityTypeSubtypeList(activityUuidList []
 
 // Get a list of activity lists
 func (db *IMicrocycleRepository) ReadCycle(startDate string, endDate string, userUuid string) (*model.Cycle, error) {
-	sql := utils.SQLReader(sqlcode.Microcycle_read_activity_list)
+	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_activity_list)
 	rows, err := db.DB.Query(sql, startDate, endDate, userUuid)
 	if err != nil {
 		return nil, err
@@ -241,7 +240,7 @@ func (db *IMicrocycleRepository) ReadTotalsPreviousCurrent(startDate string, end
 
 	previousStart, previousEnd := dateutil.GetPreviousCycle(startDate, endDate)
 
-	sql := utils.SQLReader(sqlcode.Microcycle_read_totals_current_previous)
+	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_totals_current_previous)
 	rows, err := db.DB.Query(sql, previousStart, previousEnd, startDate, endDate, previousStart, endDate, userUuid)
 	if err != nil {
 		return nil, nil, fmt.Errorf("previous/current totals did not query properly: %w", err)
@@ -272,7 +271,7 @@ func (db *IMicrocycleRepository) ReadTotalsPreviousCurrent(startDate string, end
 
 // Get the average totals over a given date range where the divisor is the number of cycles in the range
 func (db *IMicrocycleRepository) ReadAveragePriorTotals(priorStart string, priorEnd string, numPriors int, userUuid string, userUnitClass measurement.UnitClass) (*model.Totals, error) {
-	sql := utils.SQLReader(sqlcode.Microcycle_read_totals_date_range)
+	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_totals_date_range)
 
 	row := db.DB.QueryRow(sql, numPriors, numPriors, numPriors, numPriors, numPriors, numPriors, priorStart, priorEnd, userUuid)
 	totals := model.EmptyTotals(userUnitClass)
@@ -291,7 +290,7 @@ func (db *IMicrocycleRepository) ReadAveragePriorTotals(priorStart string, prior
 func (db *IMicrocycleRepository) ReadTotalsByActivityTypePreviousCurrent(startDate string, endDate string, userUuid string, userUnitClass measurement.UnitClass) ([]*model.TotalByActivityType, []*model.TotalByActivityType, error) {
 	previousStart, previousEnd := dateutil.GetPreviousCycle(startDate, endDate)
 
-	sql := utils.SQLReader(sqlcode.Microcycle_read_totals_by_activity_type_current_previous)
+	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_totals_by_activity_type_current_previous)
 
 	rows, err := db.DB.Query(sql,
 		previousStart, previousEnd,
@@ -354,7 +353,7 @@ func (db *IMicrocycleRepository) ReadTotalsByActivityTypePreviousCurrent(startDa
 
 // Get totals by activity type and date for a date range
 func (db *IMicrocycleRepository) ReadTotalsByActivityTypeAndDate(startDate string, endDate string, userUuid string, userUnitClass measurement.UnitClass) ([]*model.TotalByActivityTypeAndDate, error) {
-	sql := utils.SQLReader(sqlcode.Microcycle_read_totals_by_activity_type_and_date)
+	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_totals_by_activity_type_and_date)
 	rows, err := db.DB.Query(sql, startDate, endDate, userUuid)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query totals by activity type and date: %w", err)

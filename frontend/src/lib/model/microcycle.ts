@@ -1,6 +1,5 @@
-import { EmptyLength, type Distance } from "./distance";
-import type { DateObject } from "./date";
-import { model } from "../wailsjs/go/models";
+import { EmptyLength } from "./distance";
+import { model } from "../../../../frontend/src/lib/wailsjs/go/models";
 
 /**
  * Create an empty total

@@ -1,9 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import { ConvertDuration, } from '$lib/model/date';
-    import { goto } from '$app/navigation';
     import { model } from '../../wailsjs/go/models';
-    import { GetMicrocycleCurrentDates } from '../../wailsjs/go/controllers/UserHandler'
     import ActivityList from '../activity/ActivityList.svelte';
 
     import { overrideItemIdKeyNameBeforeInitialisingDndZones } from "svelte-dnd-action";
@@ -23,10 +21,8 @@
         dispatch("update")
     }
 
-    async function gotoToday() {
-        let d = await GetMicrocycleCurrentDates()
-        let l = "/microcycle/" + d.start_date + "/" + d.end_date
-        goto(l)
+    function gotoToday() {
+        dispatch("today")
     }
 
 </script>
@@ -41,7 +37,7 @@
             </div>
 
             <div class="col">
-                <button class="btn btn-primary btn-sm" on:click={async () => {await gotoToday()}}>Today</button>
+                <button class="btn btn-primary btn-sm" on:click={gotoToday}>Today</button>
             </div>
             <div class="col small-text d-flex justify-content-end">
                 <div class="btn-group-vertical">
@@ -97,6 +93,7 @@
                                     {activity_list.date_object.day_of_week}
                                 {/if}
                                 <ActivityList
+                                    bind:user={usr}
                                     bind:activity_list={activity_list}
                                     bind:date={activity_list.date_object.date}
                                     bind:activity_type_list={activity_type_list}

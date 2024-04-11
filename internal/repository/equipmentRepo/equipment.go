@@ -6,7 +6,6 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
-	"github.com/jcocozza/cassidy-wails/internal/utils"
 )
 
 // The methods for interacting with equipment objects
@@ -38,7 +37,7 @@ func NewIEquipmentRepository(db database.DbOperations) *IEquipmentRepository {
 
 // Insert the equipment object into the database.
 func (db *IEquipmentRepository) Create(equipment *model.Equipment) (int, error) {
-	sql := utils.SQLReader(sqlcode.Equipment_create)
+	sql := sqlcode.SQLReader(sqlcode.Equipment_create)
 
 	err1 := equipment.Validate()
 	if err1 != nil {
@@ -60,7 +59,7 @@ func (db *IEquipmentRepository) Update(equipment *model.Equipment) error {
 		return fmt.Errorf("equipment update failed to validate: %w", err1)
 	}
 
-	sql := utils.SQLReader(sqlcode.Equipment_update)
+	sql := sqlcode.SQLReader(sqlcode.Equipment_update)
 	err := db.DB.Execute(sql, equipment.Name, equipment.Brand, equipment.Model, equipment.Cost, equipment.Size, equipment.PurchaseDate, equipment.Notes, equipment.Mileage.Length, equipment.Mileage.Unit, equipment.IsRetired, equipment.Id)
 	if err != nil {
 		return fmt.Errorf("equipment update failed: %w", err)
@@ -70,7 +69,7 @@ func (db *IEquipmentRepository) Update(equipment *model.Equipment) error {
 
 // Delete the equipment object in the database
 func (db *IEquipmentRepository) Delete(id int) error {
-	sql := utils.SQLReader(sqlcode.Equipment_delete)
+	sql := sqlcode.SQLReader(sqlcode.Equipment_delete)
 	err := db.DB.Execute(sql, id)
 	if err != nil {
 		return fmt.Errorf("equipment delete failed: %w", err)
@@ -80,7 +79,7 @@ func (db *IEquipmentRepository) Delete(id int) error {
 
 // List all equipment for a given user uuid
 func (db *IEquipmentRepository) List(userUuid string) ([]*model.Equipment, error) {
-	sql := utils.SQLReader(sqlcode.Equipment_list)
+	sql := sqlcode.SQLReader(sqlcode.Equipment_list)
 	rows, err := db.DB.Query(sql, userUuid)
 	if err != nil {
 		return nil, fmt.Errorf("error querying equipment list: %w", err)
@@ -117,7 +116,7 @@ func (db *IEquipmentRepository) List(userUuid string) ([]*model.Equipment, error
 func (db *IEquipmentRepository) ListEquipmentTypes() ([]*model.EquipmentType, error) {
 	equipmentTypeList := []*model.EquipmentType{}
 
-	sql := utils.SQLReader(sqlcode.EquipmentType_list)
+	sql := sqlcode.SQLReader(sqlcode.EquipmentType_list)
 	rows, err := db.DB.Query(sql)
 	if err != nil {
 		return equipmentTypeList, fmt.Errorf("failed to get equipment type list from database: %w", err)
@@ -145,7 +144,7 @@ func (db *IEquipmentRepository) ListEquipmentTypes() ([]*model.EquipmentType, er
 //
 // Returns the id of the inserted row or -1 if the insert fails.
 func (db *IEquipmentRepository) CreateActivityEquipment(activityEquipment *model.ActivityEquipment) (int, error) {
-	sql := utils.SQLReader(sqlcode.ActivityEquipment_create)
+	sql := sqlcode.SQLReader(sqlcode.ActivityEquipment_create)
 
 	err := activityEquipment.Validate(true)
 	if err != nil {
@@ -169,7 +168,7 @@ func (db *IEquipmentRepository) UpdateActivityEquipment(activityEquipment *model
 		return fmt.Errorf("activity equipment update failed to validate: %w", err1)
 	}
 
-	sql := utils.SQLReader(sqlcode.ActivityEquipment_update)
+	sql := sqlcode.SQLReader(sqlcode.ActivityEquipment_update)
 	err := db.DB.Execute(sql, activityEquipment.AssignedMileage.Length, activityEquipment.AssignedMileage.Unit, activityEquipment.Id)
 	if err != nil {
 		return fmt.Errorf("activity equipment update failed: %w", err)
@@ -179,7 +178,7 @@ func (db *IEquipmentRepository) UpdateActivityEquipment(activityEquipment *model
 
 // Delete activity equipment object in the database.
 func (db *IEquipmentRepository) DeleteActivityEquipment(id int) error {
-	sql := utils.SQLReader(sqlcode.ActivityEquipment_delete)
+	sql := sqlcode.SQLReader(sqlcode.ActivityEquipment_delete)
 	err := db.DB.Execute(sql, id)
 	if err != nil {
 		return fmt.Errorf("activity equipment delete failed: %w", err)

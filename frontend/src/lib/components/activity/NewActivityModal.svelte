@@ -4,6 +4,7 @@
     import BaseActivityModal from "./BaseActivityModal.svelte";
     import { createEventDispatcher } from "svelte";
 
+    export let usr: model.User;
     export let equipment_choices: model.Equipment[];
     export let activity_type_list: model.ActivityTypeWithSubtypes[];
     export let date: string;

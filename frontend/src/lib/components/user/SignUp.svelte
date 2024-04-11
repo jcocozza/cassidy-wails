@@ -1,11 +1,11 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { CreateUser } from "$lib/wailsjs/go/controllers/UserHandler";
+    import { SetUser } from "$lib/wailsjs/go/main/App";
     import { model } from "../../wailsjs/go/models";
-    import type { ActionData } from "../../../routes/(unprotected)/auth/signup/$types";
-    import { auth_store } from "../../../stores/auth";
 
-    export let form: ActionData;
-
+    let user_already_exits: boolean = false;
+    let other_error: boolean = false;
     let new_user: model.User = new model.User({
         username: "",
         password: "",
@@ -15,6 +15,22 @@
         initial_cycle_start: ""
     });
 
+    async function signup() {
+        try {
+            user_already_exits = false;
+            other_error = false;
+            let usr = await CreateUser(new_user)
+            await SetUser(usr)
+            goto("/microcycle")
+        } catch (error) {
+            if (error === "user already exists") {
+                user_already_exits = true;
+            } else {
+                other_error = true;
+            }
+        }
+    }
+
     function toLogin() {
         goto("/auth/login");
     };
@@ -23,14 +39,16 @@
 <div class="signup container">
     <h3>Create a New Account</h3>
 
-    <form method="POST" action="?/register">
+    <form>
         <h5>Basic Info:</h5>
         <input class="form-control" bind:value="{new_user.username}" type="email" name="username" placeholder="Email" required />
 
-        {#if form?.success == "already exists" }
+        {#if user_already_exits}
             <p style="color: red;">Username already exists</p>
         {/if}
-
+        {#if other_error}
+            <p style="color: red;">An unknown error occurred</p>
+        {/if}
         <input class="form-control" bind:value="{new_user.password}" type="password" name="password" placeholder="Password" required />
 
         <h5>Personal Preferences:</h5>
@@ -66,7 +84,7 @@
             <input class="form-control" id="initial_cycle_start" name="initial_cycle_start" type="date" bind:value={new_user.initial_cycle_start} required>
         {/if}
 
-        <input type="submit">
+        <button class="btn btn-primary" on:click={async () => {await signup()}}>Sign Up</button>
     </form>
     <p>
     Already have an account?
