@@ -6,6 +6,7 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/controllers"
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
+	"github.com/jcocozza/cassidy-wails/internal/strava"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -28,6 +29,8 @@ func main() {
 	app.Handlers = handlers
 	app.DB = DB
 
+	stravaApp := strava.NewStravaApp()
+
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "cassidy",
@@ -47,6 +50,7 @@ func main() {
 			app.Handlers.EquipmentHandler,
 			app.Handlers.MicrocycleHandler,
 			app.Handlers.MiscHandler,
+			stravaApp,
 		},
 	})
 

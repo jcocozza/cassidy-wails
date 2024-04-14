@@ -1,6 +1,10 @@
 <script lang="ts">
+    import compwstrava from '$lib/static/strava/strava_api_logos/compatible with strava/cptblWith_strava_light/api_logo_cptblWith_strava_horiz_light.svg?raw'
+    import connectwstrava from '$lib/static/strava/connect_with_strava/btn_strava_connectwith_orange/btn_strava_connectwith_orange.svg?raw'
+
     import type { model } from "../../wailsjs/go/models";
     import { UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
+    import { OpenStravaAuth, StartListener } from '$lib/wailsjs/go/strava/Strava';
 
     export let usr: model.User
     let is_editing = false;
@@ -13,6 +17,12 @@
         usr = await UpdateUser(usr)
         toggleEdit()
     }
+
+    async function adf() {
+        StartListener()
+        await OpenStravaAuth()
+    }
+
 </script>
 
 {#if usr}
@@ -67,4 +77,8 @@
     </div>
 </div>
 -->
+
+{@html compwstrava}
+
+<button class="btn btn-primary btn-sm" type="button" on:click={adf}>{@html connectwstrava}</button>
 {/if}
