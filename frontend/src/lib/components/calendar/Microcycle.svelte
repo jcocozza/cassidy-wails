@@ -159,7 +159,7 @@
                                                     <tbody>
                                                         <!-- Distance -->
                                                         <tr>
-                                                            <td>{microcycle.summary.totals.total_planned_distance.length} {microcycle.summary.totals.total_planned_distance.unit}</td>
+                                                            <td>{microcycle.summary.totals.total_completed_distance.length} {microcycle.summary.totals.total_completed_distance.unit}</td>
                                                             <td class="text-secondary">{microcycle.summary.totals.total_planned_distance.length} {microcycle.summary.totals.total_planned_distance.unit}</td>
                                                         </tr>
                                                         <!-- Duration -->

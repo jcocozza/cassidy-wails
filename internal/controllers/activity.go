@@ -29,8 +29,10 @@ func (ah *ActivityHandler) CreateActivity(createRequest *model.Activity) (*model
 		return nil, err0
 	}
 
-	newActUuid := uuidgen.GenerateUUID()
-	createRequest.SetUuid(newActUuid)
+	if createRequest.Uuid == "" {
+		newActUuid := uuidgen.GenerateUUID()
+		createRequest.SetUuid(newActUuid)
+	}
 
 	err := createRequest.Validate()
 	if err != nil {

@@ -2,12 +2,14 @@
     import compwstrava from '$lib/static/strava/strava_api_logos/compatible with strava/cptblWith_strava_light/api_logo_cptblWith_strava_horiz_light.svg?raw'
     import connectwstrava from '$lib/static/strava/connect_with_strava/btn_strava_connectwith_orange/btn_strava_connectwith_orange.svg?raw'
 
-    import type { model } from "../../wailsjs/go/models";
-    import { UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
-    import { OpenStravaAuth, StartListener } from '$lib/wailsjs/go/strava/Strava';
+    import type { model, oauth2 } from "../../wailsjs/go/models";
+    import { CreateStravaToken, UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
+    import { BackfillData, OpenStravaAuth, StartListener } from '$lib/wailsjs/go/strava/Strava';
 
     export let usr: model.User
     let is_editing = false;
+    let strava_token: oauth2.Token;
+    let backfilling: boolean = false;
 
     function toggleEdit() {
         is_editing = !is_editing
@@ -19,10 +21,16 @@
     }
 
     async function adf() {
-        StartListener()
         await OpenStravaAuth()
+        strava_token = await StartListener()
+        await CreateStravaToken(usr, strava_token)
     }
 
+    async function backfillStravaData() {
+        backfilling = true;
+        await BackfillData(usr)
+        backfilling = false;
+    }
 </script>
 
 {#if usr}
@@ -81,4 +89,14 @@
 {@html compwstrava}
 
 <button class="btn btn-primary btn-sm" type="button" on:click={adf}>{@html connectwstrava}</button>
+
+{#if strava_token}
+    <button class="btn btn-primary" type="button" on:click={backfillStravaData} disabled={backfilling}>Backfill all strava data</button>
+
+    {#if backfilling}
+        <p>Currently backfilling strava data. This can take some time. Please be patient.</p>
+    {/if}
+
+{/if}
+
 {/if}

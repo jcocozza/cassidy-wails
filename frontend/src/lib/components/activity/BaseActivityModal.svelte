@@ -3,7 +3,7 @@
 
     import edit from '$lib/static/edit-3-svgrepo-com.svg?raw'
     import { ValidateDuration } from "$lib/model/duration";
-    import { ConvertDuration, FormatDurationSimple } from "$lib/model/date";
+    import { FormatDurationSimple } from "$lib/model/date";
     import type { model } from "../../wailsjs/go/models";
     import { EmptyActivityEquipment, HandleActivityEquipmentList } from "$lib/model/equipment";
 
@@ -27,6 +27,8 @@
     let activity_type_id: number = activity.activity_type.id;
     let duration_planned: string = FormatDurationSimple(activity.planned.duration);
     let duration_completed: string = FormatDurationSimple(activity.completed.duration);
+
+    let form_error: string = ""
 
     function getSubtypeList(): model.ActivitySubtype[] {
         if (edited_activity.activity_type.id == -1) {
@@ -86,14 +88,24 @@
 
     const dispatch = createEventDispatcher();
     function handleSubmit() {
-        is_hidden = false;
+        form_error = ""
         let planned_duration = ValidateDuration(duration_planned)
         let completed_duration = ValidateDuration(duration_completed)
 
-        if (typeof planned_duration === "string" || typeof completed_duration === "string") {
+        /*if (typeof planned_duration === "string" || typeof completed_duration === "string") {
             throw new Error("duration validation failure!")
-        }
+        }*/
 
+        if (typeof planned_duration === "string") {
+            planned_shown = "planned"
+            form_error = "planned duration is malformed"
+            return
+        } else if (typeof completed_duration === "string") {
+            planned_shown = "completed"
+            form_error = "completed duration is malformed"
+            return
+        }
+        is_hidden = false;
         edited_activity.planned.duration = planned_duration;
         edited_activity.completed.duration = completed_duration;
 
@@ -318,8 +330,8 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="input-group w-20">
-                                                        <label for="editedPlannedDistance">Distance:</label>
-                                                        <input type="number" step="0.01" class="form-control" id="editedPlannedDistance" bind:value={edited_activity.completed.distance.length}>
+                                                        <label for="editedCompletedDistance">Distance:</label>
+                                                        <input type="number" step="0.01" class="form-control" id="editedCompletedDistance" bind:value={edited_activity.completed.distance.length}>
                                                         <select id="activitylenunits" bind:value={edited_activity.completed.distance.unit}>
                                                             <option value="m">m</option>
                                                             <option value="yd">yd</option>
@@ -330,8 +342,8 @@
                                                 </div>
                                                 <div class="col">
                                                     <div class="input-group w-20">
-                                                        <label for="editedPlannedVertical">Vertical:</label>
-                                                        <input type="number" step="0.01" class="form-control" id="editedPlannedVertical" bind:value={edited_activity.completed.vertical.length}>
+                                                        <label for="editedCompletedVertical">Vertical:</label>
+                                                        <input type="number" step="0.01" class="form-control" id="editedCompletedVertical" bind:value={edited_activity.completed.vertical.length}>
                                                         <select bind:value={edited_activity.completed.vertical.unit}>
                                                             <option value="ft">ft</option>
                                                             <option value="m">m</option>
@@ -340,8 +352,8 @@
                                                 </div>
                                                 <div class="col">
                                                     <div class="input-group w-20">
-                                                        <label for="editedPlannedDuration">Duration:</label>
-                                                        <input type=text class="form-control" id="editedPlannedDuration" bind:value={duration_completed} placeholder="hh:mm:ss" pattern="[0-9][0-9]:[0-5][0-9]:[0-5][0-9]">
+                                                        <label for="editedCompletedDuration">Duration:</label>
+                                                        <input type=text class="form-control" id="editedCompletedDuration" bind:value={duration_completed} placeholder="hh:mm:ss" pattern="[0-9][0-9]:[0-5][0-9]:[0-5][0-9]">
                                                     </div>
                                                 </div>
                                             </div>
@@ -358,6 +370,11 @@
                                 </div>
 
                                 <div class="modal-footer">
+
+                                    {#if form_error}
+                                        <p>{form_error}</p>
+                                    {/if}
+
                                     <button type="button" class="btn btn-secondary" on:click={toggleHidden}>Close</button>
                                     <input type="submit" class="btn btn-primary">
                                 </div>

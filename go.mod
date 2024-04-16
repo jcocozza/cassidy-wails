@@ -3,8 +3,9 @@ module github.com/jcocozza/cassidy-wails
 go 1.22.0
 
 require (
-	github.com/jcocozza/cassidy-connector v0.0.0-20240415004116-6cde44b608d4
+	github.com/jcocozza/cassidy-connector v0.0.0-20240415223449-ae2f10bb2ae4
 	github.com/wailsapp/wails/v2 v2.8.0
+	golang.org/x/oauth2 v0.19.0
 )
 
 require (
@@ -29,7 +30,6 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.7.0 // indirect
-	golang.org/x/oauth2 v0.19.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

@@ -29,7 +29,7 @@ func main() {
 	app.Handlers = handlers
 	app.DB = DB
 
-	stravaApp := strava.NewStravaApp()
+	stravaApp := strava.NewStravaApp(handlers)
 
 	// Create application with options
 	err := wails.Run(&options.App{

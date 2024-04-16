@@ -7,7 +7,6 @@ import (
 	colorutil "github.com/jcocozza/cassidy-wails/internal/utils/colorUtil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
-	//gostructstringify "github.com/jcocozza/go_struct_stringify"
 )
 
 // Represents an activity type.
@@ -17,7 +16,6 @@ type ActivityType struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
-
 // An empty activity type has an id of -1 and an empty name.
 func EmptyActivityType() *ActivityType {
 	return &ActivityType{
@@ -82,7 +80,13 @@ type ActivityTypeSubtype struct {
 	ActivityType    *ActivityType    `json:"activity_type"`
 	ActivitySubtype *ActivitySubtype `json:"activity_subtype"`
 }
-
+func NewActivityTypeSubtype(activityUuid string, activityType *ActivityType, activitySubtype *ActivitySubtype) *ActivityTypeSubtype {
+	return &ActivityTypeSubtype{
+		ActivityUuid: activityUuid,
+		ActivityType: activityType,
+		ActivitySubtype: activitySubtype,
+	}
+}
 // An empty activity type subtype has an id of -1, no activity uuid, an empty activity type and and empty activity subtype
 func EmptyActivityTypeSubtype() *ActivityTypeSubtype {
 	return &ActivityTypeSubtype{
@@ -218,8 +222,9 @@ func (a *Activity) SetUuid(uuid string) {
 // Calculate pace for planned and completed
 func (a *Activity) CalculatePace(userUnitClass measurement.UnitClass) {
 	//paceUnit := measurement.PaceUnitByActivityType(a.Type.Id, userUnitClass)
-	plannedPaceUnit := measurement.PaceUnitByDistanceUnit(a.Type.Id, a.Planned.Distance.Unit)
-	completedPaceUnit := measurement.PaceUnitByDistanceUnit(a.Type.Id, a.Completed.Distance.Unit)
+	userUnits := measurement.UnitClassControl(userUnitClass, measurement.Distance)
+	plannedPaceUnit := measurement.PaceUnitByDistanceUnit(a.Type.Id, userUnits)
+	completedPaceUnit := measurement.PaceUnitByDistanceUnit(a.Type.Id, userUnits)
 	a.Planned.CalculatePace(plannedPaceUnit)
 	a.Completed.CalculatePace(completedPaceUnit)
 }

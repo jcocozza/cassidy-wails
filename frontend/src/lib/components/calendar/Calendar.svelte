@@ -270,7 +270,7 @@
                                                         <tbody>
                                                             <!-- Distance -->
                                                             <tr>
-                                                                <td>{cycle.summary.totals.total_planned_distance.length} {cycle.summary.totals.total_planned_distance.unit}</td>
+                                                                <td>{cycle.summary.totals.total_completed_distance.length} {cycle.summary.totals.total_completed_distance.unit}</td>
                                                                 <td class="text-secondary">{cycle.summary.totals.total_planned_distance.length} {cycle.summary.totals.total_planned_distance.unit}</td>
                                                             </tr>
                                                             <!-- Duration -->

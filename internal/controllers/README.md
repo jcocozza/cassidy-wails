@@ -1,0 +1,1 @@
+The methods contained in the controller's package are exposed to the app via JavaScript bindings.

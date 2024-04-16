@@ -6,6 +6,10 @@ export function AuthenticateUser(arg1) {
   return window['go']['controllers']['UserHandler']['AuthenticateUser'](arg1);
 }
 
+export function CreateStravaToken(arg1, arg2) {
+  return window['go']['controllers']['UserHandler']['CreateStravaToken'](arg1, arg2);
+}
+
 export function CreateUser(arg1) {
   return window['go']['controllers']['UserHandler']['CreateUser'](arg1);
 }
@@ -14,6 +18,14 @@ export function GetMicrocycleCurrentDates() {
   return window['go']['controllers']['UserHandler']['GetMicrocycleCurrentDates']();
 }
 
+export function GetStravaToken(arg1) {
+  return window['go']['controllers']['UserHandler']['GetStravaToken'](arg1);
+}
+
 export function UpdateUser(arg1) {
   return window['go']['controllers']['UserHandler']['UpdateUser'](arg1);
+}
+
+export function UpdateorCreateStravaToken(arg1, arg2) {
+  return window['go']['controllers']['UserHandler']['UpdateorCreateStravaToken'](arg1, arg2);
 }

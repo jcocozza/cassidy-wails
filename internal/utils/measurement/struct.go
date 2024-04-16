@@ -143,6 +143,7 @@ func (p *Pace) String() string {
 		return paceString + " " + string(p.Unit)
 }
 // The id's of activity types
+// TODO: FIX THIS TO DEPEND ON THE ACTIVITY TYPE FILE
 const (
 	Run = 1
 	Bike = 2

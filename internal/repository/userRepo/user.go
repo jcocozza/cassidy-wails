@@ -4,10 +4,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
+	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
+	"golang.org/x/oauth2"
 )
 
 // The methods for interacting with user objects
@@ -17,19 +20,20 @@ type UserRepository interface {
 	ReadPreferences(userUuid string) (string, int, string, error)
 	Update(user *model.User) error
 	//Delete(user *User) error
+	CreateStravaToken(user *model.User, token *oauth2.Token) error
+	ReadStravaToken(user *model.User) (*oauth2.Token, error)
+	UpdateStravaToken(user *model.User, token *oauth2.Token) error
 }
 
 // Represents a database connection
 type IUserRepository struct {
 	DB database.DbOperations
 }
-
 func NewIUserRespository(db database.DbOperations) *IUserRepository {
 	return &IUserRepository{
 		DB: db,
 	}
 }
-
 // Insert the user object into the database.
 func (db *IUserRepository) Create(user *model.User) error {
 	sql := sqlcode.SQLReader(sqlcode.User_create)
@@ -43,10 +47,8 @@ func (db *IUserRepository) Create(user *model.User) error {
 	if err != nil {
 		return fmt.Errorf("user creation failed: %w", err)
 	}
-
 	return nil
 }
-
 // Read user object from the database for a given username
 func (db *IUserRepository) Read(username string) (*model.User, error) {
 	query := sqlcode.SQLReader(sqlcode.User_read)
@@ -68,7 +70,6 @@ func (db *IUserRepository) Read(username string) (*model.User, error) {
 	}
 	return usr, nil
 }
-
 // Read the user start date, number of cycle day preferences and initial start date
 func (db *IUserRepository) ReadPreferences(userUuid string) (string, int, string, error) {
 	sql := sqlcode.SQLReader(sqlcode.User_preferences)
@@ -85,13 +86,51 @@ func (db *IUserRepository) ReadPreferences(userUuid string) (string, int, string
 
 	return cycleStart, cycleDays, initialStartDate, nil
 }
-
 // Update the user preferences
 func (db *IUserRepository) Update(user *model.User) error {
 	sql := sqlcode.SQLReader(sqlcode.User_update)
 	err := db.DB.Execute(sql, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart, user.Uuid)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)
+	}
+	return nil
+}
+// Create a strava token for the user
+func (db *IUserRepository) CreateStravaToken(user *model.User, token *oauth2.Token) error {
+	sql := sqlcode.SQLReader(sqlcode.Strava_token_create)
+	err := db.DB.Execute(sql, user.Uuid, token.AccessToken, token.TokenType, token.RefreshToken, token.Expiry.Format(dateutil.TokenLayout))
+	if err != nil {
+		return fmt.Errorf("failed to create strava token: %w", err)
+	}
+	return nil
+}
+// Read the strava token stored in the database for a given user
+func (db *IUserRepository) ReadStravaToken(user *model.User) (*oauth2.Token, error) {
+	sql := sqlcode.SQLReader(sqlcode.Strava_token_read)
+	// there should only ever be 1 user token
+	row := db.DB.QueryRow(sql, user.Uuid)
+	var accessToken, tokenType, refreshToken, expiryStr string
+	err := row.Scan(accessToken, tokenType, refreshToken, expiryStr)
+	if err != nil {
+		return nil, err
+	}
+	expiry, err := time.Parse(dateutil.TokenLayout, expiryStr)
+	if err != nil {
+		return nil, err
+	}
+	return &oauth2.Token{
+		AccessToken: accessToken,
+		TokenType: tokenType,
+		RefreshToken: refreshToken,
+		Expiry: expiry,
+	}, nil
+}
+// Update the user's strava token
+func (db *IUserRepository) UpdateStravaToken(user *model.User, token *oauth2.Token) error {
+	sql := sqlcode.SQLReader(sqlcode.Strava_token_update)
+	err := db.DB.Execute(sql, token.AccessToken, token.TokenType, token.RefreshToken, token.Expiry.Format(dateutil.TokenLayout), user.Uuid)
+	if err != nil {
+		return fmt.Errorf("failed to update strava token: %w", err)
 	}
 	return nil
 }
