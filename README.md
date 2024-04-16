@@ -1,5 +1,8 @@
 # README
 
+# Cassidy
+
+
 ## About
 
 This is the official Wails Svelte-TS template.

@@ -62,6 +62,8 @@ func (s *Strava) sportTypeToActivityType(activityId string, sportType swagger.Sp
 		actType = &model.Swim
 	case swagger.HIKE_SportType:
 		actType = &model.Hike
+	case swagger.WEIGHT_TRAINING_SportType:
+		actType = &model.Strength
 	default:
 		actType = &model.Other
 	}
