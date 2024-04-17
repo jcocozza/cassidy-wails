@@ -5,27 +5,23 @@ import "time"
 // get the microcycle for a given date and start day of week combination.
 //
 // e.g. Get the microcycle that contains a date, "YYYY-MM-DD" that starts on weekday e.g. Monday
-func GetDateMicrocycle(date string, microcycleStartDayOfWeek string, microcycleLength int) []*DateObject {
-	parsedDate, err := time.Parse(Layout, date)
-	if err != nil {
-		panic(err)
-	}
+func GetDateMicrocycle(date time.Time, microcycleStartDayOfWeek string, microcycleLength int) []time.Time {
 	// Get the day of the week
-	dayOfWeek := parsedDate.Weekday().String()
+	dayOfWeek := date.Weekday().String()
 
 	if microcycleStartDayOfWeek == dayOfWeek {
-		lastDayMicrocycle := parsedDate.AddDate(0, 0, microcycleLength - 1)
-		mc, _ := GenerateDateRange(date, lastDayMicrocycle.Format(Layout))
+		lastDayMicrocycle := date.AddDate(0, 0, microcycleLength - 1)
+		mc := GenerateDateRange(date, lastDayMicrocycle)
 		return mc
 	} else {
-		firstDayMicrocycle := parsedDate
+		firstDayMicrocycle := date
 		for microcycleStartDayOfWeek != dayOfWeek {
 			firstDayMicrocycle = firstDayMicrocycle.AddDate(0, 0, -1) // there will never be a day where the beginning of the microcycle is after that day
 			dayOfWeek = firstDayMicrocycle.Weekday().String()
 		}
 
 		lastDayMicrocycle := firstDayMicrocycle.AddDate(0, 0, microcycleLength - 1)
-		mc, _ := GenerateDateRange(firstDayMicrocycle.Format(Layout), lastDayMicrocycle.Format(Layout))
+		mc := GenerateDateRange(firstDayMicrocycle, lastDayMicrocycle)
 		return mc
 	}
 }
@@ -34,126 +30,78 @@ func GetDateMicrocycle(date string, microcycleStartDayOfWeek string, microcycleL
 // e.g. Get the microcyle that contains the current date starting on the passed weekday
 //
 // (Untested)
-func CurrentMicrocycle(microcycleStartDayOfWeek string, microcycleLength int) []*DateObject {
-	currentDate := time.Now().Format(Layout)
+func CurrentMicrocycle(microcycleStartDayOfWeek string, microcycleLength int) []time.Time {
+	currentDate := time.Now()
 	return GetDateMicrocycle(currentDate, microcycleStartDayOfWeek, microcycleLength)
 }
 // Get the current microcycle for a given length and initial date combination
-func GetCurrentCycleFromInitialDate(initialDate string, microcycleLength int) []*DateObject {
-	parsedDate, err := time.Parse(Layout, initialDate)
-	if err != nil {
-		panic(err)
-	}
-
+func GetCurrentCycleFromInitialDate(initialDate time.Time, microcycleLength int) []time.Time {
 	// Calculate the difference in days from the initial date to today
-	daysDifference := time.Since(parsedDate).Hours() / 24
+	daysDifference := time.Since(initialDate).Hours() / 24
 
 	// Calculate number of microcycles away from today
 	numCyclesAway := int(daysDifference) / microcycleLength
 
 	// Calculate the start date of the current microcycle
-	startDate := parsedDate.Add(time.Duration(numCyclesAway * microcycleLength) * 24 * time.Hour)
+	startDate := initialDate.Add(time.Duration(numCyclesAway * microcycleLength) * 24 * time.Hour)
 
-	return GetDateMicrocycle(startDate.Format(Layout), startDate.Weekday().String(), microcycleLength)
+	return GetDateMicrocycle(startDate, startDate.Weekday().String(), microcycleLength)
 }
-
 // return the next cycle start/end for the passed start and end
-func GetNextCycle(startDate string, endDate string) (string, string) {
-	cycleLength, err := daysDifference(startDate, endDate)
-	if err != nil {
-		panic(err)
-	}
+func GetNextCycle(startDate time.Time, endDate time.Time) (time.Time, time.Time) {
+	cycleLength := daysDifference(startDate, endDate)
 
-	sd, _ := time.Parse(Layout, startDate)
-	ed, _ := time.Parse(Layout, endDate)
+	newSd := startDate.AddDate(0, 0, cycleLength+1)
+	newEd := endDate.AddDate(0, 0, cycleLength+1)
 
-	newSd := sd.AddDate(0, 0, cycleLength+1)
-	newEd := ed.AddDate(0, 0, cycleLength+1)
-
-	return newSd.Format(Layout), newEd.Format(Layout)
+	return newSd, newEd
 }
-
 // ! Currently not used
 // from a given (startDate, endDate) cycle, return the next N cycles (from that cycle)
-func GetNextNCycles(startDate string, endDate string, numberOfCycles int) ([][]*DateObject, error) {
-	cycleLength, err := daysDifference(startDate, endDate)
-
-	if err != nil {
-		return [][]*DateObject{}, err
-	}
-
-	sd, _ := time.Parse(Layout, startDate)
-	ed, _ := time.Parse(Layout, endDate)
-
-	var cycleList [][]*DateObject
-	var tmpSd time.Time = sd
-	var tmpEd time.Time = ed
+func GetNextNCycles(startDate time.Time, endDate time.Time, numberOfCycles int) [][]time.Time {
+	cycleLength := daysDifference(startDate, endDate)
+	var cycleList [][]time.Time
+	var tmpSd time.Time = startDate
+	var tmpEd time.Time = endDate
 	for i := 0; i < numberOfCycles; i++ {
 		tmpSd = tmpSd.AddDate(0, 0, cycleLength+1)
 		tmpEd = tmpEd.AddDate(0, 0, cycleLength+1)
-		newCycleRange, _ := GenerateDateRange(tmpSd.Format(Layout), tmpEd.Format(Layout))
+		newCycleRange := GenerateDateRange(tmpSd, tmpEd)
 		cycleList = append(cycleList, newCycleRange)
 	}
-	return cycleList, nil
+	return cycleList
 }
-
 // return the previous cycle start/end for the passed start and end
-func GetPreviousCycle(startDate string, endDate string) (string, string) {
-	cycleLength, err := daysDifference(startDate, endDate)
-	if err != nil {
-		panic(err)
-	}
-
-	sd, _ := time.Parse(Layout, startDate)
-	ed, _ := time.Parse(Layout, endDate)
-
-	newSd := sd.AddDate(0, 0, -cycleLength-1)
-	newEd := ed.AddDate(0, 0, -cycleLength-1)
-
-	return newSd.Format(Layout), newEd.Format(Layout)
+func GetPreviousCycle(startDate time.Time, endDate time.Time) (time.Time, time.Time) {
+	cycleLength := daysDifference(startDate, endDate)
+	newSd := startDate.AddDate(0, 0, -cycleLength-1)
+	newEd := endDate.AddDate(0, 0, -cycleLength-1)
+	return newSd, newEd
 }
-
 // from a given (startDate, endDate) cycle, return the previous N cycles prior to that cycle
-func GetPreviousNCycles(startDate string, endDate string, numberOfCycles int) ([][]*DateObject, error) {
-	cycleLength, err := daysDifference(startDate, endDate)
-
-	if err != nil {
-		return [][]*DateObject{}, err
-	}
-
-	sd, _ := time.Parse(Layout, startDate)
-	ed, _ := time.Parse(Layout, endDate)
-
-	var cycleList [][]*DateObject
-	var tmpSd time.Time = sd
-	var tmpEd time.Time = ed
+func GetPreviousNCycles(startDate time.Time, endDate time.Time, numberOfCycles int) [][]time.Time {
+	cycleLength := daysDifference(startDate, endDate)
+	var cycleList [][]time.Time
+	var tmpSd time.Time = startDate
+	var tmpEd time.Time = endDate
 	for i := 0; i < numberOfCycles; i++ {
 		tmpSd = tmpSd.AddDate(0, 0, -cycleLength-1)
 		tmpEd = tmpEd.AddDate(0, 0, -cycleLength-1)
-		newCycleRange, _ := GenerateDateRange(tmpSd.Format(Layout), tmpEd.Format(Layout))
+		newCycleRange := GenerateDateRange(tmpSd, tmpEd)
 		cycleList = append(cycleList, newCycleRange)
 	}
-	return cycleList, nil
+	return cycleList
 }
 
 // from a given (startDate, endDate) cycle, return the next cycle start/end pair and the previous start/end pair
-func GetNextPrevious(startDate string, endDate string) (string, string, string, string, error) {
-	cycleLength, err := daysDifference(startDate, endDate)
-	if err != nil {
-		return "","","","", err
-	}
-
+func GetNextPrevious(startDate time.Time, endDate time.Time) (time.Time, time.Time, time.Time, time.Time, error) {
+	cycleLength := daysDifference(startDate, endDate)
 	if cycleLength == 0 {
 		cycleLength = 1
 	}
-
-	sd, _ := time.Parse(Layout, startDate)
-	ed, _ := time.Parse(Layout, endDate)
-
-	sdNext := sd.AddDate(0, 0, cycleLength+1)
-	edNext := ed.AddDate(0, 0, cycleLength+1)
-	sdPrevious := sd.AddDate(0, 0, -cycleLength-1)
-	edPrevious := ed.AddDate(0, 0, -cycleLength-1)
-
-	return sdNext.Format(Layout), edNext.Format(Layout), sdPrevious.Format(Layout), edPrevious.Format(Layout), nil
+	sdNext := startDate.AddDate(0, 0, cycleLength+1)
+	edNext := endDate.AddDate(0, 0, cycleLength+1)
+	sdPrevious := startDate.AddDate(0, 0, -cycleLength-1)
+	edPrevious := endDate.AddDate(0, 0, -cycleLength-1)
+	return sdNext, edNext, sdPrevious, edPrevious, nil
 }

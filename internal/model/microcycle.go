@@ -2,6 +2,7 @@ package model
 
 import (
 	"math"
+	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/utils"
 	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
@@ -327,8 +328,8 @@ func (ms *MicrocycleSummary) CalculateCycleChanges() error {
 
 // Represents a set number of days (typically between 1 week and 10 days).
 type Microcycle struct {
-	StartDate       string             `json:"start_date"`
-	EndDate         string             `json:"end_date"`
+	StartDate       time.Time          `json:"start_date"`
+	EndDate         time.Time          `json:"end_date"`
 	CycleActivities *Cycle             `json:"cycle_activities"`
 	Summary         *MicrocycleSummary `json:"summary"`
 }

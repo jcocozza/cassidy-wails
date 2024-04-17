@@ -73,13 +73,13 @@ func (uh *UserHandler) AuthenticateUser(authRequest authRequest) (*model.User, e
 }
 
 type MCCurrentDate struct {
-	StartDate string `json:"start_date"`
-	EndDate   string `json:"end_date"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
 }
 // Return the start date and end date of the current microcycle
 func (uh *UserHandler) GetMicrocycleCurrentDates() *MCCurrentDate {
-	currentDate := time.Now().Format(dateutil.Layout)
-	var mc []*dateutil.DateObject
+	currentDate := time.Now()
+	var mc []time.Time
 	if uh.User.CycleDays == 7 {
 		mc = dateutil.GetDateMicrocycle(currentDate, uh.User.CycleStart, uh.User.CycleDays)
 	} else {
@@ -87,8 +87,8 @@ func (uh *UserHandler) GetMicrocycleCurrentDates() *MCCurrentDate {
 	}
 
 	mp := &MCCurrentDate{
-		StartDate: mc[0].Date,
-		EndDate:   mc[len(mc)-1].Date,
+		StartDate: mc[0],
+		EndDate:   mc[len(mc)-1],
 	}
 
 	fmt.Println("CURRENT MICROCYCLE DATES:", mp)

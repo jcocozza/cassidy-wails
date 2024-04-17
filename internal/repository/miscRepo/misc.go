@@ -2,6 +2,7 @@ package miscrepo
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
@@ -13,7 +14,7 @@ import (
 
 // Misc db queries
 type MiscRepository interface {
-	ReadNCycleSummary(startDate, endDate, userUuid string) (*model.NCycleSummary, error)
+	ReadNCycleSummary(startDate, endDate time.Time, userUuid string) (*model.NCycleSummary, error)
 }
 
 // Represents a database connection
@@ -30,37 +31,32 @@ func NewIMiscRepository(db database.DbOperations) *IMiscRepository {
 // Create the 12 cycle summary
 //
 // TODO: Generalize this function for n cycles
-func (db *IMiscRepository) ReadNCycleSummary(startDate, endDate, userUuid string) (*model.NCycleSummary, error) {
+func (db *IMiscRepository) ReadNCycleSummary(startDate, endDate time.Time, userUuid string) (*model.NCycleSummary, error) {
 	numCycles := 12
-	cycleList, err := dateutil.GetPreviousNCycles(startDate, endDate, numCycles-1)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get previous n cycles: %w", err)
-	}
+	cycleList := dateutil.GetPreviousNCycles(startDate, endDate, numCycles-1)
 
 	cycleLength := len(cycleList[0])
 
-	// can ignore this error because things would have already failed if it won't work
-	start, _ := dateutil.CreateFromDate(startDate)
-	startDateList := []*dateutil.DateObject{}
-	startDateList = append(startDateList, start)
+	startDateList := []time.Time{}
+	startDateList = append(startDateList, startDate)
 	for _, cycle := range cycleList {
 		startDateList = append(startDateList, cycle[0])
 	}
 
 	sql := sqlcode.SQLReader(sqlcode.N_cycle_summary)
-	rows, err2 := db.DB.Query(sql, cycleList[10][0].Date, cycleList[10][cycleLength-1].Date,
-		cycleList[9][0].Date, cycleList[9][cycleLength-1].Date,
-		cycleList[8][0].Date, cycleList[8][cycleLength-1].Date,
-		cycleList[7][0].Date, cycleList[7][cycleLength-1].Date,
-		cycleList[6][0].Date, cycleList[6][cycleLength-1].Date,
-		cycleList[5][0].Date, cycleList[5][cycleLength-1].Date,
-		cycleList[4][0].Date, cycleList[4][cycleLength-1].Date,
-		cycleList[3][0].Date, cycleList[3][cycleLength-1].Date,
-		cycleList[2][0].Date, cycleList[2][cycleLength-1].Date,
-		cycleList[1][0].Date, cycleList[1][cycleLength-1].Date,
-		cycleList[0][0].Date, cycleList[0][cycleLength-1].Date,
-		startDate, endDate,
-		cycleList[10][0].Date, endDate, userUuid)
+	rows, err2 := db.DB.Query(sql, cycleList[10][0].Format(dateutil.Layout), cycleList[10][cycleLength-1].Format(dateutil.Layout),
+		cycleList[9][0].Format(dateutil.Layout), cycleList[9][cycleLength-1].Format(dateutil.Layout),
+		cycleList[8][0].Format(dateutil.Layout), cycleList[8][cycleLength-1].Format(dateutil.Layout),
+		cycleList[7][0].Format(dateutil.Layout), cycleList[7][cycleLength-1].Format(dateutil.Layout),
+		cycleList[6][0].Format(dateutil.Layout), cycleList[6][cycleLength-1].Format(dateutil.Layout),
+		cycleList[5][0].Format(dateutil.Layout), cycleList[5][cycleLength-1].Format(dateutil.Layout),
+		cycleList[4][0].Format(dateutil.Layout), cycleList[4][cycleLength-1].Format(dateutil.Layout),
+		cycleList[3][0].Format(dateutil.Layout), cycleList[3][cycleLength-1].Format(dateutil.Layout),
+		cycleList[2][0].Format(dateutil.Layout), cycleList[2][cycleLength-1].Format(dateutil.Layout),
+		cycleList[1][0].Format(dateutil.Layout), cycleList[1][cycleLength-1].Format(dateutil.Layout),
+		cycleList[0][0].Format(dateutil.Layout), cycleList[0][cycleLength-1].Format(dateutil.Layout),
+		startDate.Format(dateutil.Layout), endDate.Format(dateutil.Layout),
+		cycleList[10][0].Format(dateutil.Layout), endDate.Format(dateutil.Layout), userUuid)
 	if err2 != nil {
 		return nil, fmt.Errorf("failed to query n cycle summary: %w", err2)
 	}
@@ -110,7 +106,7 @@ func (db *IMiscRepository) ReadNCycleSummary(startDate, endDate, userUuid string
 	finalCompletedDurations := createFinalList[float64](completedDurations, binList, numCycles, 0)
 	finalCompletedVerticals := createFinalList[*measurement.Measurement](completedVerticals, binList, numCycles, measurement.ZeroLength(measurement.StandardUnit))
 
-	sdl := utils.ReverseList[*dateutil.DateObject](startDateList)
+	sdl := utils.ReverseList[time.Time](startDateList)
 
 	return &model.NCycleSummary{
 		StartDateList:      sdl,

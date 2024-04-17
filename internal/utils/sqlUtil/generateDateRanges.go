@@ -1,20 +1,22 @@
 package sqlutil
 
-import "github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
+import (
+	"time"
+
+	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
+)
 
 type DateRange struct {
-	Start string
-	End   string
+	Start time.Time
+	End   time.Time
 }
-
 // Create a new date range
-func NewDateRange(start, end string) *DateRange {
+func NewDateRange(start, end time.Time) *DateRange {
 	return &DateRange{
 		Start: start,
 		End:   end,
 	}
 }
-
 /*
 Generate a table of this form:
 
@@ -35,11 +37,11 @@ The idea is to attach this to the front of quries that need to check lots of dat
 func generateDateRangesCTE(dateRanges []*DateRange) string {
 	// initial
 	sql := "WITH DateRanges AS (\n"
-	sql += "SELECT '" + dateRanges[0].Start + "' AS start_date, '" + dateRanges[0].End + "' AS end_date\n"
+	sql += "SELECT '" + dateRanges[0].Start.Format(dateutil.Layout) + "' AS start_date, '" + dateRanges[0].End.Format(dateutil.Layout) + "' AS end_date\n"
 	sql += "UNION ALL\n"
 
 	for i := 1; i <= len(dateRanges)-1; i++ {
-		sql += "SELECT '" + dateRanges[i].Start + "', '" + dateRanges[i].End + "'\n"
+		sql += "SELECT '" + dateRanges[i].Start.Format(dateutil.Layout) + "', '" + dateRanges[i].End.Format(dateutil.Layout) + "'\n"
 		if i != len(dateRanges)-1 {
 			sql += "UNION ALL\n"
 		}
@@ -47,11 +49,10 @@ func generateDateRangesCTE(dateRanges []*DateRange) string {
 	sql += ")"
 	return sql
 }
-
 // Generate a date range Common Table expression for a give start and end date and number of totals in the previous direction
 //
 // Will be INCLUSIVE of the passed startDate, endDate
-func GenerateDateRangesPreviousCTE(startDate, endDate string, numTotals int) string {
+func GenerateDateRangesPreviousCTE(startDate, endDate time.Time, numTotals int) string {
 	drList := []*DateRange{}
 	drList = append(drList, NewDateRange(startDate, endDate))
 
@@ -68,7 +69,7 @@ func GenerateDateRangesPreviousCTE(startDate, endDate string, numTotals int) str
 // Generate a date range Common Table expression for a give start and end date and number of totals in the next direction
 //
 // Will be INCLUSIVE of the passed startDate, endDate
-func GenerateDateRangesNextCTE(startDate, endDate string, numTotals int) string {
+func GenerateDateRangesNextCTE(startDate, endDate time.Time, numTotals int) string {
 	drList := []*DateRange{}
 	drList = append(drList, NewDateRange(startDate, endDate))
 

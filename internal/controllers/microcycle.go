@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	conversionrepo "github.com/jcocozza/cassidy-wails/internal/repository/conversionRepo"
@@ -40,7 +42,7 @@ func NewMicrocycleHandler(db database.DbOperations, user *model.User) *Microcycl
 //
 // @param start_date
 // @param end_date
-func (mh *MicrocycleHandler) GetMicrocycle(startDate, endDate string) (*model.Microcycle, error) {
+func (mh *MicrocycleHandler) GetMicrocycle(startDate, endDate time.Time) (*model.Microcycle, error) {
 	microcycle, err := mh.MicrocycleRepository.ReadMicrocycle(startDate, endDate, mh.User.Uuid, mh.User.Units)
 	if err != nil {
 		return nil, err
@@ -56,7 +58,7 @@ func (mh *MicrocycleHandler) GetMicrocycle(startDate, endDate string) (*model.Mi
 //
 // @param: start_date
 // @param: end_date
-func (mh *MicrocycleHandler) GetCalendar(startDate, endDate string) ([]*model.Microcycle, error) {
+func (mh *MicrocycleHandler) GetCalendar(startDate, endDate time.Time) ([]*model.Microcycle, error) {
 	centerMicrocycle, err := mh.MicrocycleRepository.ReadMicrocycle(startDate, endDate, mh.User.Uuid, mh.User.Units)
 	if err != nil {
 		return nil, err
@@ -106,7 +108,7 @@ func (mh *MicrocycleHandler) GetCalendar(startDate, endDate string) ([]*model.Mi
 // @param: start_date
 // @param: end_date
 // @param: number
-func (mh *MicrocycleHandler) GetNextNMicrocycles(startDate, endDate string, numberCycles int) ([]*model.Microcycle, error) {
+func (mh *MicrocycleHandler) GetNextNMicrocycles(startDate, endDate time.Time, numberCycles int) ([]*model.Microcycle, error) {
 	var tmpStart = startDate
 	var tmpEnd = endDate
 	var microcycleList = []*model.Microcycle{}
@@ -133,7 +135,7 @@ func (mh *MicrocycleHandler) GetNextNMicrocycles(startDate, endDate string, numb
 // @param: start_date
 // @param: end_date
 // @param: number
-func (mh *MicrocycleHandler) GetPreviousNMicrocycles(startDate, endDate string, numberCycles int) ([]*model.Microcycle, error) {
+func (mh *MicrocycleHandler) GetPreviousNMicrocycles(startDate, endDate time.Time, numberCycles int) ([]*model.Microcycle, error) {
 	var tmpStart = startDate
 	var tmpEnd = endDate
 	var microcycleList = []*model.Microcycle{}

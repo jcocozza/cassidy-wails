@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
@@ -14,7 +15,7 @@ type User struct {
 	Units             measurement.UnitClass `json:"units"`
 	CycleStart        string                `json:"cycle_start"`
 	CycleDays         int                   `json:"cycle_days"`
-	InitialCycleStart string                `json:"initial_cycle_start"`
+	InitialCycleStart time.Time             `json:"initial_cycle_start"`
 }
 
 // An empty user has no uuid, information and has cycle days of -1
@@ -26,7 +27,7 @@ func EmptyUser() *User {
 		Units:             "",
 		CycleStart:        "",
 		CycleDays:         -1,
-		InitialCycleStart: "",
+		InitialCycleStart: time.Now(),
 	}
 }
 

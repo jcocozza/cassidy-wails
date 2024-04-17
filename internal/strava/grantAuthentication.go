@@ -86,7 +86,7 @@ func (s *Strava) stravaActivityToCassidyActivity(activity swagger.SummaryActivit
 
 	act := &model.Activity{
 		Uuid: uuid,
-		Date: activity.StartDate.Format(dateutil.Layout),
+		Date: activity.StartDate,
 		Order: 1,
 		Name: activity.Name,
 		Description: "",

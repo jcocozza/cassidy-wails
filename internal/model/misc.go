@@ -1,7 +1,8 @@
 package model
 
 import (
-	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
+	"time"
+
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
 )
 
@@ -10,7 +11,7 @@ import (
 // It is an ordered date list where each element in the date list has a corresponding element in several other lists which
 // provide totals for their respective purposes.
 type NCycleSummary struct {
-	StartDateList    []*dateutil.DateObject     `json:"start_date_list"`
+	StartDateList    []time.Time     			`json:"start_date_list"`
 	PlannedDistances []*measurement.Measurement `json:"planned_distances"`
 	PlannedDurations []float64                  `json:"planned_durations"`
 	PlannedVerticals []*measurement.Measurement `json:"planned_verticals"`
