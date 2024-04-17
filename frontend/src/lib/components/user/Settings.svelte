@@ -6,10 +6,11 @@
     import { CreateStravaToken, UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
     import { BackfillData, OpenStravaAuth, StartListener } from '$lib/wailsjs/go/strava/Strava';
 
-    export let usr: model.User
+    export let usr: model.User;
     let is_editing = false;
     let strava_token: oauth2.Token;
     let backfilling: boolean = false;
+    let redirect_message: string = "";
 
     function toggleEdit() {
         is_editing = !is_editing
@@ -23,6 +24,7 @@
     async function adf() {
         await OpenStravaAuth()
         strava_token = await StartListener()
+        redirect_message = ""
         await CreateStravaToken(usr, strava_token)
     }
 
@@ -86,15 +88,27 @@
 </div>
 -->
 
-{@html compwstrava}
+<div class="col">
+    <div class="row">
+        {@html compwstrava}
+    </div>
+    <div class="row">
+        <button class="btn btn-sm" type="button" on:click={adf}>{@html connectwstrava}</button>
+        {#if redirect_message}
+            <p>An authorization prompt should have opened in your browser, please check it and grant authorization.</p>
+        {/if}
+    </div>
+</div>
 
-<button class="btn btn-primary btn-sm" type="button" on:click={adf}>{@html connectwstrava}</button>
 
 {#if strava_token}
     <button class="btn btn-primary" type="button" on:click={backfillStravaData} disabled={backfilling}>Backfill all strava data</button>
 
     {#if backfilling}
         <p>Currently backfilling strava data. This can take some time. Please be patient.</p>
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     {/if}
 
 {/if}

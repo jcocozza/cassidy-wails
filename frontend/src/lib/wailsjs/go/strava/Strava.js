@@ -6,6 +6,10 @@ export function BackfillData(arg1) {
   return window['go']['strava']['Strava']['BackfillData'](arg1);
 }
 
+export function GetNewData(arg1, arg2) {
+  return window['go']['strava']['Strava']['GetNewData'](arg1, arg2);
+}
+
 export function OpenStravaAuth() {
   return window['go']['strava']['Strava']['OpenStravaAuth']();
 }

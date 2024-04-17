@@ -839,8 +839,7 @@ export namespace oauth2 {
 	    access_token: string;
 	    token_type?: string;
 	    refresh_token?: string;
-	    // Go type: time
-	    expiry?: any;
+	    expiry?: time.Time;
 	
 	    static createFrom(source: any = {}) {
 	        return new Token(source);
@@ -851,7 +850,7 @@ export namespace oauth2 {
 	        this.access_token = source["access_token"];
 	        this.token_type = source["token_type"];
 	        this.refresh_token = source["refresh_token"];
-	        this.expiry = this.convertValues(source["expiry"], null);
+	        this.expiry = this.convertValues(source["expiry"], time.Time);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
