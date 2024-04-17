@@ -370,9 +370,9 @@ func (db *IMicrocycleRepository) ReadTotalsByActivityTypeAndDate(startDate, endD
 			return nil, fmt.Errorf("error scanning row: %w", err1)
 		}
 
-		date, err := time.Parse(dateutil.Layout, dateStr)
+		date, err := time.Parse(dateutil.TokenLayout, dateStr)
 		if err != nil {
-			return nil, fmt.Errorf("date failed to part when reading totals by type and date: %w", err)
+			return nil, fmt.Errorf("date failed to parse when reading totals by type and date: %w", err)
 		}
 		totActTypeDate.Date = date
 
