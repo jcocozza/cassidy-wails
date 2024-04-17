@@ -1,8 +1,8 @@
 export namespace controllers {
 	
 	export class MCCurrentDate {
-	    start_date: string;
-	    end_date: string;
+	    start_date: Date;
+	    end_date: Date;
 	
 	    static createFrom(source: any = {}) {
 	        return new MCCurrentDate(source);
@@ -10,15 +10,15 @@ export namespace controllers {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.start_date = source["start_date"];
-	        this.end_date = source["end_date"];
+	        this.start_date = new Date(source["start_date"]);
+	        this.end_date = new Date(source["end_date"]);
 	    }
 	}
 	export class NextPrevious {
-	    next_start_date: string;
-	    next_end_date: string;
-	    previous_start_date: string;
-	    previous_end_date: string;
+	    next_start_date: Date;
+	    next_end_date: Date;
+	    previous_start_date: Date;
+	    previous_end_date: Date;
 	
 	    static createFrom(source: any = {}) {
 	        return new NextPrevious(source);
@@ -26,10 +26,10 @@ export namespace controllers {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.next_start_date = source["next_start_date"];
-	        this.next_end_date = source["next_end_date"];
-	        this.previous_start_date = source["previous_start_date"];
-	        this.previous_end_date = source["previous_end_date"];
+	        this.next_start_date = new Date(source["next_start_date"]);
+	        this.next_end_date = new Date(source["next_end_date"]);
+	        this.previous_start_date = new Date(source["previous_start_date"]);
+	        this.previous_end_date = new Date(source["previous_end_date"]);
 	    }
 	}
 	export class authRequest {
@@ -317,7 +317,7 @@ export namespace model {
 	}
 	export class Activity {
 	    uuid: string;
-	    date: string;
+	    date: Date;
 	    order: number;
 	    name: string;
 	    description: string;
@@ -338,7 +338,7 @@ export namespace model {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.uuid = source["uuid"];
-	        this.date = source["date"];
+	        this.date = new Date(source["date"]);
 	        this.order = source["order"];
 	        this.name = source["name"];
 	        this.description = source["description"];
@@ -692,8 +692,7 @@ export namespace model {
 		}
 	}
 	export class ActivityList {
-	    // Go type: dateutil
-	    date_object?: any;
+	    date: Date;
 	    activity_list: Activity[];
 	
 	    static createFrom(source: any = {}) {
@@ -702,7 +701,7 @@ export namespace model {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.date_object = this.convertValues(source["date_object"], null);
+	        this.date = new Date(source["date"]);
 	        this.activity_list = this.convertValues(source["activity_list"], Activity);
 	    }
 	
@@ -725,8 +724,8 @@ export namespace model {
 		}
 	}
 	export class Microcycle {
-	    start_date: string;
-	    end_date: string;
+	    start_date: Date;
+	    end_date: Date;
 	    cycle_activities?: ActivityList[];
 	    summary?: MicrocycleSummary;
 	
@@ -736,8 +735,8 @@ export namespace model {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.start_date = source["start_date"];
-	        this.end_date = source["end_date"];
+	        this.start_date = new Date(source["start_date"]);
+	        this.end_date = new Date(source["end_date"]);
 	        this.cycle_activities = this.convertValues(source["cycle_activities"], ActivityList);
 	        this.summary = this.convertValues(source["summary"], MicrocycleSummary);
 	    }
@@ -762,7 +761,7 @@ export namespace model {
 	}
 	
 	export class NCycleSummary {
-	    start_date_list: dateutil.DateObject[];
+	    start_date_list: Date[];
 	    planned_distances: measurement.Measurement[];
 	    planned_durations: number[];
 	    planned_verticals: measurement.Measurement[];
@@ -776,7 +775,7 @@ export namespace model {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.start_date_list = this.convertValues(source["start_date_list"], dateutil.DateObject);
+	        this.start_date_list = source["start_date_list"];
 	        this.planned_distances = this.convertValues(source["planned_distances"], measurement.Measurement);
 	        this.planned_durations = source["planned_durations"];
 	        this.planned_verticals = this.convertValues(source["planned_verticals"], measurement.Measurement);
@@ -813,7 +812,7 @@ export namespace model {
 	    units: string;
 	    cycle_start: string;
 	    cycle_days: number;
-	    initial_cycle_start: string;
+	    initial_cycle_start: Date;
 	
 	    static createFrom(source: any = {}) {
 	        return new User(source);
@@ -827,7 +826,7 @@ export namespace model {
 	        this.units = source["units"];
 	        this.cycle_start = source["cycle_start"];
 	        this.cycle_days = source["cycle_days"];
-	        this.initial_cycle_start = source["initial_cycle_start"];
+	        this.initial_cycle_start = new Date(source["initial_cycle_start"]);
 	    }
 	}
 

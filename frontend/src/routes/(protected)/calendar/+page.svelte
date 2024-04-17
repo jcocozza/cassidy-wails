@@ -5,8 +5,8 @@
     import type { model } from "$lib/wailsjs/go/models";
     import { onMount } from "svelte";
 
-    let start_date: string = "";
-    let end_date: string = "";
+    let start_date: Date;
+    let end_date: Date;
     let usr: model.User;
 
     onMount(async () => {

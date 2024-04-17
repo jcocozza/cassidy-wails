@@ -41,7 +41,8 @@ func GetDayOfWeek(date string) (string, error) {
 }
 // calculate # of days between two dates
 func daysDifference(date1, date2 time.Time) int {
-	duration := date1.Sub(date2)
+	//duration := date1.Sub(date2)
+	duration := date2.Sub(date1)
 	days := int(duration.Hours() / 24)
 	return days
 }
@@ -55,4 +56,8 @@ func IsFuture(date string) (bool, error) {
 	now := time.Now()
 
 	return t1.After(now), nil
+}
+// Check if two time.Time structs occur on the same date
+func SameDate(t1, t2 time.Time) bool {
+	return t1.Year() == t2.Year() && t1.Month() == t2.Month() && t1.Day() == t2.Day()
 }

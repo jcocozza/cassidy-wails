@@ -1,25 +1,25 @@
 <script lang="ts">
     import Microcycle from "$lib/components/calendar/Microcycle.svelte";
     import { onMount } from "svelte";
-    import { type NextPrevious } from "../model/date";
     import Bar from "$lib/components/charts/Bar.svelte";
     import NCycleLineChart from "$lib/components/charts/NCycleLineChart.svelte";
     import { model } from "../wailsjs/go/models";
     import { GetMicrocycle } from "../wailsjs/go/controllers/MicrocycleHandler";
+    import { controllers } from "../wailsjs/go/models"
     import { GetNextPrevious } from '../wailsjs/go/controllers/MiscHandler'
     import { List } from "../wailsjs/go/controllers/EquipmentHandler";
     import { ListActivityTypes } from "../wailsjs/go/controllers/ActivityTypeHandler";
     import { GetMicrocycleCurrentDates } from "$lib/wailsjs/go/controllers/UserHandler";
 
-    export let start_date: string;
-    export let end_date: string;
+    export let start_date: Date;
+    export let end_date: Date;
     export let usr: model.User;
 
     let equipment_choices: model.Equipment[] = [];
 
     let microcycle: model.Microcycle;
     let activity_type_list: model.ActivityTypeWithSubtypes[] = [];
-    let next_previous: NextPrevious;
+    let next_previous: controllers.NextPrevious;
 
     let is_loading: boolean = false;
 

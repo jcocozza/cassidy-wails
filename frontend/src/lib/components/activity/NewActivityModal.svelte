@@ -7,7 +7,7 @@
     export let usr: model.User;
     export let equipment_choices: model.Equipment[];
     export let activity_type_list: model.ActivityTypeWithSubtypes[];
-    export let date: string;
+    export let date: Date;
     export let activity_list: model.Activity[];
     export let is_hovering: boolean = false;
 

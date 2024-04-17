@@ -12,8 +12,8 @@
     import { GetMicrocycle, GetCalendar, GetNextNMicrocycles, GetPreviousNMicrocycles } from '../../wailsjs/go/controllers/MicrocycleHandler'
     import { ListActivityTypes } from '../../wailsjs/go/controllers/ActivityTypeHandler'
 
-    export let initial_start_date: string;
-    export let initial_end_date: string;
+    export let initial_start_date: Date;
+    export let initial_end_date: Date;
     export let equipment_choices: model.Equipment[];
     export let usr: model.User;
 
@@ -156,7 +156,7 @@
                 <thead>
                     {#if microcycle_list[0].cycle_activities.length == 7}
                         {#each microcycle_list[0].cycle_activities as cycle}
-                            <th class="bg-body-secondary"> {cycle.date_object.day_of_week} </th>
+                            <th class="bg-body-secondary"> {cycle.date} </th>
                         {/each}
                     {:else}
                         {#each microcycle_list[0].cycle_activities as cycle}

@@ -175,10 +175,7 @@ func (db *IMicrocycleRepository) ReadCycle(startDate, endDate time.Time, userUui
 	}
 	defer rows.Close()
 
-	cycle, err := model.NewCycle(startDate, endDate)
-	if err != nil {
-		return nil, fmt.Errorf("error creating cycle during cycle read: %w", err)
-	}
+	cycle := model.NewCycle(startDate, endDate)
 	for rows.Next() {
 		tmpAct := model.EmptyActivity()
 		err := rows.Scan(&tmpAct.Uuid,
@@ -242,7 +239,7 @@ func (db *IMicrocycleRepository) ReadTotalsPreviousCurrent(startDate, endDate ti
 	previousStart, previousEnd := dateutil.GetPreviousCycle(startDate, endDate)
 
 	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_totals_current_previous)
-	rows, err := db.DB.Query(sql, previousStart, previousEnd, startDate, endDate, previousStart, endDate, userUuid)
+	rows, err := db.DB.Query(sql, previousStart.Format(dateutil.Layout), previousEnd.Format(dateutil.Layout), startDate.Format(dateutil.Layout), endDate.Format(dateutil.Layout), previousStart, endDate.Format(dateutil.Layout), userUuid)
 	if err != nil {
 		return nil, nil, fmt.Errorf("previous/current totals did not query properly: %w", err)
 	}

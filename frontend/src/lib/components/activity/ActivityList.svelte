@@ -7,7 +7,7 @@
     import { UpdateActivity } from "../../wailsjs/go/controllers/ActivityHandler";
 
     export let user: model.User
-    export let date: string;
+    export let date: Date;
     export let activity_type_list: model.ActivityTypeWithSubtypes[] = [];
     export let activity_list: model.ActivityList;
     export let display_completion: boolean;
@@ -70,14 +70,14 @@
 
             <div class="row">
                 <div class="col" style="text-align: left;">
-                    {activity_list.date_object.date}
+                    {activity_list.date.toDateString()}
                 </div>
                 <div class="col">
                     <!--{#if is_hovering} -->
                         <NewActivityModal
                             bind:usr={user}
                             bind:equipment_choices={equipment_choices}
-                            bind:date={activity_list.date_object.date}
+                            bind:date={activity_list.date}
                             bind:activity_list={activity_list.activity_list}
                             bind:activity_type_list={activity_type_list}
                             bind:is_hovering={is_hovering}

@@ -328,8 +328,8 @@ func (ms *MicrocycleSummary) CalculateCycleChanges() error {
 
 // Represents a set number of days (typically between 1 week and 10 days).
 type Microcycle struct {
-	StartDate       time.Time          `json:"start_date"`
-	EndDate         time.Time          `json:"end_date"`
+	StartDate       time.Time          `json:"start_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
+	EndDate         time.Time          `json:"end_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 	CycleActivities *Cycle             `json:"cycle_activities"`
 	Summary         *MicrocycleSummary `json:"summary"`
 }

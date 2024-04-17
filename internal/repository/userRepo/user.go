@@ -43,7 +43,7 @@ func (db *IUserRepository) Create(user *model.User) error {
 		return fmt.Errorf("planned creation failed to validate: %w", err1)
 	}
 
-	err := db.DB.Execute(sql, user.Uuid, user.Username, user.Password, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart)
+	err := db.DB.Execute(sql, user.Uuid, user.Username, user.Password, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart.Format(dateutil.Layout))
 	if err != nil {
 		return fmt.Errorf("user creation failed: %w", err)
 	}
@@ -53,10 +53,10 @@ func (db *IUserRepository) Create(user *model.User) error {
 func (db *IUserRepository) Read(username string) (*model.User, error) {
 	query := sqlcode.SQLReader(sqlcode.User_read)
 	row := db.DB.QueryRow(query, username)
-
 	usr := model.EmptyUser()
 
-	err := row.Scan(&usr.Uuid, &usr.Username, &usr.Password, &usr.Units, &usr.CycleStart, &usr.CycleDays, &usr.InitialCycleStart)
+	var initialCycleStartStr string
+	err := row.Scan(&usr.Uuid, &usr.Username, &usr.Password, &usr.Units, &usr.CycleStart, &usr.CycleDays, &initialCycleStartStr)
 	if err != nil {
 		// in the case that no results are returned, we want to know that b/c that means there are no users with that username
 		if errors.Is(err, sql.ErrNoRows) {
@@ -64,6 +64,15 @@ func (db *IUserRepository) Read(username string) (*model.User, error) {
 		}
 		return nil, fmt.Errorf("user read failed: %w", err)
 	}
+
+	if initialCycleStartStr != "" {
+		initialCycleStart, err15 := time.Parse(dateutil.Layout, initialCycleStartStr)
+		if err15 != nil {
+			return nil, err15
+		}
+		usr.InitialCycleStart = initialCycleStart
+	}
+
 	err2 := usr.Validate()
 	if err2 != nil {
 		return nil, fmt.Errorf("user validation failed: %w", err2)

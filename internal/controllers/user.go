@@ -73,8 +73,8 @@ func (uh *UserHandler) AuthenticateUser(authRequest authRequest) (*model.User, e
 }
 
 type MCCurrentDate struct {
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
+	StartDate time.Time `json:"start_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
+	EndDate   time.Time `json:"end_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 }
 // Return the start date and end date of the current microcycle
 func (uh *UserHandler) GetMicrocycleCurrentDates() *MCCurrentDate {

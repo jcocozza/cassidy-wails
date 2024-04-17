@@ -18,7 +18,7 @@
     function createLabels(cycle_activities: model.ActivityList[]): string[] {
         let date_labels: string[] = []
         cycle_activities.forEach((act_list) => {
-            date_labels = [...date_labels, act_list.date_object.date]
+            date_labels = [...date_labels, act_list.date.toString()]
         })
         return date_labels
     }

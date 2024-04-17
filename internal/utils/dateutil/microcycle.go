@@ -94,7 +94,7 @@ func GetPreviousNCycles(startDate time.Time, endDate time.Time, numberOfCycles i
 }
 
 // from a given (startDate, endDate) cycle, return the next cycle start/end pair and the previous start/end pair
-func GetNextPrevious(startDate time.Time, endDate time.Time) (time.Time, time.Time, time.Time, time.Time, error) {
+func GetNextPrevious(startDate time.Time, endDate time.Time) (time.Time, time.Time, time.Time, time.Time) {
 	cycleLength := daysDifference(startDate, endDate)
 	if cycleLength == 0 {
 		cycleLength = 1
@@ -103,5 +103,5 @@ func GetNextPrevious(startDate time.Time, endDate time.Time) (time.Time, time.Ti
 	edNext := endDate.AddDate(0, 0, cycleLength+1)
 	sdPrevious := startDate.AddDate(0, 0, -cycleLength-1)
 	edPrevious := endDate.AddDate(0, 0, -cycleLength-1)
-	return sdNext, edNext, sdPrevious, edPrevious, nil
+	return sdNext, edNext, sdPrevious, edPrevious
 }

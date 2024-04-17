@@ -6,6 +6,7 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	"github.com/jcocozza/cassidy-wails/internal/sqlcode"
+	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 )
 
 // Functions for working with activity objects.
@@ -34,7 +35,7 @@ func NewIActivityRepository(db database.DbOperations) *IActivityRepository {
 // The creates a new row in the activity table, planned table, completed table, and optionally in the activity equipment and activity type subtype tables.
 func (db *IActivityRepository) Create(userUuid string, activity *model.Activity) error {
 	sqlActivity := sqlcode.SQLReader(sqlcode.Activity_create)
-	err := db.DB.Execute(sqlActivity, activity.Uuid, userUuid, activity.Date, activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides)
+	err := db.DB.Execute(sqlActivity, activity.Uuid, userUuid, activity.Date.Format(dateutil.TokenLayout), activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides)
 	if err != nil {
 		return fmt.Errorf("failed to insert into activity table: %w", err)
 	}
@@ -83,7 +84,7 @@ func (db *IActivityRepository) Create(userUuid string, activity *model.Activity)
 // Updates the activity and its planned/completed
 func (db *IActivityRepository) Update(activity *model.Activity) error {
 	sqlActivity := sqlcode.SQLReader(sqlcode.Activity_update)
-	err := db.DB.Execute(sqlActivity, activity.Date, activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides, activity.Uuid)
+	err := db.DB.Execute(sqlActivity, activity.Date.Format(dateutil.TokenLayout), activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides, activity.Uuid)
 
 	if err != nil {
 		return fmt.Errorf("error updating activity in database: %w", err)

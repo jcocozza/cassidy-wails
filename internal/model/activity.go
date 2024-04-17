@@ -130,7 +130,7 @@ func (atws *ActivityTypeWithSubtypes) AddSubtype(sub *ActivitySubtype) {
 
 type Activity struct {
 	Uuid            string                 `json:"uuid"`
-	Date            time.Time              `json:"date"`
+	Date            time.Time              `json:"date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 	Order           int                    `json:"order"`
 	Name            string                 `json:"name"`
 	Description     string                 `json:"description"`
@@ -265,7 +265,7 @@ func (a *Activity) CompletionColor() (colorutil.Color, error) {
 }
 // Represents a list of activities on a given day
 type ActivityList struct {
-	Date         time.Time   `json:"date"`
+	Date         time.Time   `json:"date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 	ActivityList []*Activity `json:"activity_list"`
 }
 // An empty activity list has an empty date object and no activities
@@ -298,23 +298,20 @@ func (al *ActivityList) AddActivity(act *Activity) {
 type Cycle []*ActivityList
 
 // Creata a new cycle based on start and end dates
-func NewCycle(startDate, endDate time.Time) (*Cycle, error) {
-	dates, err := dateutil.GenerateDateRange(startDate, endDate)
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate date range for cycle creation: %w", err)
-	}
+func NewCycle(startDate, endDate time.Time) (*Cycle) {
+	dates := dateutil.GenerateDateRange(startDate, endDate)
 	cycle := Cycle{}
 	for _, date := range dates {
 		actList := EmptyDatedActivityList(date)
 		cycle = append(cycle, actList)
 	}
-	return &cycle, nil
+	return &cycle
 }
 // Add an activity to a cycle at the proper date.
 func (c *Cycle) AddActivity(act *Activity) error {
 	for _, actListOb := range *c {
 		l := len(actListOb.ActivityList)
-		if actListOb.Date == act.Date {
+		if dateutil.SameDate(actListOb.Date, act.Date) {
 			actListOb.AddActivity(act)
 			if len(actListOb.ActivityList) != 1+l {
 				return fmt.Errorf("failed to add activity to cycle")

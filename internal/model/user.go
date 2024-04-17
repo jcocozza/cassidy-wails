@@ -15,7 +15,7 @@ type User struct {
 	Units             measurement.UnitClass `json:"units"`
 	CycleStart        string                `json:"cycle_start"`
 	CycleDays         int                   `json:"cycle_days"`
-	InitialCycleStart time.Time             `json:"initial_cycle_start"`
+	InitialCycleStart time.Time             `json:"initial_cycle_start" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 }
 
 // An empty user has no uuid, information and has cycle days of -1

@@ -9,7 +9,6 @@ import (
 	"github.com/jcocozza/cassidy-connector/strava/swagger"
 	"github.com/jcocozza/cassidy-wails/internal/controllers"
 	"github.com/jcocozza/cassidy-wails/internal/model"
-	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
 	"golang.org/x/oauth2"
 )

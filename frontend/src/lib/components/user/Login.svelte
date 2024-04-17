@@ -23,6 +23,7 @@
         await SetUser(usr)
         goto("/microcycle")
       } catch (error) {
+        console.error(error)
         if (error === "incorrect password") {
           invalid_password = true;
         } else {

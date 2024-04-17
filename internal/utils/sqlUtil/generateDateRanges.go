@@ -7,8 +7,8 @@ import (
 )
 
 type DateRange struct {
-	Start time.Time
-	End   time.Time
+	Start time.Time	`json:"start" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
+	End   time.Time	`json:"end" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 }
 // Create a new date range
 func NewDateRange(start, end time.Time) *DateRange {
