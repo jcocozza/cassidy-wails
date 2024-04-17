@@ -66,7 +66,6 @@ export function FormatDurationSimple(duration: number): string {
     }
     return hh_mm_ss;
 }
-
 /**
  * Determine if a date is today
  * @param date A date in MM-DD-YYYY form
@@ -76,7 +75,7 @@ export function IsToday(date: string): boolean {
     // Get the current date
     const currentDate = new Date();
 
-    // Create a date object for the target date "2024-01-01"
+    // Create a date object for the target date
     const targetDate = new Date(date);
 
     // Check if the target date is equal to today's date
@@ -89,4 +88,24 @@ export function IsToday(date: string): boolean {
     } else {
         return false;
     }
+}
+/**
+ * Parse a date into a string
+ * @param date a date object
+ * @returns string representation YYYY-MM-DD
+ */
+export function ParseDateYYYYMMDD(date: string): string {
+
+    let d = new Date(date)
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+export function GetWeekday(date: string): string {
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    let d = new Date(date)
+    let day = d.getDay()
+    return days[day];
 }

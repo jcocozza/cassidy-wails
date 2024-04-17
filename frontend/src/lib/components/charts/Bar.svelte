@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Chart from "chart.js/auto";
-    import { ConvertDuration } from "../../model/date";
+    import { ConvertDuration, ParseDateYYYYMMDD } from "../../model/date";
     import type { model } from "../../wailsjs/go/models";
 
     export let microcycle: model.Microcycle;
@@ -18,7 +18,8 @@
     function createLabels(cycle_activities: model.ActivityList[]): string[] {
         let date_labels: string[] = []
         cycle_activities.forEach((act_list) => {
-            date_labels = [...date_labels, act_list.date.toString()]
+            date_labels = [...date_labels, ParseDateYYYYMMDD(act_list.date)]
+            // date_labels = [...date_labels, act_list.date.toString()]
         })
         return date_labels
     }
@@ -41,7 +42,8 @@
             appendOrCreateKey(act_type_dict, t.activity_type!.name, stackData)
         })
         mc.summary!.totals_by_activity_type_and_date.forEach((t) => {
-            const index = date_list.indexOf(t.date.toString());
+            //const index = date_list.indexOf(t.date.toString());
+            const index = date_list.indexOf(ParseDateYYYYMMDD(t.date));
             let act_type = t.activity_type!.name;
             let lst =  act_type_dict[act_type];
             if (type == "distance") {

@@ -299,7 +299,7 @@
                                     <div class="container">
                                         <!-- Planned Stuff -->
                                         {#if planned_shown === "planned"}
-                                            {#if edited_activity.planned && edited_activity.planned.distance && edited_activity.planned.duration && edited_activity.planned.vertical}
+                                            {#if edited_activity.planned}
                                                 <div class="row">
                                                     <div class="col">
                                                         <div class="input-group w-20">
@@ -333,7 +333,7 @@
                                             {/if}
                                         {:else if planned_shown === "completed"}
                                             <!-- Completed Stuff -->
-                                            {#if edited_activity.completed && edited_activity.completed.distance && edited_activity.completed.duration && edited_activity.completed.vertical}
+                                            {#if edited_activity.completed}
                                                 <div class="row">
                                                     <div class="col">
                                                         <div class="input-group w-20">

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { ConvertDuration, } from '$lib/model/date';
+    import { ConvertDuration, GetWeekday, } from '$lib/model/date';
     import { model } from '../../wailsjs/go/models';
     import ActivityList from '../activity/ActivityList.svelte';
 
@@ -65,7 +65,7 @@
                 <thead>
                     {#if microcycle.cycle_activities.length == 7}
                         {#each microcycle.cycle_activities as cycle}
-                            <th> {cycle.date} </th>
+                            <th> {GetWeekday(cycle.date)} </th>
                         {/each}
                     {:else}
                         {#each microcycle.cycle_activities as cycle}

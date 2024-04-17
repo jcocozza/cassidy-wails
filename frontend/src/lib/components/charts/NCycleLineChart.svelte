@@ -1,7 +1,7 @@
 <script lang="ts">
     import Chart from "chart.js/auto";
     import { afterUpdate, onMount } from "svelte";
-    import { ConvertDuration } from "../../model/date";
+    import { ConvertDuration, ParseDateYYYYMMDD } from "../../model/date";
     import { model } from "../../wailsjs/go/models";
     import { GetMicrocycleCurrentDates } from "../../wailsjs/go/controllers/UserHandler";
     import { GetNCycleSummary } from '../../wailsjs/go/controllers/MiscHandler'
@@ -17,7 +17,7 @@
     let yAxisTitle = "";
 
     function updateChart(type: string) {
-        chart.data.labels = n_cycle_summary.start_date_list.map(d => d.toString())
+        chart.data.labels = n_cycle_summary.start_date_list.map(d => ParseDateYYYYMMDD(d))
         if (type == "distance") {
             chart.data.datasets = [
                 {
@@ -85,7 +85,7 @@
         chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: n_cycle_summary.start_date_list.map(d => d.toString()),
+                labels: n_cycle_summary.start_date_list.map(d => ParseDateYYYYMMDD(d)),
                 datasets: [
                     {
                         label: "Completed Distance: " + n_cycle_summary.completed_distances[0].unit,

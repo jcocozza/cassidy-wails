@@ -5,6 +5,7 @@
     import { dndzone, type DndEvent } from "svelte-dnd-action";
     import type { model } from "../../wailsjs/go/models";
     import { UpdateActivity } from "../../wailsjs/go/controllers/ActivityHandler";
+    import { ParseDateYYYYMMDD } from "$lib/model/date";
 
     export let user: model.User
     export let date: Date;
@@ -70,7 +71,8 @@
 
             <div class="row">
                 <div class="col" style="text-align: left;">
-                    {activity_list.date.toString()}
+                    <!-- {activity_list.date.toString()} -->
+                    {ParseDateYYYYMMDD(activity_list.date)}
                 </div>
                 <div class="col">
                     <!--{#if is_hovering} -->

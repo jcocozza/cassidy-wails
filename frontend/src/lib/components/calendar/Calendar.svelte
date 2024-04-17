@@ -7,7 +7,7 @@
     import { FormatPercent } from '$lib/misc/percent';
     import ActivityList from '../activity/ActivityList.svelte';
     import { CreateObserver } from '../../../functions/infiniteScroll';
-    import { ConvertDuration, IsToday } from '../../model/date';
+    import { ConvertDuration, GetWeekday, IsToday } from '../../model/date';
     import type { model } from '../../wailsjs/go/models';
     import { GetMicrocycle, GetCalendar, GetNextNMicrocycles, GetPreviousNMicrocycles } from '../../wailsjs/go/controllers/MicrocycleHandler'
     import { ListActivityTypes } from '../../wailsjs/go/controllers/ActivityTypeHandler'
@@ -157,7 +157,7 @@
                 <thead>
                     {#if microcycle_list[0].cycle_activities?.length == 7}
                         {#each microcycle_list[0].cycle_activities as cycle}
-                            <th class="bg-body-secondary"> {cycle.date} </th>
+                            <th class="bg-body-secondary"> {GetWeekday(cycle.date)} </th>
                         {/each}
                     {:else}
                         {#if microcycle_list && microcycle_list[0] && microcycle_list[0].cycle_activities}
