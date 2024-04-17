@@ -36,7 +36,7 @@
             ]
             yAxisTitle = "distance (" + n_cycle_summary.completed_distances[0].unit + ")";
             // the error is not a problem here?
-            chart.options.scales.y.title = { display: true, text: yAxisTitle }
+            chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
         } else if (type == "duration") {
             chart.data.datasets = [
                 {
@@ -55,7 +55,7 @@
             ]
             yAxisTitle = ""
             // the error is not a problem here?
-            chart.options.scales.y.title = { display: true, text: yAxisTitle }
+            chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
         } else if (type == "vertical") {
             chart.data.datasets = [
                 {
@@ -74,7 +74,7 @@
             ]
             yAxisTitle = "vertical (" + n_cycle_summary.completed_verticals[0].unit + ")";
             // the error is not a problem here?
-            chart.options.scales.y.title = { display: true, text: yAxisTitle }
+            chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
         }
         chart.update()
     }
@@ -85,7 +85,7 @@
         chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: n_cycle_summary.start_date_list.map(d => d.toDateString()),
+                labels: n_cycle_summary.start_date_list.map(d => d.toString()),
                 datasets: [
                     {
                         label: "Completed Distance: " + n_cycle_summary.completed_distances[0].unit,

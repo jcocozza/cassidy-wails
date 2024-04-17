@@ -410,8 +410,7 @@ export namespace model {
 	
 	export class TotalByActivityTypeAndDate {
 	    activity_type?: ActivityType;
-	    // Go type: dateutil
-	    date?: any;
+	    date: Date;
 	    total_planned_distance?: measurement.Measurement;
 	    total_planned_duration: number;
 	    total_planned_vertical?: measurement.Measurement;
@@ -426,7 +425,7 @@ export namespace model {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.activity_type = this.convertValues(source["activity_type"], ActivityType);
-	        this.date = this.convertValues(source["date"], null);
+	        this.date = new Date(source["date"]);
 	        this.total_planned_distance = this.convertValues(source["total_planned_distance"], measurement.Measurement);
 	        this.total_planned_duration = source["total_planned_duration"];
 	        this.total_planned_vertical = this.convertValues(source["total_planned_vertical"], measurement.Measurement);

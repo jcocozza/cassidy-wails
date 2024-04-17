@@ -70,7 +70,7 @@
 
             <div class="row">
                 <div class="col" style="text-align: left;">
-                    {activity_list.date.toDateString()}
+                    {activity_list.date.toString()}
                 </div>
                 <div class="col">
                     <!--{#if is_hovering} -->

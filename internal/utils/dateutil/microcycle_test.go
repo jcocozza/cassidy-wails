@@ -101,7 +101,7 @@ func TestGetNextNCycles(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    [][]*DateObject
+		want    [][]time.Time
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -153,7 +153,7 @@ func TestGetPreviousNCycles(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    [][]*DateObject
+		want    [][]time.Time
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -211,7 +211,7 @@ func TestGetCurrentCycleFromInitialDate(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []*DateObject
+		want []time.Time
 	}{
 		//{"test", args{initialDate: "2024-02-26", microcycleLength: 10}, nil},
 	}

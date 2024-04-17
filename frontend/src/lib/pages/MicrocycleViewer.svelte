@@ -90,7 +90,7 @@
 </script>
 
 
-{#if microcycle && usr && !is_loading}
+{#if microcycle && microcycle.cycle_activities && usr && !is_loading}
 <div class="container microcycle-viewer">
     <div class="row">
         <Microcycle

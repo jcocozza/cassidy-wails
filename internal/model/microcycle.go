@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/utils"
-	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
 )
 
@@ -120,7 +119,7 @@ type TotalByActivityTypeDifferences struct {
 // The set of totals for an activity type on a given date.
 type TotalByActivityTypeAndDate struct {
 	ActivityType         *ActivityType            `json:"activity_type"`
-	Date                 *dateutil.DateObject     `json:"date"`
+	Date                 time.Time			      `json:"date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 	TotalPlannedDistance *measurement.Measurement `json:"total_planned_distance"`
 	TotalPlannedDuration float64                  `json:"total_planned_duration"`
 	TotalPlannedVertical *measurement.Measurement `json:"total_planned_vertical"`
@@ -135,7 +134,7 @@ func EmptyTotalByActivityTypeAndDate(userUnitClass measurement.UnitClass) *Total
 	distanceUnit, verticalUnit := measurement.DistanceVerticalFromClass(userUnitClass)
 	return &TotalByActivityTypeAndDate{
 		ActivityType:         EmptyActivityType(),
-		Date:                 dateutil.EmptyDateObject(),
+		Date:                 time.Now(),
 		TotalPlannedDistance: measurement.CreateMeasurement(distanceUnit, 0),
 		TotalPlannedDuration: 0,
 		TotalPlannedVertical: measurement.CreateMeasurement(verticalUnit, 0),

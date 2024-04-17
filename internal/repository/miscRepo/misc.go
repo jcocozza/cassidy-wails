@@ -16,18 +16,15 @@ import (
 type MiscRepository interface {
 	ReadNCycleSummary(startDate, endDate time.Time, userUuid string) (*model.NCycleSummary, error)
 }
-
 // Represents a database connection
 type IMiscRepository struct {
 	DB database.DbOperations
 }
-
 func NewIMiscRepository(db database.DbOperations) *IMiscRepository {
 	return &IMiscRepository{
 		DB: db,
 	}
 }
-
 // Create the 12 cycle summary
 //
 // TODO: Generalize this function for n cycles
@@ -118,7 +115,6 @@ func (db *IMiscRepository) ReadNCycleSummary(startDate, endDate time.Time, userU
 		CompletedVerticals: finalCompletedVerticals,
 	}, nil
 }
-
 // fill in 0's where the database doesn't return anything for a given bin
 func createFinalList[T any](initialList []T, indexList []int, totalLen int, zeroElm T) []T {
 	finalList := []T{}

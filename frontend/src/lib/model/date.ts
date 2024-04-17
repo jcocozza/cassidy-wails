@@ -1,18 +1,4 @@
 /**
- * A date object is a date and its day of week
- */
-export type DateObject = {
-    day_of_week: string;
-    date: string;
-}
-
-export type NextPrevious = {
-    next_start_date: string;
-    next_end_date: string;
-    previous_start_date: string;
-    previous_end_date: string;
-}
-/**
  * Convert a durations in seconds to a HH:MM:SS string.
  * If the duration is negative, return -HH:MM:SS string
  * If Duration is 0, return an empty string

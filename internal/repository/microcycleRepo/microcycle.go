@@ -36,7 +36,6 @@ func NewIMicrocycleRepository(db database.DbOperations) *IMicrocycleRepository {
 		DB: db,
 	}
 }
-
 // Get microcycle information from the database
 func (db *IMicrocycleRepository) ReadMicrocycle(startDate, endDate time.Time, userUuid string, userUnitClass measurement.UnitClass) (*model.Microcycle, error) {
 	c, err := db.ReadCycle(startDate, endDate, userUuid)
@@ -129,7 +128,6 @@ func (db *IMicrocycleRepository) ReadActivityEquipmentList(activityUuidList []st
 	}
 	return activityEquipmentList, nil
 }
-
 // Get all activity types for the activity uuid list
 func (db *IMicrocycleRepository) ReadActivityTypeSubtypeList(activityUuidList []string) ([]*model.ActivityTypeSubtype, error) {
 	sql := sqlcode.SQLReader(sqlcode.ActivityTypeSubtype_list)
@@ -165,7 +163,6 @@ func (db *IMicrocycleRepository) ReadActivityTypeSubtypeList(activityUuidList []
 	}
 	return activityTypeSubtypeList, nil
 }
-
 // Get a list of activity lists
 func (db *IMicrocycleRepository) ReadCycle(startDate, endDate time.Time, userUuid string) (*model.Cycle, error) {
 	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_activity_list)
@@ -178,8 +175,9 @@ func (db *IMicrocycleRepository) ReadCycle(startDate, endDate time.Time, userUui
 	cycle := model.NewCycle(startDate, endDate)
 	for rows.Next() {
 		tmpAct := model.EmptyActivity()
+		tmpDateStr := ""
 		err := rows.Scan(&tmpAct.Uuid,
-			&tmpAct.Date, &tmpAct.Order, &tmpAct.Name, &tmpAct.Description, &tmpAct.Notes, &tmpAct.IsRace, &tmpAct.NumStrides,
+			&tmpDateStr, &tmpAct.Order, &tmpAct.Name, &tmpAct.Description, &tmpAct.Notes, &tmpAct.IsRace, &tmpAct.NumStrides,
 			&tmpAct.Type.Id, &tmpAct.Type.Name,
 			&tmpAct.Planned.Distance.Length, &tmpAct.Planned.Distance.Unit, &tmpAct.Planned.Duration, &tmpAct.Planned.Vertical.Length, &tmpAct.Planned.Vertical.Unit,
 			&tmpAct.Completed.Distance.Length, &tmpAct.Completed.Distance.Unit, &tmpAct.Completed.Duration, &tmpAct.Completed.Vertical.Length, &tmpAct.Completed.Vertical.Unit,
@@ -187,6 +185,12 @@ func (db *IMicrocycleRepository) ReadCycle(startDate, endDate time.Time, userUui
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)
 		} else {
+
+			tmpDate, err := time.Parse(dateutil.TokenLayout, tmpDateStr)
+			if err != nil {
+				return nil, fmt.Errorf("activity date failed to parse: %w", err)
+			}
+			tmpAct.Date = tmpDate
 			tmpAct.SetUuid(tmpAct.Uuid)
 			err2 := tmpAct.Validate()
 			if err2 != nil {
@@ -232,7 +236,6 @@ func (db *IMicrocycleRepository) ReadCycle(startDate, endDate time.Time, userUui
 
 	return cycle, nil
 }
-
 // Get totals for the current date date and the previous date range
 func (db *IMicrocycleRepository) ReadTotalsPreviousCurrent(startDate, endDate time.Time, userUuid string, userUnitClass measurement.UnitClass) (*model.Totals, *model.Totals, error) {
 
@@ -266,7 +269,6 @@ func (db *IMicrocycleRepository) ReadTotalsPreviousCurrent(startDate, endDate ti
 	}
 	return previousTotals, currentTotals, nil
 }
-
 // Get the average totals over a given date range where the divisor is the number of cycles in the range
 func (db *IMicrocycleRepository) ReadAveragePriorTotals(priorStart, priorEnd time.Time, numPriors int, userUuid string, userUnitClass measurement.UnitClass) (*model.Totals, error) {
 	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_totals_date_range)
@@ -281,7 +283,6 @@ func (db *IMicrocycleRepository) ReadAveragePriorTotals(priorStart, priorEnd tim
 
 	return totals, nil
 }
-
 // Get totals by activity type for the current date date and the previous date range
 //
 // Will return an empty list if errors
@@ -348,7 +349,6 @@ func (db *IMicrocycleRepository) ReadTotalsByActivityTypePreviousCurrent(startDa
 	}
 	return allTotalsPrevious, allTotalsCurrent, nil
 }
-
 // Get totals by activity type and date for a date range
 func (db *IMicrocycleRepository) ReadTotalsByActivityTypeAndDate(startDate, endDate time.Time, userUuid string, userUnitClass measurement.UnitClass) ([]*model.TotalByActivityTypeAndDate, error) {
 	sql := sqlcode.SQLReader(sqlcode.Microcycle_read_totals_by_activity_type_and_date)
@@ -361,13 +361,21 @@ func (db *IMicrocycleRepository) ReadTotalsByActivityTypeAndDate(startDate, endD
 	allTotals := []*model.TotalByActivityTypeAndDate{}
 	for rows.Next() {
 		totActTypeDate := model.EmptyTotalByActivityTypeAndDate(userUnitClass)
-		err1 := rows.Scan(&totActTypeDate.ActivityType.Id, &totActTypeDate.ActivityType.Name, &totActTypeDate.Date.Date,
+		dateStr := ""
+		err1 := rows.Scan(&totActTypeDate.ActivityType.Id, &totActTypeDate.ActivityType.Name, &dateStr,
 			&totActTypeDate.TotalPlannedDistance.Length, &totActTypeDate.TotalPlannedDuration, &totActTypeDate.TotalPlannedVertical.Length, &totActTypeDate.TotalPlannedDistance.Unit, &totActTypeDate.TotalPlannedVertical.Unit,
 			&totActTypeDate.TotalCompletedDistance.Length, &totActTypeDate.TotalCompletedDuration, &totActTypeDate.TotalCompletedVertical.Length, &totActTypeDate.TotalCompletedDistance.Unit, &totActTypeDate.TotalCompletedVertical.Unit,
 		)
 		if err1 != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err1)
 		}
+
+		date, err := time.Parse(dateutil.Layout, dateStr)
+		if err != nil {
+			return nil, fmt.Errorf("date failed to part when reading totals by type and date: %w", err)
+		}
+		totActTypeDate.Date = date
+
 		allTotals = append(allTotals, totActTypeDate)
 	}
 	return allTotals, nil

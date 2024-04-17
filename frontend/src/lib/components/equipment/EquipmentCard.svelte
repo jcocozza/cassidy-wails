@@ -21,8 +21,8 @@
 <div class="equipment-card card" on:mouseover={handleMouseOver} on:mouseleave={handleMouseLeave}>
     <div class="card-body">
         <h5> {equipment.name} | {equipment.brand}, {equipment.model} </h5>
-        <h6> {equipment.equipment_type.name }</h6>
-        <p> { equipment.mileage.length} {equipment.mileage.unit} </p>
+        <h6> {equipment.equipment_type?.name }</h6>
+        <p> { equipment.mileage?.length} {equipment.mileage?.unit} </p>
 
         <p> {equipment.notes} </p>
         <EquipmentModal

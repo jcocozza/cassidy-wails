@@ -17,7 +17,7 @@ import (
 type UserRepository interface {
 	Create(user *model.User) error
 	Read(username string) (*model.User, error)
-	ReadPreferences(userUuid string) (string, int, string, error)
+	//ReadPreferences(userUuid string) (string, int, string, error)
 	Update(user *model.User) error
 	//Delete(user *User) error
 	CreateStravaToken(user *model.User, token *oauth2.Token) error
@@ -79,6 +79,8 @@ func (db *IUserRepository) Read(username string) (*model.User, error) {
 	}
 	return usr, nil
 }
+/*
+TODO: Depreciate this
 // Read the user start date, number of cycle day preferences and initial start date
 func (db *IUserRepository) ReadPreferences(userUuid string) (string, int, string, error) {
 	sql := sqlcode.SQLReader(sqlcode.User_preferences)
@@ -95,10 +97,11 @@ func (db *IUserRepository) ReadPreferences(userUuid string) (string, int, string
 
 	return cycleStart, cycleDays, initialStartDate, nil
 }
+*/
 // Update the user preferences
 func (db *IUserRepository) Update(user *model.User) error {
 	sql := sqlcode.SQLReader(sqlcode.User_update)
-	err := db.DB.Execute(sql, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart, user.Uuid)
+	err := db.DB.Execute(sql, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart.Format(dateutil.Layout), user.Uuid)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)
 	}
