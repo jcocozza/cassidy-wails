@@ -103,7 +103,7 @@ export function ParseDateYYYYMMDD(date: string): string {
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
-export function GetWeekday(date: string): string {
+export function GetWeekday(date: Date): string {
     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     let d = new Date(date)
     let day = d.getDay()

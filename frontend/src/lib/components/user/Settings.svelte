@@ -17,6 +17,7 @@
     };
 
     async function update() {
+        usr.initial_cycle_start = new Date(usr.initial_cycle_start)
         usr = await UpdateUser(usr)
         toggleEdit()
     }

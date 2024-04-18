@@ -43,7 +43,7 @@ func (db *IUserRepository) Create(user *model.User) error {
 		return fmt.Errorf("planned creation failed to validate: %w", err1)
 	}
 
-	err := db.DB.Execute(sql, user.Uuid, user.Username, user.Password, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart.Format(dateutil.Layout))
+	err := db.DB.Execute(sql, user.Uuid, user.Username, user.Password, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart.Format(dateutil.TokenLayout))
 	if err != nil {
 		return fmt.Errorf("user creation failed: %w", err)
 	}
