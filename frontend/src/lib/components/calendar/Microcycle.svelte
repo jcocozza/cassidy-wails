@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { ConvertDuration, GetWeekday, } from '$lib/model/date';
+    import { ConvertDuration, GetWeekday, ParseDateYYYYMMDD, } from '$lib/model/date';
     import { model } from '../../wailsjs/go/models';
     import ActivityList from '../activity/ActivityList.svelte';
 
@@ -69,7 +69,7 @@
                         {/each}
                     {:else}
                         {#each microcycle.cycle_activities as cycle}
-                            <th></th>
+                            <th> {ParseDateYYYYMMDD(cycle.date)} </th>
                         {/each}
                     {/if}
 
@@ -89,9 +89,6 @@
                     <tr>
                         {#each microcycle.cycle_activities as activity_list}
                             <td>
-                                {#if microcycle.cycle_activities.length != 7}
-                                    {activity_list.date}
-                                {/if}
                                 <ActivityList
                                     bind:user={usr}
                                     bind:activity_list={activity_list}

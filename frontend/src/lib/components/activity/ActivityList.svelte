@@ -70,10 +70,11 @@
         {#if activity_list.activity_list}
 
             <div class="row">
-                <div class="col" style="text-align: left;">
-                    <!-- {activity_list.date.toString()} -->
+                <!-- <div class="col" style="text-align: left;">
+                    // {activity_list.date.toString()}
                     {ParseDateYYYYMMDD(activity_list.date)}
-                </div>
+                </div> 
+                -->
                 <div class="col">
                     <!--{#if is_hovering} -->
                         <NewActivityModal
