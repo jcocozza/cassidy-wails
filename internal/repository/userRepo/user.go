@@ -43,7 +43,7 @@ func (db *IUserRepository) Create(user *model.User) error {
 		return fmt.Errorf("planned creation failed to validate: %w", err1)
 	}
 
-	err := db.DB.Execute(sql, user.Uuid, user.Username, user.Password, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart.Format(dateutil.TokenLayout))
+	err := db.DB.Execute(sql, user.Uuid, user.Username, user.Password, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart.Format(dateutil.TimeLayout))
 	if err != nil {
 		return fmt.Errorf("user creation failed: %w", err)
 	}
@@ -66,9 +66,9 @@ func (db *IUserRepository) Read(username string) (*model.User, error) {
 	}
 
 	if initialCycleStartStr != "" {
-		initialCycleStart, err15 := time.Parse(dateutil.Layout, initialCycleStartStr)
+		initialCycleStart, err15 := time.Parse(dateutil.TimeLayout, initialCycleStartStr)
 		if err15 != nil {
-			return nil, err15
+			return nil, fmt.Errorf("initial cycle start failed to parse: %w", err15)
 		}
 		usr.InitialCycleStart = initialCycleStart
 	}
@@ -101,7 +101,7 @@ func (db *IUserRepository) ReadPreferences(userUuid string) (string, int, string
 // Update the user preferences
 func (db *IUserRepository) Update(user *model.User) error {
 	sql := sqlcode.SQLReader(sqlcode.User_update)
-	err := db.DB.Execute(sql, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart.Format(dateutil.Layout), user.Uuid)
+	err := db.DB.Execute(sql, user.Units, user.CycleStart, user.CycleDays, user.InitialCycleStart.Format(dateutil.TimeLayout), user.Uuid)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)
 	}

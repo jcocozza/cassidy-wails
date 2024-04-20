@@ -12,7 +12,7 @@
     export let is_hovering: boolean = false;
 
     let a = {activity_type: {id: -1, name: ""},
-		date: date,
+		date: new Date(date),
 		description: "",
 		equipment_list: [],
 		name: "",

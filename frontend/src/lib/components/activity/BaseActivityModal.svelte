@@ -17,6 +17,7 @@
     export let total_num_date_activities: number = 0;
     export let edit_type: string; // either "update" or "create"
 
+    let time: string = ""
     let is_hidden: boolean = false;
     let edited_activity: model.Activity = activity;
     let planned_shown: string = "planned";
@@ -109,6 +110,34 @@
         edited_activity.planned!.duration = planned_duration;
         edited_activity.completed!.duration = completed_duration;
 
+        console.log("BEFORE:::: ", edited_activity.date);
+
+        if (time.trim() !== "") {
+            // Ensure the 'time' variable contains the expected value
+            console.log("TIME:::: ", time);
+            // Get the year, month, and day from the original date
+            var year = edited_activity.date.getFullYear();
+            var month = edited_activity.date.getMonth();
+            var day = edited_activity.date.getDate();
+            // Parse the time string from the input field
+            console.log("TIME BEFORE PARSE:::: ", time);
+            var [hoursStr, minutesStr] = time.split(':');
+            console.log("HOURS STR:::: ", hoursStr);
+            console.log("MINUTES STR:::: ", minutesStr);
+            let hours = parseInt(hoursStr, 10);
+            let minutes = parseInt(minutesStr, 10);
+            console.log("HOURS PARSED:::: ", hours);
+            console.log("MINUTES PARSED:::: ", minutes);
+            // Create a new Date object with the updated year, month, day, hours, and minutes
+            var updatedDate = new Date(year, month, day, hours, minutes);
+            // Set the edited_activity.date to the updated Date object
+            edited_activity.date = updatedDate;
+        }
+
+
+        console.log("AFTER:::: ", edited_activity.date);
+
+
         activity = edited_activity
         if (edit_type == "create") {
             (async () => {
@@ -177,42 +206,50 @@
                         <div class="modal-body">
                             <form on:submit={handleSubmit}>
                                 <div class="row">
-                                    <div class="form-group">
-                                        <label for="newActivityType">Activity Type:</label>
-                                        <select class="form-select" bind:value={activity_type_id} on:change={() => {setActivityType(activity_type_id)}} required>
-                                            <option disabled selected>Select an activity type...</option>
-                                            {#each activity_type_list as actType}
-                                                <option value={actType.activity_type?.id}>{actType.activity_type?.name}</option>
-                                            {/each}
-                                        </select>
-                                        {#if edited_activity.activity_type?.id !== -1}
-                                            <div class="row">
-                                                {#each subtype_list as subType, idx}
-                                                    <div class="col-md-2">
-                                                        {#if subType}
-                                                            <div class="form-check">
-                                                                <label class="form-check-label" for="subtype-{subType.id}">{subType.name}</label>
-                                                                <input class="form-check-input" type="checkbox" id="subtype-{subType.id}" checked={subtype_bool_list[idx]} on:change={(event) => handleCheckboxChange(event, {activity_subtype: subType, activity_type: edited_activity.activity_type, activity_uuid: edited_activity.uuid, id: -1})}>
-                                                            </div>
-                                                        {/if}
-                                                    </div>
+
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="newActivityType">Activity Type:</label>
+                                            <select class="form-select" bind:value={activity_type_id} on:change={() => {setActivityType(activity_type_id)}} required>
+                                                <option disabled selected>Select an activity type...</option>
+                                                {#each activity_type_list as actType}
+                                                    <option value={actType.activity_type?.id}>{actType.activity_type?.name}</option>
                                                 {/each}
-                                            </div>
-                                        {/if}
+                                            </select>
+                                            {#if edited_activity.activity_type?.id !== -1}
+                                                <div class="row">
+                                                    {#each subtype_list as subType, idx}
+                                                        <div class="col-md-2">
+                                                            {#if subType}
+                                                                <div class="form-check">
+                                                                    <label class="form-check-label" for="subtype-{subType.id}">{subType.name}</label>
+                                                                    <input class="form-check-input" type="checkbox" id="subtype-{subType.id}" checked={subtype_bool_list[idx]} on:change={(event) => handleCheckboxChange(event, {activity_subtype: subType, activity_type: edited_activity.activity_type, activity_uuid: edited_activity.uuid, id: -1})}>
+                                                                </div>
+                                                            {/if}
+                                                        </div>
+                                                    {/each}
+                                                </div>
+                                            {/if}
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="newActivityOrder">Order:</label>
+                                            <select class="form-select" bind:value={edited_activity.order}>
+                                                {#if total_num_date_activities > 0}
+                                                    {#each Array(total_num_date_activities).fill(null).map((_, index) => index) as act, index}
+                                                        <option value={index+1}>{index + 1}</option>
+                                                    {/each}
+                                                    <option value={total_num_date_activities + 1} selected>{total_num_date_activities + 1}</option>
+                                                {:else}
+                                                    <option value={1}>1</option>
+                                                {/if}
+                                            </select>
+                                        </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="newActivityOrder">Order:</label>
-                                        <select class="form-select" bind:value={edited_activity.order}>
-                                            {#if total_num_date_activities > 0}
-                                                {#each Array(total_num_date_activities).fill(null).map((_, index) => index) as act, index}
-                                                    <option value={index+1}>{index + 1}</option>
-                                                {/each}
-                                                <option value={total_num_date_activities + 1} selected>{total_num_date_activities + 1}</option>
-                                            {:else}
-                                                <option value={1}>1</option>
-                                            {/if}
-                                        </select>
+                                    <div class="col">
+                                        <label for="time">Time:</label>
+                                        <input type="time" id="time" bind:value={time} placeholder="--:--">
                                     </div>
                                 </div>
 

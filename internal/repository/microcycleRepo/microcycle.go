@@ -186,7 +186,7 @@ func (db *IMicrocycleRepository) ReadCycle(startDate, endDate time.Time, userUui
 			return nil, fmt.Errorf("error scanning row: %w", err)
 		} else {
 
-			tmpDate, err := time.Parse(dateutil.TokenLayout, tmpDateStr)
+			tmpDate, err := time.Parse(dateutil.TimeLayout, tmpDateStr)
 			if err != nil {
 				return nil, fmt.Errorf("activity date failed to parse: %w", err)
 			}
@@ -370,7 +370,7 @@ func (db *IMicrocycleRepository) ReadTotalsByActivityTypeAndDate(startDate, endD
 			return nil, fmt.Errorf("error scanning row: %w", err1)
 		}
 
-		date, err := time.Parse(dateutil.TokenLayout, dateStr)
+		date, err := time.Parse(dateutil.TimeLayout, dateStr)
 		if err != nil {
 			return nil, fmt.Errorf("date failed to parse when reading totals by type and date: %w", err)
 		}
