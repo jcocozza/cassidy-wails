@@ -51,8 +51,8 @@ func GetCurrentCycleFromInitialDate(initialDate time.Time, microcycleLength int)
 func GetNextCycle(startDate time.Time, endDate time.Time) (time.Time, time.Time) {
 	cycleLength := daysDifference(startDate, endDate)
 
-	newSd := startDate.AddDate(0, 0, cycleLength+1)
-	newEd := endDate.AddDate(0, 0, cycleLength+1)
+	newSd := startDate.AddDate(0, 0, cycleLength+1).In(time.UTC)
+	newEd := endDate.AddDate(0, 0, cycleLength+1).In(time.UTC)
 
 	return newSd, newEd
 }
@@ -99,9 +99,9 @@ func GetNextPrevious(startDate time.Time, endDate time.Time) (time.Time, time.Ti
 	if cycleLength == 0 {
 		cycleLength = 1
 	}
-	sdNext := startDate.AddDate(0, 0, cycleLength+1)
-	edNext := endDate.AddDate(0, 0, cycleLength+1)
-	sdPrevious := startDate.AddDate(0, 0, -cycleLength-1)
-	edPrevious := endDate.AddDate(0, 0, -cycleLength-1)
+	sdNext := startDate.AddDate(0, 0, cycleLength+1).In(time.UTC)
+	edNext := endDate.AddDate(0, 0, cycleLength+1).In(time.UTC)
+	sdPrevious := startDate.AddDate(0, 0, -cycleLength-1).In(time.UTC)
+	edPrevious := endDate.AddDate(0, 0, -cycleLength-1).In(time.UTC)
 	return sdNext, edNext, sdPrevious, edPrevious
 }
