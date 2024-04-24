@@ -68,27 +68,6 @@
         loading...
     {:then}
         {#if activity_list.activity_list}
-
-            <div class="row">
-                <!-- <div class="col" style="text-align: left;">
-                    // {activity_list.date.toString()}
-                    {ParseDateYYYYMMDD(activity_list.date)}
-                </div> 
-                -->
-                <div class="col">
-                    <!--{#if is_hovering} -->
-                        <NewActivityModal
-                            bind:usr={user}
-                            bind:equipment_choices={equipment_choices}
-                            bind:date={activity_list.date}
-                            bind:activity_list={activity_list.activity_list}
-                            bind:activity_type_list={activity_type_list}
-                            bind:is_hovering={is_hovering}
-                            on:new={dispatchChange}
-                        />
-                    <!-- {/if} -->
-                </div>
-            </div>
             <div class="min-size-drop-zone" use:dndzone="{{ items: activity_list.activity_list }}" on:consider="{handleDndConsider}"  on:finalize="{handleDndFinalize}">
                 {#each activity_list.activity_list as act (act.uuid)}
                     <ActivityComp

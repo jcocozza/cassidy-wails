@@ -5,6 +5,7 @@
     import ActivityList from '../activity/ActivityList.svelte';
 
     import { overrideItemIdKeyNameBeforeInitialisingDndZones } from "svelte-dnd-action";
+    import NewActivityModal from '../activity/NewActivityModal.svelte';
     overrideItemIdKeyNameBeforeInitialisingDndZones("uuid");
 
     export let activity_type_list: model.ActivityTypeWithSubtypes[];
@@ -61,17 +62,31 @@
 
         <div class="overflow-scroll" style="max-height:50vh">
             <table class="table">
-
                 <thead>
-                    {#if microcycle.cycle_activities.length == 7}
-                        {#each microcycle.cycle_activities as cycle}
-                            <th> {GetWeekday(cycle.date)} </th>
-                        {/each}
-                    {:else}
-                        {#each microcycle.cycle_activities as cycle}
-                            <th> {ParseDateYYYYMMDD(cycle.date)} </th>
-                        {/each}
-                    {/if}
+                    {#each microcycle.cycle_activities as cycle}
+                        <th>
+                            <div class="row">
+                                <div class="col">
+                                    {#if microcycle.cycle_activities.length == 7}
+                                        {GetWeekday(cycle.date)}
+                                    {:else}
+                                        {ParseDateYYYYMMDD(cycle.date)}
+                                    {/if}
+                                </div>
+                                <div class="col">
+                                    <NewActivityModal
+                                        bind:usr={usr}
+                                        bind:equipment_choices={equipment_choices}
+                                        bind:date={cycle.date}
+                                        bind:activity_list={cycle.activity_list}
+                                        bind:activity_type_list={activity_type_list}
+                                        is_hovering={true}
+                                        on:new={dispatchUpdate}
+                                    />
+                                </div>
+                            </div>
+                        </th>
+                    {/each}
 
                     {#if summary_col_is_visible}
                         <th>
@@ -188,9 +203,9 @@
     .calendar th {
       border: 1px solid lightgray;
       text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 2;
+      /*position: sticky;*/
+      /*top: 0;*/
+      /*z-index: 2;*/
     }
     .calendar td {
       border: 1px solid lightgray;

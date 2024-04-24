@@ -11,6 +11,7 @@
     import type { model } from '../../wailsjs/go/models';
     import { GetMicrocycle, GetCalendar, GetNextNMicrocycles, GetPreviousNMicrocycles } from '../../wailsjs/go/controllers/MicrocycleHandler'
     import { ListActivityTypes } from '../../wailsjs/go/controllers/ActivityTypeHandler'
+    import NewActivityModal from '../activity/NewActivityModal.svelte';
 
     export let initial_start_date: Date;
     export let initial_end_date: Date;
@@ -197,26 +198,48 @@
                             {#if cycle && cycle.cycle_activities}
                                 {#each cycle.cycle_activities as activity_list}
                                     <td style="padding: 0;">
-                                        {#if microcycle_list[0].cycle_activities?.length != 7}
-                                            {ParseDateYYYYMMDD(activity_list.date)}
-                                        {:else}
-                                            {ParseDateYYYYMMDD(activity_list.date)}
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col">
+                                                    {#if microcycle_list[0].cycle_activities?.length != 7}
+                                                        {ParseDateYYYYMMDD(activity_list.date)}
+                                                    {:else}
+                                                        {ParseDateYYYYMMDD(activity_list.date)}
+                                                    {/if}
+                                                </div>
+                                                <div class="col">
+                                                    <NewActivityModal
+                                                        bind:usr={usr}
+                                                        bind:equipment_choices={equipment_choices}
+                                                        bind:date={activity_list.date}
+                                                        bind:activity_list={activity_list.activity_list}
+                                                        bind:activity_type_list={activity_type_list}
+                                                        is_hovering={true}
+                                                        on:new={async () => {
+                                                            await replaceMicrocycle(cycle, index)
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <ActivityList
+                                                    bind:user={usr}
+                                                    bind:activity_list={activity_list}
+                                                    bind:date={activity_list.date}
+                                                    bind:activity_type_list={activity_type_list}
+                                                    bind:display_completion={display_completion}
+                                                    bind:equipment_choices={equipment_choices}
+                                                    on:change={async () => {
+                                                        console.log('Calendar::: Change requested.');
+                                                        await replaceMicrocycle(cycle, index);
+                                                    }} />
+                                            </div>
+                                        </div>
+                                        <!-- If it is today, assign an invisible div so that we can return to it later -->
+                                        {#if IsToday(activity_list.date.toString())}
+                                            <div bind:this={today}></div>
                                         {/if}
-                                        <ActivityList
-                                            bind:user={usr}
-                                            bind:activity_list={activity_list}
-                                            bind:date={activity_list.date}
-                                            bind:activity_type_list={activity_type_list}
-                                            bind:display_completion={display_completion}
-                                            bind:equipment_choices={equipment_choices}
-                                            on:change={async () => {
-                                                console.log('Calendar::: Change requested.');
-                                                await replaceMicrocycle(cycle, index);
-                                            }} />
-                                            <!-- If it is today, assign an invisible div so that we can return to it later -->
-                                            {#if IsToday(activity_list.date.toString())}
-                                                <div bind:this={today}></div>
-                                            {/if}
                                     </td>
                                 {/each}
                         {#if summary_col_is_visible}
