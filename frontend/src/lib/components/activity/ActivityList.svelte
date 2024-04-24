@@ -1,13 +1,10 @@
 <script lang="ts">
     import ActivityComp from "$lib/components/activity/Activity.svelte";
-    import NewActivityModal from "$lib/components/activity/NewActivityModal.svelte";
     import { createEventDispatcher } from "svelte";
     import { dndzone, type DndEvent } from "svelte-dnd-action";
     import type { model } from "../../wailsjs/go/models";
     import { UpdateActivity } from "../../wailsjs/go/controllers/ActivityHandler";
-    import { ParseDateYYYYMMDD } from "$lib/model/date";
 
-    export let user: model.User
     export let date: Date;
     export let activity_type_list: model.ActivityTypeWithSubtypes[] = [];
     export let activity_list: model.ActivityList;
