@@ -17,7 +17,8 @@
     export let total_num_date_activities: number = 0;
     export let edit_type: string; // either "update" or "create"
 
-    let time: string = ""
+    // <!-- TODO: enable time -->
+    // let time: string = ""
     let is_hidden: boolean = false;
     let edited_activity: model.Activity = activity;
     let planned_shown: string = "planned";
@@ -93,10 +94,6 @@
         let planned_duration = ValidateDuration(duration_planned)
         let completed_duration = ValidateDuration(duration_completed)
 
-        /*if (typeof planned_duration === "string" || typeof completed_duration === "string") {
-            throw new Error("duration validation failure!")
-        }*/
-
         if (typeof planned_duration === "string") {
             planned_shown = "planned"
             form_error = "planned duration is malformed"
@@ -110,33 +107,20 @@
         edited_activity.planned!.duration = planned_duration;
         edited_activity.completed!.duration = completed_duration;
 
-        console.log("BEFORE:::: ", edited_activity.date);
-
+        /* <!-- TODO: enable time -->
         if (time.trim() !== "") {
-            // Ensure the 'time' variable contains the expected value
-            console.log("TIME:::: ", time);
-            // Get the year, month, and day from the original date
             var year = edited_activity.date.getFullYear();
             var month = edited_activity.date.getMonth();
             var day = edited_activity.date.getDate();
-            // Parse the time string from the input field
-            console.log("TIME BEFORE PARSE:::: ", time);
             var [hoursStr, minutesStr] = time.split(':');
-            console.log("HOURS STR:::: ", hoursStr);
-            console.log("MINUTES STR:::: ", minutesStr);
             let hours = parseInt(hoursStr, 10);
             let minutes = parseInt(minutesStr, 10);
-            console.log("HOURS PARSED:::: ", hours);
-            console.log("MINUTES PARSED:::: ", minutes);
             // Create a new Date object with the updated year, month, day, hours, and minutes
             var updatedDate = new Date(year, month, day, hours, minutes);
             // Set the edited_activity.date to the updated Date object
             edited_activity.date = updatedDate;
         }
-
-
-        console.log("AFTER:::: ", edited_activity.date);
-
+        */
 
         activity = edited_activity
         if (edit_type == "create") {
@@ -246,11 +230,12 @@
                                             </select>
                                         </div>
                                     </div>
-
+                                    <!-- TODO: Enable Time setup
                                     <div class="col">
                                         <label for="time">Time:</label>
                                         <input type="time" id="time" bind:value={time} placeholder="--:--">
                                     </div>
+                                     -->
                                 </div>
 
                                 <div class="row">
