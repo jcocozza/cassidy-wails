@@ -88,6 +88,7 @@ func Test_daysDifference(t *testing.T) {
 		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)}, 0},
 		{"case2", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC)}, 6},
 		{"case 5", args{time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC)}, 6},
+		{"case 5", args{time.Date(2024, time.March, 4, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 10, 0, 0, 0, 0, time.UTC)}, 6},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

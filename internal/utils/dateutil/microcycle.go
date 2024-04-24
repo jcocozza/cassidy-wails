@@ -74,8 +74,8 @@ func GetNextNCycles(startDate time.Time, endDate time.Time, numberOfCycles int) 
 // return the previous cycle start/end for the passed start and end
 func GetPreviousCycle(startDate time.Time, endDate time.Time) (time.Time, time.Time) {
 	cycleLength := daysDifference(startDate, endDate)
-	newSd := startDate.AddDate(0, 0, -cycleLength-1)
-	newEd := endDate.AddDate(0, 0, -cycleLength-1)
+	newSd := startDate.AddDate(0, 0, -cycleLength-1).In(time.UTC)
+	newEd := endDate.AddDate(0, 0, -cycleLength-1).In(time.UTC)
 	return newSd, newEd
 }
 // from a given (startDate, endDate) cycle, return the previous N cycles prior to that cycle

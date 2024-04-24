@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/database"
@@ -54,6 +55,69 @@ func (mh *MicrocycleHandler) GetMicrocycle(startDate, endDate time.Time) (*model
 	}
 	return microcycle, nil
 }
+
+func (mh *MicrocycleHandler) GetCalendar() ([]*model.Microcycle, error) {
+	const numberCyclesForward = 7
+	const numberCyclesBackward = 8
+	now := time.Now()
+	fmt.Println("it is currently: ", now)
+	var current []time.Time
+	if (mh.User.CycleDays) == 7 {
+		current = dateutil.GetDateMicrocycle(now, mh.User.CycleStart, mh.User.CycleDays)
+	} else {
+		current = dateutil.GetCurrentCycleFromInitialDate(mh.User.InitialCycleStart, mh.User.CycleDays)
+	}
+
+	currentStart := current[0]
+	currentEnd := current[len(current) - 1]
+
+	centerMicrocycle, err := mh.MicrocycleRepository.ReadMicrocycle(currentStart, currentEnd, mh.User.Uuid, mh.User.Units)
+	if err != nil {
+		return nil, err
+	}
+
+	var tmpStartFwd = currentStart
+	var tmpEndFwd = currentEnd
+	var forwardCycles []*model.Microcycle
+	for i := 0; i < numberCyclesForward; i++ {
+		tmpStartFwd, tmpEndFwd = dateutil.GetNextCycle(tmpStartFwd, tmpEndFwd)
+		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStartFwd, tmpEndFwd, mh.User.Uuid, mh.User.Units)
+		if err != nil {
+			return nil, err
+		}
+		forwardCycles = append(forwardCycles, mc)
+	}
+
+	var tmpStartBwd = currentStart
+	var tmpEndBwd = currentEnd
+	var backwardCycles []*model.Microcycle
+	for i := 0; i <  numberCyclesBackward; i++ {
+		fmt.Printf("getting previous cycle for %s, %s \n", tmpStartBwd, tmpEndBwd)
+		tmpStartBwd, tmpEndBwd = dateutil.GetPreviousCycle(tmpStartBwd, tmpEndBwd)
+		fmt.Printf("new cycle date: %s, %s \n\n", tmpStartBwd, tmpEndBwd)
+		mc, err := mh.MicrocycleRepository.ReadMicrocycle(tmpStartBwd, tmpEndBwd, mh.User.Uuid, mh.User.Units)
+		if err != nil {
+			return nil, err
+		}
+		backwardCycles = prependMicrocycle(backwardCycles, mc)
+	}
+
+	var calendarMicrocycleList []*model.Microcycle
+
+	calendarMicrocycleList = append(calendarMicrocycleList, backwardCycles...)
+	calendarMicrocycleList = append(calendarMicrocycleList, centerMicrocycle)
+	calendarMicrocycleList = append(calendarMicrocycleList, forwardCycles...)
+
+	for _, mc := range calendarMicrocycleList {
+		err1 := mh.ConversionRepository.ConvertMicrocycle(conversionrepo.Outgoing, mc, mh.User.Units)
+		if err1 != nil {
+			return nil, err1
+		}
+	}
+
+	return calendarMicrocycleList, nil
+}
+/*
 // Get a list of microcycles
 //
 // @param: start_date
@@ -103,6 +167,8 @@ func (mh *MicrocycleHandler) GetCalendar(startDate, endDate time.Time) ([]*model
 
 	return calendarMicrocycleList, nil
 }
+*/
+
 // Get the next number of microcycles
 //
 // @param: start_date

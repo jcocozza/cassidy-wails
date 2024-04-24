@@ -54,7 +54,8 @@
 
     onMount(async () => {
         activity_type_list = await ListActivityTypes()
-        microcycle_list = await GetCalendar(initial_start_date, initial_end_date);
+        //microcycle_list = await GetCalendar(initial_start_date, initial_end_date);
+        microcycle_list = await GetCalendar();
     })
 
     $: {

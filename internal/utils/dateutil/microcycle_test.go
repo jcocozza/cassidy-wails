@@ -129,6 +129,8 @@ func TestGetPreviousCycle(t *testing.T) {
 	}{
 		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC)}, time.Date(2023, time.December, 30, 0, 0, 0, 0, time.UTC), time.Date(2023, time.December, 31, 0, 0, 0, 0, time.UTC)},
 		{"case2", args{time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 12, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 6, 0, 0, 0, 0, time.UTC)},
+		{"case3", args{time.Date(2024, time.March, 4, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 10, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC)},
+		{"case3", args{time.Date(2024, time.March, 4, 21, 34, 0, 0, time.Local), time.Date(2024, time.March, 10, 21, 34, 0, 0, time.Local)}, time.Date(2024, time.February, 26, 21, 34, 0, 0, time.Local), time.Date(2024, time.March, 3, 21, 34, 0, 0, time.Local)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -182,6 +184,7 @@ func TestGetNextPrevious(t *testing.T) {
 		want3   time.Time
 	}{
 		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.January, 3, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 4, 0, 0, 0, 0, time.UTC), time.Date(2023, time.December, 30, 0, 0, 0, 0, time.UTC), time.Date(2023, time.December, 31, 0, 0, 0, 0, time.UTC)},
+		{"case1", args{time.Date(2024, time.March, 4, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 10, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.March, 11, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 17, 0, 0, 0, 0, time.UTC), time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

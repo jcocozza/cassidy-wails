@@ -107,5 +107,9 @@ export function GetWeekday(date: Date): string {
     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     let d = new Date(date)
     let day = d.getDay()
+
+    console.log("PRODUCING DATE:::", date)
+    console.log("the date:::" + days[day])
+
     return days[day];
 }
