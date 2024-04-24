@@ -41,10 +41,11 @@ func GetDayOfWeek(date string) (string, error) {
 }
 // calculate # of days between two dates
 func daysDifference(date1, date2 time.Time) int {
-	//duration := date1.Sub(date2)
-	duration := date2.Sub(date1)
-	days := int(duration.Hours() / 24)
-	return days
+    date1 = date1.Truncate(24 * time.Hour)
+    date2 = date2.Truncate(24 * time.Hour)
+    duration := date2.Sub(date1)
+    days := int(duration.Hours() / 24)
+    return days
 }
 // check if a date is future or not
 func IsFuture(date string) (bool, error) {

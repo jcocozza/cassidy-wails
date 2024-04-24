@@ -51,8 +51,8 @@ func GetCurrentCycleFromInitialDate(initialDate time.Time, microcycleLength int)
 func GetNextCycle(startDate time.Time, endDate time.Time) (time.Time, time.Time) {
 	cycleLength := daysDifference(startDate, endDate)
 
-	newSd := startDate.AddDate(0, 0, cycleLength+1).In(time.UTC)
-	newEd := endDate.AddDate(0, 0, cycleLength+1).In(time.UTC)
+	newSd := startDate.AddDate(0, 0, cycleLength+1)
+	newEd := endDate.AddDate(0, 0, cycleLength+1)
 
 	return newSd, newEd
 }
@@ -74,10 +74,11 @@ func GetNextNCycles(startDate time.Time, endDate time.Time, numberOfCycles int) 
 // return the previous cycle start/end for the passed start and end
 func GetPreviousCycle(startDate time.Time, endDate time.Time) (time.Time, time.Time) {
 	cycleLength := daysDifference(startDate, endDate)
-	newSd := startDate.AddDate(0, 0, -cycleLength-1).In(time.UTC)
-	newEd := endDate.AddDate(0, 0, -cycleLength-1).In(time.UTC)
+	newSd := startDate.AddDate(0, 0, -cycleLength-1)
+	newEd := endDate.AddDate(0, 0, -cycleLength-1)
 	return newSd, newEd
 }
+
 // from a given (startDate, endDate) cycle, return the previous N cycles prior to that cycle
 func GetPreviousNCycles(startDate time.Time, endDate time.Time, numberOfCycles int) [][]time.Time {
 	cycleLength := daysDifference(startDate, endDate)
@@ -99,9 +100,9 @@ func GetNextPrevious(startDate time.Time, endDate time.Time) (time.Time, time.Ti
 	if cycleLength == 0 {
 		cycleLength = 1
 	}
-	sdNext := startDate.AddDate(0, 0, cycleLength+1).In(time.UTC)
-	edNext := endDate.AddDate(0, 0, cycleLength+1).In(time.UTC)
-	sdPrevious := startDate.AddDate(0, 0, -cycleLength-1).In(time.UTC)
-	edPrevious := endDate.AddDate(0, 0, -cycleLength-1).In(time.UTC)
+	sdNext := startDate.AddDate(0, 0, cycleLength+1)
+	edNext := endDate.AddDate(0, 0, cycleLength+1)
+	sdPrevious := startDate.AddDate(0, 0, -cycleLength-1)
+	edPrevious := endDate.AddDate(0, 0, -cycleLength-1)
 	return sdNext, edNext, sdPrevious, edPrevious
 }

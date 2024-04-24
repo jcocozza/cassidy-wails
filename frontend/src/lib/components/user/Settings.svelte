@@ -10,7 +10,7 @@
     let is_editing = false;
     let strava_token: oauth2.Token;
     let backfilling: boolean = false;
-    let redirect_message: string = "";
+    let redirect_message: boolean = false;
 
     function toggleEdit() {
         is_editing = !is_editing
@@ -24,9 +24,10 @@
 
     async function adf() {
         await OpenStravaAuth()
+        redirect_message = true
         strava_token = await StartListener()
-        redirect_message = ""
         await CreateStravaToken(usr, strava_token)
+        redirect_message = false
     }
 
     async function backfillStravaData() {
@@ -95,6 +96,8 @@
     </div>
     <div class="row">
         <button class="btn btn-sm" type="button" on:click={adf}>{@html connectwstrava}</button>
+    </div>
+    <div class="row">
         {#if redirect_message}
             <p>An authorization prompt should have opened in your browser, please check it and grant authorization.</p>
         {/if}
