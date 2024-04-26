@@ -289,7 +289,7 @@ func (ms *MicrocycleSummary) CalculateCycleChanges() error {
 					return err2
 				}
 				tmpTotalCompletedDistanceActTypePercentChange, _ := measurement.PercentChange(tat.TotalCompletedDistance, ptat.TotalCompletedDistance)
-				tmpTotalCompletedDurationActTypeChange := tat.TotalPlannedDuration - ptat.TotalPlannedDuration
+				tmpTotalCompletedDurationActTypeChange := tat.TotalCompletedDuration - ptat.TotalCompletedDuration
 				tmpTotalCompletedDurationActTypePercentChange := utils.PercentChange(tat.TotalCompletedDuration, ptat.TotalCompletedDuration)
 				tmpTotalCompletedVerticalActTypeChange, err3 := measurement.DifferenceSI(tat.TotalCompletedVertical, ptat.TotalCompletedVertical)
 				if err3 != nil {
