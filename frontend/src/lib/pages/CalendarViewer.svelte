@@ -4,8 +4,8 @@
     import type { model } from "../wailsjs/go/models";
     import { List } from "../wailsjs/go/controllers/EquipmentHandler";
 
-    export let initial_start_date: string;
-    export let initial_end_date: string;
+    export let initial_start_date: Date;
+    export let initial_end_date: Date;
     export let usr: model.User;
     let equipment_choices: model.Equipment[] = [];
 

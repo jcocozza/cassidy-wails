@@ -17,6 +17,8 @@
     export let total_num_date_activities: number = 0;
     export let edit_type: string; // either "update" or "create"
 
+    // <!-- TODO: enable time -->
+    // let time: string = ""
     let is_hidden: boolean = false;
     let edited_activity: model.Activity = activity;
     let planned_shown: string = "planned";
@@ -24,17 +26,17 @@
     let ae_to_delete: model.ActivityEquipment[] = [];
     let subtype_list: model.ActivitySubtype[] = getSubtypeList();
     let subtype_bool_list: boolean[] = []; // this list corresponds to subtype_list and tells you if the activity has that subtype or not
-    let activity_type_id: number = activity.activity_type.id;
-    let duration_planned: string = FormatDurationSimple(activity.planned.duration);
-    let duration_completed: string = FormatDurationSimple(activity.completed.duration);
+    let activity_type_id: number = activity.activity_type!.id;
+    let duration_planned: string = FormatDurationSimple(activity.planned!.duration);
+    let duration_completed: string = FormatDurationSimple(activity.completed!.duration);
 
     let form_error: string = ""
 
     function getSubtypeList(): model.ActivitySubtype[] {
-        if (edited_activity.activity_type.id == -1) {
+        if (edited_activity.activity_type?.id == -1) {
             return []
         }
-        let l = activity_type_list.filter(item => item.activity_type.id === edited_activity.activity_type.id)
+        let l = activity_type_list.filter(item => item.activity_type?.id === edited_activity.activity_type?.id)
         return l[0].subtype_list
     };
     function toggleHidden() {
@@ -54,7 +56,7 @@
     }
     // add a new activity equipment object
     function addNewAE() {
-        new_activity_equipment_list = [...new_activity_equipment_list, EmptyActivityEquipment(activity.uuid, activity.planned.distance.unit)]
+        new_activity_equipment_list = [...new_activity_equipment_list, EmptyActivityEquipment(activity.uuid, activity.planned!.distance!.unit)]
     }
     // delete activity equipment
     function deleteAE(ae: model.ActivityEquipment) {
@@ -77,7 +79,7 @@
         }
     };
     function setActivityType(id: number) {
-        let l = activity_type_list.filter(item => item.activity_type.id == id);
+        let l = activity_type_list.filter(item => item.activity_type?.id == id);
         edited_activity.activity_type = l[0].activity_type;
         subtype_list = getSubtypeList();
     };
@@ -92,10 +94,6 @@
         let planned_duration = ValidateDuration(duration_planned)
         let completed_duration = ValidateDuration(duration_completed)
 
-        /*if (typeof planned_duration === "string" || typeof completed_duration === "string") {
-            throw new Error("duration validation failure!")
-        }*/
-
         if (typeof planned_duration === "string") {
             planned_shown = "planned"
             form_error = "planned duration is malformed"
@@ -106,8 +104,23 @@
             return
         }
         is_hidden = false;
-        edited_activity.planned.duration = planned_duration;
-        edited_activity.completed.duration = completed_duration;
+        edited_activity.planned!.duration = planned_duration;
+        edited_activity.completed!.duration = completed_duration;
+
+        /* <!-- TODO: enable time -->
+        if (time.trim() !== "") {
+            var year = edited_activity.date.getFullYear();
+            var month = edited_activity.date.getMonth();
+            var day = edited_activity.date.getDate();
+            var [hoursStr, minutesStr] = time.split(':');
+            let hours = parseInt(hoursStr, 10);
+            let minutes = parseInt(minutesStr, 10);
+            // Create a new Date object with the updated year, month, day, hours, and minutes
+            var updatedDate = new Date(year, month, day, hours, minutes);
+            // Set the edited_activity.date to the updated Date object
+            edited_activity.date = updatedDate;
+        }
+        */
 
         activity = edited_activity
         if (edit_type == "create") {
@@ -177,43 +190,52 @@
                         <div class="modal-body">
                             <form on:submit={handleSubmit}>
                                 <div class="row">
-                                    <div class="form-group">
-                                        <label for="newActivityType">Activity Type:</label>
-                                        <select class="form-select" bind:value={activity_type_id} on:change={() => {setActivityType(activity_type_id)}} required>
-                                            <option disabled selected>Select an activity type...</option>
-                                            {#each activity_type_list as actType}
-                                                <option value={actType.activity_type.id}>{actType.activity_type.name}</option>
-                                            {/each}
-                                        </select>
-                                        {#if edited_activity.activity_type.id !== -1}
-                                            <div class="row">
-                                                {#each subtype_list as subType, idx}
-                                                    <div class="col-md-2">
-                                                        {#if subType}
-                                                            <div class="form-check">
-                                                                <label class="form-check-label" for="subtype-{subType.id}">{subType.name}</label>
-                                                                <input class="form-check-input" type="checkbox" id="subtype-{subType.id}" checked={subtype_bool_list[idx]} on:change={(event) => handleCheckboxChange(event, {activity_subtype: subType, activity_type: edited_activity.activity_type, activity_uuid: edited_activity.uuid, id: -1})}>
-                                                            </div>
-                                                        {/if}
-                                                    </div>
-                                                {/each}
-                                            </div>
-                                        {/if}
-                                    </div>
 
-                                    <div class="form-group">
-                                        <label for="newActivityOrder">Order:</label>
-                                        <select class="form-select" bind:value={edited_activity.order}>
-                                            {#if total_num_date_activities > 0}
-                                                {#each Array(total_num_date_activities).fill(null).map((_, index) => index) as act, index}
-                                                    <option value={index+1}>{index + 1}</option>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="newActivityType">Activity Type:</label>
+                                            <select class="form-select" bind:value={activity_type_id} on:change={() => {setActivityType(activity_type_id)}} required>
+                                                <option disabled selected>Select an activity type...</option>
+                                                {#each activity_type_list as actType}
+                                                    <option value={actType.activity_type?.id}>{actType.activity_type?.name}</option>
                                                 {/each}
-                                                <option value={total_num_date_activities + 1} selected>{total_num_date_activities + 1}</option>
-                                            {:else}
-                                                <option value={1}>1</option>
+                                            </select>
+                                            {#if edited_activity.activity_type?.id !== -1}
+                                                <div class="row">
+                                                    {#each subtype_list as subType, idx}
+                                                        <div class="col-md-2">
+                                                            {#if subType}
+                                                                <div class="form-check">
+                                                                    <label class="form-check-label" for="subtype-{subType.id}">{subType.name}</label>
+                                                                    <input class="form-check-input" type="checkbox" id="subtype-{subType.id}" checked={subtype_bool_list[idx]} on:change={(event) => handleCheckboxChange(event, {activity_subtype: subType, activity_type: edited_activity.activity_type, activity_uuid: edited_activity.uuid, id: -1})}>
+                                                                </div>
+                                                            {/if}
+                                                        </div>
+                                                    {/each}
+                                                </div>
                                             {/if}
-                                        </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="newActivityOrder">Order:</label>
+                                            <select class="form-select" bind:value={edited_activity.order}>
+                                                {#if total_num_date_activities > 0}
+                                                    {#each Array(total_num_date_activities).fill(null).map((_, index) => index) as act, index}
+                                                        <option value={index+1}>{index + 1}</option>
+                                                    {/each}
+                                                    <option value={total_num_date_activities + 1} selected>{total_num_date_activities + 1}</option>
+                                                {:else}
+                                                    <option value={1}>1</option>
+                                                {/if}
+                                            </select>
+                                        </div>
                                     </div>
+                                    <!-- TODO: Enable Time setup
+                                    <div class="col">
+                                        <label for="time">Time:</label>
+                                        <input type="time" id="time" bind:value={time} placeholder="--:--">
+                                    </div>
+                                     -->
                                 </div>
 
                                 <div class="row">
@@ -238,44 +260,48 @@
                                         <strong>Equipment</strong>
                                         <div class="form-group">
                                             {#each activity.equipment_list as ae}
-                                                <div class="input-group w-60">
-                                                    <span>{ae.equipment?.name}</span>
-                                                    <input class="form-control" type="number" step="0.01" bind:value={ae.assigned_mileage.length}>
-                                                    <select id="activitylenunits" bind:value={ae.assigned_mileage.unit}>
+                                                {#if ae.assigned_mileage}
+                                                    <div class="input-group w-60">
+                                                        <span>{ae.equipment?.name}</span>
+                                                        <input class="form-control" type="number" step="0.01" bind:value={ae.assigned_mileage.length}>
+                                                        <select id="activitylenunits" bind:value={ae.assigned_mileage.unit}>
+                                                            <option value="m">m</option>
+                                                            <option value="yd">yd</option>
+                                                            <option value="mi">mi</option>
+                                                            <option value="km">km</option>
+                                                        </select>
+
+                                                        <button type="button" class="btn btn-primary" on:click={() => {deleteAE(ae)}}>Delete</button>
+                                                    </div>
+                                                {/if}
+                                            {/each}
+                                        </div>
+
+                                        {#each new_activity_equipment_list as nae}
+                                            {#if nae.assigned_mileage}
+                                                <div class="input-group">
+                                                    <select bind:value={nae.equipment}>
+                                                        <option value={null}>Select equipment...</option>
+                                                        {#each equipment_choices as equipment}
+                                                            {#if equipmentIsUsed(equipment, [...new_activity_equipment_list, ...activity.equipment_list])}
+                                                                    <option value={equipment} disabled>{equipment.name}</option>
+                                                            {:else}
+                                                                <option value={equipment}>{equipment.name}</option>
+                                                            {/if}
+                                                        {/each}
+                                                    </select>
+
+                                                    <input class="form-control" type="number" step="0.01" bind:value={nae.assigned_mileage.length}>
+                                                    <select id="activitylenunits" bind:value={nae.assigned_mileage.unit}>
                                                         <option value="m">m</option>
                                                         <option value="yd">yd</option>
                                                         <option value="mi">mi</option>
                                                         <option value="km">km</option>
                                                     </select>
 
-                                                    <button type="button" class="btn btn-primary" on:click={() => {deleteAE(ae)}}>Delete</button>
+                                                    <button type="button" class="btn btn-danger" on:click={() => {deleteAE(nae)}}>Delete</button>
                                                 </div>
-                                            {/each}
-                                        </div>
-
-                                        {#each new_activity_equipment_list as nae}
-                                            <div class="input-group">
-                                                <select bind:value={nae.equipment}>
-                                                    <option value={null}>Select equipment...</option>
-                                                    {#each equipment_choices as equipment}
-                                                        {#if equipmentIsUsed(equipment, [...new_activity_equipment_list, ...activity.equipment_list])}
-                                                                <option value={equipment} disabled>{equipment.name}</option>
-                                                        {:else}
-                                                            <option value={equipment}>{equipment.name}</option>
-                                                        {/if}
-                                                    {/each}
-                                                </select>
-
-                                                <input class="form-control" type="number" step="0.01" bind:value={nae.assigned_mileage.length}>
-                                                <select id="activitylenunits" bind:value={nae.assigned_mileage.unit}>
-                                                    <option value="m">m</option>
-                                                    <option value="yd">yd</option>
-                                                    <option value="mi">mi</option>
-                                                    <option value="km">km</option>
-                                                </select>
-
-                                                <button type="button" class="btn btn-danger" on:click={() => {deleteAE(nae)}}>Delete</button>
-                                            </div>
+                                            {/if}
                                         {/each}
 
                                         <button type="button" class="btn btn-primary" on:click={addNewAE}>Add Activity Equipment</button>
@@ -295,68 +321,72 @@
                                     <div class="container">
                                         <!-- Planned Stuff -->
                                         {#if planned_shown === "planned"}
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="input-group w-20">
-                                                    <label for="editedPlannedDistance">Distance:</label>
-                                                    <input type="number" step="0.01" class="form-control" id="editedPlannedDistance" bind:value={edited_activity.planned.distance.length}>
-                                                    <select id="activitylenunits" bind:value={edited_activity.planned.distance.unit}>
-                                                        <option value="m">m</option>
-                                                        <option value="yd">yd</option>
-                                                        <option value="mi">mi</option>
-                                                        <option value="km">km</option>
-                                                    </select>
+                                            {#if edited_activity.planned}
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="input-group w-20">
+                                                            <label for="editedPlannedDistance">Distance:</label>
+                                                            <input type="number" step="0.01" class="form-control" id="editedPlannedDistance" bind:value={edited_activity.planned.distance.length}>
+                                                            <select id="activitylenunits" bind:value={edited_activity.planned.distance.unit}>
+                                                                <option value="m">m</option>
+                                                                <option value="yd">yd</option>
+                                                                <option value="mi">mi</option>
+                                                                <option value="km">km</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="input-group w-20">
+                                                            <label for="editedPlannedVertical">Vertical:</label>
+                                                            <input type="number" step="0.01" class="form-control" id="editedPlannedVertical" bind:value={edited_activity.planned.vertical.length}>
+                                                            <select bind:value={edited_activity.planned.vertical.unit}>
+                                                                <option value="ft">ft</option>
+                                                                <option value="m">m</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="input-group w-20">
+                                                            <label for="editedPlannedDuration">Duration:</label>
+                                                            <input type="text" class="form-control" id="editedPlannedDuration" bind:value={duration_planned} placeholder="hh:mm:ss" pattern="[0-9][0-9]:[0-5][0-9]:[0-5][0-9]">
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="input-group w-20">
-                                                    <label for="editedPlannedVertical">Vertical:</label>
-                                                    <input type="number" step="0.01" class="form-control" id="editedPlannedVertical" bind:value={edited_activity.planned.vertical.length}>
-                                                    <select bind:value={edited_activity.planned.vertical.unit}>
-                                                        <option value="ft">ft</option>
-                                                        <option value="m">m</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="input-group w-20">
-                                                    <label for="editedPlannedDuration">Duration:</label>
-                                                    <input type="text" class="form-control" id="editedPlannedDuration" bind:value={duration_planned} placeholder="hh:mm:ss" pattern="[0-9][0-9]:[0-5][0-9]:[0-5][0-9]">
-                                                </div>
-                                            </div>
-                                        </div>
+                                            {/if}
                                         {:else if planned_shown === "completed"}
                                             <!-- Completed Stuff -->
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="input-group w-20">
-                                                        <label for="editedCompletedDistance">Distance:</label>
-                                                        <input type="number" step="0.01" class="form-control" id="editedCompletedDistance" bind:value={edited_activity.completed.distance.length}>
-                                                        <select id="activitylenunits" bind:value={edited_activity.completed.distance.unit}>
-                                                            <option value="m">m</option>
-                                                            <option value="yd">yd</option>
-                                                            <option value="mi">mi</option>
-                                                            <option value="km">km</option>
-                                                        </select>
+                                            {#if edited_activity.completed}
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="input-group w-20">
+                                                            <label for="editedCompletedDistance">Distance:</label>
+                                                            <input type="number" step="0.01" class="form-control" id="editedCompletedDistance" bind:value={edited_activity.completed.distance.length}>
+                                                            <select id="activitylenunits" bind:value={edited_activity.completed.distance.unit}>
+                                                                <option value="m">m</option>
+                                                                <option value="yd">yd</option>
+                                                                <option value="mi">mi</option>
+                                                                <option value="km">km</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="input-group w-20">
+                                                            <label for="editedCompletedVertical">Vertical:</label>
+                                                            <input type="number" step="0.01" class="form-control" id="editedCompletedVertical" bind:value={edited_activity.completed.vertical.length}>
+                                                            <select bind:value={edited_activity.completed.vertical.unit}>
+                                                                <option value="ft">ft</option>
+                                                                <option value="m">m</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="input-group w-20">
+                                                            <label for="editedCompletedDuration">Duration:</label>
+                                                            <input type=text class="form-control" id="editedCompletedDuration" bind:value={duration_completed} placeholder="hh:mm:ss" pattern="[0-9][0-9]:[0-5][0-9]:[0-5][0-9]">
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col">
-                                                    <div class="input-group w-20">
-                                                        <label for="editedCompletedVertical">Vertical:</label>
-                                                        <input type="number" step="0.01" class="form-control" id="editedCompletedVertical" bind:value={edited_activity.completed.vertical.length}>
-                                                        <select bind:value={edited_activity.completed.vertical.unit}>
-                                                            <option value="ft">ft</option>
-                                                            <option value="m">m</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="input-group w-20">
-                                                        <label for="editedCompletedDuration">Duration:</label>
-                                                        <input type=text class="form-control" id="editedCompletedDuration" bind:value={duration_completed} placeholder="hh:mm:ss" pattern="[0-9][0-9]:[0-5][0-9]:[0-5][0-9]">
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            {/if}
                                         {/if}
                                     </div>
                                 </div>

@@ -10,22 +10,46 @@
     let is_editing = false;
     let strava_token: oauth2.Token;
     let backfilling: boolean = false;
-    let redirect_message: string = "";
+    let redirect_message: boolean = false;
+
+    let now = new Date()
+    let month: string = ""
+    let day: string = ""
+    let year: number
+    let dateString: string
+
+    $: if (usr) {
+        now = new Date(usr.initial_cycle_start)
+        month = '' + (now.getMonth() + 1)
+		day = '' + now.getDate()
+		year = now.getFullYear()
+    }
+
+	$: if (month.length < 2)
+        month = '0' + month;
+
+    $: if (day.length < 2)
+        day = '0' + day;
+
+	$: dateString = [year, month, day].join('-');
 
     function toggleEdit() {
         is_editing = !is_editing
     };
 
     async function update() {
+        //usr.initial_cycle_start = new Date(usr.initial_cycle_start)
+        usr.initial_cycle_start = new Date(`${dateString}T00:00:00`);
         usr = await UpdateUser(usr)
         toggleEdit()
     }
 
     async function adf() {
         await OpenStravaAuth()
+        redirect_message = true
         strava_token = await StartListener()
-        redirect_message = ""
         await CreateStravaToken(usr, strava_token)
+        redirect_message = false
     }
 
     async function backfillStravaData() {
@@ -62,7 +86,7 @@
 
             {#if usr.cycle_days != 7}
                 <label for="initial_cycle_start">Initial Cycle Start Date:</label>
-                <input class="form-control" id="initial_cycle_start" name="initial_cycle_start" type="date" bind:value={usr.initial_cycle_start} disabled={!is_editing} readonly={!is_editing} required>
+                <input class="form-control" id="initial_cycle_start" name="initial_cycle_start" type="date" bind:value={dateString} disabled={!is_editing} readonly={!is_editing} required>
             {/if}
 
             <input type="hidden" id="uuid" name="uuid" bind:value={usr.uuid}>
@@ -94,6 +118,8 @@
     </div>
     <div class="row">
         <button class="btn btn-sm" type="button" on:click={adf}>{@html connectwstrava}</button>
+    </div>
+    <div class="row">
         {#if redirect_message}
             <p>An authorization prompt should have opened in your browser, please check it and grant authorization.</p>
         {/if}

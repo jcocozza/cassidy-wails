@@ -7,16 +7,16 @@
     import { FormatPercent } from '$lib/misc/percent';
     import ActivityList from '../activity/ActivityList.svelte';
     import { CreateObserver } from '../../../functions/infiniteScroll';
-    import { ConvertDuration, IsToday } from '../../model/date';
+    import { ConvertDuration, GetWeekday, IsToday, ParseDateYYYYMMDD } from '../../model/date';
     import type { model } from '../../wailsjs/go/models';
     import { GetMicrocycle, GetCalendar, GetNextNMicrocycles, GetPreviousNMicrocycles } from '../../wailsjs/go/controllers/MicrocycleHandler'
     import { ListActivityTypes } from '../../wailsjs/go/controllers/ActivityTypeHandler'
+    import NewActivityModal from '../activity/NewActivityModal.svelte';
 
-    export let initial_start_date: string;
-    export let initial_end_date: string;
+    export let initial_start_date: Date;
+    export let initial_end_date: Date;
     export let equipment_choices: model.Equipment[];
     export let usr: model.User;
-
     let microcycle_list: model.Microcycle[];
     let activity_type_list: model.ActivityTypeWithSubtypes[] = [];
 
@@ -38,6 +38,8 @@
     const number_new_cycles_per_pull: number = 15;
     const max_number_cycles: number = 100;
 
+    let today_date = new Date();
+
     async function replaceMicrocycle(microcycle: model.Microcycle, index: number) {
         try {
             const updatedMicrocycle = await GetMicrocycle(microcycle.start_date, microcycle.end_date);
@@ -53,7 +55,8 @@
 
     onMount(async () => {
         activity_type_list = await ListActivityTypes()
-        microcycle_list = await GetCalendar(initial_start_date, initial_end_date);
+        //microcycle_list = await GetCalendar(initial_start_date, initial_end_date);
+        microcycle_list = await GetCalendar();
     })
 
     $: {
@@ -154,14 +157,16 @@
             {/if}
             <table class="table table-striped">
                 <thead>
-                    {#if microcycle_list[0].cycle_activities.length == 7}
+                    {#if microcycle_list[0].cycle_activities?.length == 7}
                         {#each microcycle_list[0].cycle_activities as cycle}
-                            <th class="bg-body-secondary"> {cycle.date_object.day_of_week} </th>
+                            <th class="bg-body-secondary"> {GetWeekday(cycle.date)} </th>
                         {/each}
                     {:else}
-                        {#each microcycle_list[0].cycle_activities as cycle}
-                            <th class="bg-body-secondary"></th>
-                        {/each}
+                        {#if microcycle_list && microcycle_list[0] && microcycle_list[0].cycle_activities}
+                            {#each microcycle_list[0].cycle_activities as cycle}
+                                <th class="bg-body-secondary"></th>
+                            {/each}
+                        {/if}
                     {/if}
 
                     {#if summary_col_is_visible}
@@ -190,88 +195,115 @@
                 <tbody>
                     {#each microcycle_list as cycle, index}
                         <tr>
-                            {#each cycle.cycle_activities as activity_list}
-                                <td style="padding: 0;">
-                                    {#if microcycle_list[0].cycle_activities.length != 7}
-                                        {activity_list.date_object.day_of_week}
-                                    {/if}
-                                    <ActivityList
-                                        bind:user={usr}
-                                        bind:activity_list={activity_list}
-                                        bind:date={activity_list.date_object.date}
-                                        bind:activity_type_list={activity_type_list}
-                                        bind:display_completion={display_completion}
-                                        bind:equipment_choices={equipment_choices}
-                                        on:change={async () => {
-                                            console.log('Calendar::: Change requested.');
-                                            await replaceMicrocycle(cycle, index);
-                                        }} />
-                                        <!-- If it is today, assign an invisible div so that we can return to it later -->
-                                        {#if IsToday(activity_list.date_object.date)}
-                                            <div bind:this={today}></div>
-                                        {/if}
-                                </td>
-                            {/each}
-                            {#if summary_col_is_visible}
-                                <td style="padding: 0;">
-                                    <ul class="list-group list-group-flush striped-list summary">
-                                        {#each cycle.summary.totals_by_activity_type as act_type_total}
-                                            <!-- This is a hacky way to check for which activities types are in the current microcyle. This way we can distinguish between totals and planning better -->
-                                            {#if cycle.summary.totals_by_activity_type_and_date.some(atd => atd.activity_type.id === act_type_total.activity_type.id)}
-                                                <li class="list-group-item">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <!-- The type -->
-                                                            <div class="col-md-auto d-flex align-items-center">
-                                                                <strong>{act_type_total.activity_type.name}</strong>
-                                                            </div>
-                                                            <!-- The margin left is to ensure that the the pacing doesn't run away -->
-                                                            <!-- This is kinda a hack and I'm looking for an alternative -->
-                                                            <div style="margin-left: -10px;">
-                                                                <table>
-                                                                    <tbody>
-                                                                        <!-- Distance -->
-                                                                        <tr>
-                                                                            <td>{act_type_total.total_completed_distance.length} {act_type_total.total_completed_distance.unit}</td>
-                                                                            <td class="text-secondary">{act_type_total.total_planned_distance.length} {act_type_total.total_planned_distance.unit}</td>
-                                                                        </tr>
-                                                                        <!-- Duration -->
-                                                                        <tr>
-                                                                            <td>{ConvertDuration(act_type_total.total_completed_duration)}</td>
-                                                                            <td class="text-secondary">{ConvertDuration(act_type_total.total_planned_duration)}</td>
-                                                                        </tr>
-                                                                        <!-- Pace -->
-                                                                        <tr>
-                                                                            <td>{act_type_total.completed_pace}</td>
-                                                                            <td class="text-secondary">{act_type_total.planned_pace}</td>
-                                                                        </tr>
-                                                                        <!-- Vertical -->
-                                                                        <tr>
-                                                                            <td>{act_type_total.total_completed_vertical.length} {act_type_total.total_completed_vertical.unit}</td>
-                                                                            <td class="text-secondary">{act_type_total.total_planned_vertical.length} {act_type_total.total_planned_vertical.unit}</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            {/if}
-                                        {/each}
-                                        <br>
-                                        <li class="list-group-item">
+                            {#if cycle && cycle.cycle_activities}
+                                {#each cycle.cycle_activities as activity_list}
+                                    <td style="padding: 0;">
+                                        <div class="col">
                                             <div class="row">
                                                 <div class="col">
-                                                    <!-- cycle totals -->
-                                                    <div class="col-md-auto d-flex align-items-center">
-                                                        <strong>Totals</strong>
+                                                    {#if microcycle_list[0].cycle_activities?.length != 7}
+                                                        {ParseDateYYYYMMDD(activity_list.date)}
+                                                    {:else}
+                                                        {ParseDateYYYYMMDD(activity_list.date)}
+                                                    {/if}
+                                                </div>
+                                                <div class="col">
+                                                    <NewActivityModal
+                                                        bind:usr={usr}
+                                                        bind:equipment_choices={equipment_choices}
+                                                        bind:date={activity_list.date}
+                                                        bind:activity_list={activity_list.activity_list}
+                                                        bind:activity_type_list={activity_type_list}
+                                                        is_hovering={true}
+                                                        on:new={async () => {
+                                                            await replaceMicrocycle(cycle, index)
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <ActivityList
+                                                    bind:activity_list={activity_list}
+                                                    bind:date={activity_list.date}
+                                                    bind:activity_type_list={activity_type_list}
+                                                    bind:display_completion={display_completion}
+                                                    bind:equipment_choices={equipment_choices}
+                                                    on:change={async () => {
+                                                        console.log('Calendar::: Change requested.');
+                                                        await replaceMicrocycle(cycle, index);
+                                                    }} />
+                                            </div>
+                                        </div>
+                                        <!-- If it is today, assign an invisible div so that we can return to it later -->
+                                        {#if IsToday(activity_list.date.toString())}
+                                            <div bind:this={today}></div>
+                                        {/if}
+                                    </td>
+                                {/each}
+                        {#if summary_col_is_visible}
+                            <td style="padding: 0;">
+                                <ul class="list-group list-group-flush striped-list summary">
+                                    {#if cycle.summary?.totals_by_activity_type}
+                                        {#each cycle.summary.totals_by_activity_type as act_type_total}
+                                        <!-- This is a hacky way to check for which activities types are in the current microcyle. This way we can distinguish between totals and planning better -->
+                                        {#if cycle.summary.totals_by_activity_type_and_date.some(atd => atd.activity_type?.id === act_type_total.activity_type?.id)}
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <!-- The type -->
+                                                        <div class="col-md-auto d-flex align-items-center">
+                                                            <strong>{act_type_total.activity_type?.name}</strong>
+                                                        </div>
+                                                        <!-- The margin left is to ensure that the the pacing doesn't run away -->
+                                                        <!-- This is kinda a hack and I'm looking for an alternative -->
+                                                        <div style="margin-left: -10px;">
+                                                            <table>
+                                                                <tbody>
+                                                                    <!-- Distance -->
+                                                                    <tr>
+                                                                        <td>{act_type_total.total_completed_distance?.length} {act_type_total.total_completed_distance?.unit}</td>
+                                                                        <td class="text-secondary">{act_type_total.total_planned_distance?.length} {act_type_total.total_planned_distance?.unit}</td>
+                                                                    </tr>
+                                                                    <!-- Duration -->
+                                                                    <tr>
+                                                                        <td>{ConvertDuration(act_type_total.total_completed_duration)}</td>
+                                                                        <td class="text-secondary">{ConvertDuration(act_type_total.total_planned_duration)}</td>
+                                                                    </tr>
+                                                                    <!-- Pace -->
+                                                                    <tr>
+                                                                        <td>{act_type_total.completed_pace}</td>
+                                                                        <td class="text-secondary">{act_type_total.planned_pace}</td>
+                                                                    </tr>
+                                                                    <!-- Vertical -->
+                                                                    <tr>
+                                                                        <td>{act_type_total.total_completed_vertical?.length} {act_type_total.total_completed_vertical?.unit}</td>
+                                                                        <td class="text-secondary">{act_type_total.total_planned_vertical?.length} {act_type_total.total_planned_vertical?.unit}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
-                                                    <table>
+                                                </div>
+                                            </li>
+                                        {/if}
+                                        {/each}
+                                    {/if}
+                                    <br>
+                                    <li class="list-group-item">
+                                        <div class="row">
+                                            <div class="col">
+                                                <!-- cycle totals -->
+                                                <div class="col-md-auto d-flex align-items-center">
+                                                    <strong>Totals</strong>
+                                                </div>
+                                                <table>
+                                                    {#if cycle.summary?.totals}
                                                         <tbody>
                                                             <!-- Distance -->
                                                             <tr>
-                                                                <td>{cycle.summary.totals.total_completed_distance.length} {cycle.summary.totals.total_completed_distance.unit}</td>
-                                                                <td class="text-secondary">{cycle.summary.totals.total_planned_distance.length} {cycle.summary.totals.total_planned_distance.unit}</td>
+                                                                <td>{cycle.summary.totals.total_completed_distance?.length} {cycle.summary.totals.total_completed_distance?.unit}</td>
+                                                                <td class="text-secondary">{cycle.summary.totals.total_planned_distance?.length} {cycle.summary.totals.total_planned_distance?.unit}</td>
                                                             </tr>
                                                             <!-- Duration -->
                                                             <tr>
@@ -280,18 +312,20 @@
                                                             </tr>
                                                             <!-- Vertical -->
                                                             <tr>
-                                                                <td>{cycle.summary.totals.total_completed_vertical.length} {cycle.summary.totals.total_completed_vertical.unit}</td>
-                                                                <td class="text-secondary">{cycle.summary.totals.total_planned_vertical.length} {cycle.summary.totals.total_planned_vertical.unit}</td>
+                                                                <td>{cycle.summary.totals.total_completed_vertical?.length} {cycle.summary.totals.total_completed_vertical?.unit}</td>
+                                                                <td class="text-secondary">{cycle.summary.totals.total_planned_vertical?.length} {cycle.summary.totals.total_planned_vertical?.unit}</td>
                                                             </tr>
                                                         </tbody>
-                                                    </table>
-                                                </div>
+                                                    {/if}
+                                                </table>
                                             </div>
-                                        </li>
-                                    </ul>
-                                </td>
-                            {/if}
-                            {#if planning_col_is_visible}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </td>
+                        {/if}
+                        {#if planning_col_is_visible}
+                            {#if cycle && cycle.summary && cycle.summary.totals_differences && cycle.summary.weighted_totals_differences && cycle.summary.totals}
                                 <td style="padding: 0;">
                                     <ul class="list-group list-group-flush striped-list summary">
                                         {#each cycle.summary.totals_by_activity_type_differences as act_type_difference}
@@ -300,7 +334,7 @@
                                                     <div class="row">
                                                         <div class="col">
                                                             <div class="col-md-auto d-flex align-items-center">
-                                                                <strong>{act_type_difference.activity_type.name} Changes</strong>
+                                                                <strong>{act_type_difference.activity_type?.name} Changes</strong>
                                                             </div>
                                                             <table>
                                                                 <tbody>
@@ -313,12 +347,12 @@
                                                                     <!-- Distance -->
                                                                     <tr>
                                                                         <td>
-                                                                            {act_type_difference.difference_completed_distance.length} {act_type_difference.difference_completed_distance.unit}
+                                                                            {act_type_difference.difference_completed_distance?.length} {act_type_difference.difference_completed_distance?.unit}
                                                                             <br>
                                                                             ({FormatPercent(act_type_difference.percent_difference_completed_distance)})
                                                                         </td>
                                                                         <td class="text-secondary">
-                                                                            {act_type_difference.difference_planned_distance.length} {act_type_difference.difference_planned_distance.unit}
+                                                                            {act_type_difference.difference_planned_distance?.length} {act_type_difference.difference_planned_distance?.unit}
                                                                             <br>
                                                                             ({FormatPercent(act_type_difference.percent_difference_planned_distance)})
                                                                         </td>
@@ -339,12 +373,12 @@
                                                                     <!-- Vertical -->
                                                                     <tr>
                                                                         <td>
-                                                                            {act_type_difference.difference_completed_vertical.length} {act_type_difference.difference_completed_vertical.unit}
+                                                                            {act_type_difference.difference_completed_vertical?.length} {act_type_difference.difference_completed_vertical?.unit}
                                                                             <br>
                                                                             ({FormatPercent(act_type_difference.percent_difference_completed_vertical)})
                                                                         </td>
                                                                         <td class="text-secondary">
-                                                                            {act_type_difference.difference_planned_vertical.length} {act_type_difference.difference_planned_vertical.unit}
+                                                                            {act_type_difference.difference_planned_vertical?.length} {act_type_difference.difference_planned_vertical?.unit}
                                                                             <br>
                                                                             ({FormatPercent(act_type_difference.percent_difference_planned_vertical)})
                                                                         </td>
@@ -375,7 +409,7 @@
                                                             <!-- Distance -->
                                                             <tr>
                                                                 <td>
-                                                                    {cycle.summary.totals_differences.difference_completed_distance.length} {cycle.summary.totals_differences.difference_completed_distance.unit}
+                                                                    {cycle.summary.totals_differences.difference_completed_distance?.length} {cycle.summary.totals_differences.difference_completed_distance?.unit}
                                                                     <br>
                                                                     {#if weighted_totals}
                                                                         ({FormatPercent(cycle.summary.weighted_totals_differences.percent_difference_completed_distance)})
@@ -384,7 +418,7 @@
                                                                     {/if}
                                                                 </td>
                                                                 <td class="text-secondary text-center">
-                                                                    {cycle.summary.totals_differences.difference_planned_distance.length} {cycle.summary.totals_differences.difference_planned_distance.unit}
+                                                                    {cycle.summary.totals_differences.difference_planned_distance?.length} {cycle.summary.totals_differences.difference_planned_distance?.unit}
                                                                     <br>
                                                                     {#if weighted_totals}
                                                                         ({FormatPercent(cycle.summary.weighted_totals_differences.percent_difference_planned_distance)})
@@ -404,7 +438,7 @@
                                                                         ({FormatPercent(cycle.summary.totals_differences.percent_difference_completed_duration)})
                                                                     {/if}
                                                                 </td>
-                                                               <td class="text-secondary text-center">
+                                                            <td class="text-secondary text-center">
                                                                     {ConvertDuration(cycle.summary.totals.total_planned_duration)}
                                                                     <br>
                                                                     {#if weighted_totals}
@@ -417,7 +451,7 @@
                                                             <!-- Vertical -->
                                                             <tr>
                                                                 <td>
-                                                                    {cycle.summary.totals.total_completed_vertical.length} {cycle.summary.totals.total_completed_vertical.unit}
+                                                                    {cycle.summary.totals.total_completed_vertical?.length} {cycle.summary.totals.total_completed_vertical?.unit}
                                                                     <br>
                                                                     {#if weighted_totals}
                                                                         ({FormatPercent(cycle.summary.weighted_totals_differences.percent_difference_completed_vertical)})
@@ -426,7 +460,7 @@
                                                                     {/if}
                                                                 </td>
                                                                 <td class="text-secondary">
-                                                                    {cycle.summary.totals.total_planned_vertical.length} {cycle.summary.totals.total_planned_vertical.unit}
+                                                                    {cycle.summary.totals.total_planned_vertical?.length} {cycle.summary.totals.total_planned_vertical?.unit}
                                                                     <br>
                                                                     {#if weighted_totals}
                                                                         ({FormatPercent(cycle.summary.weighted_totals_differences.percent_difference_planned_vertical)})
@@ -442,6 +476,8 @@
                                         </li>
                                     </ul>
                                 </td>
+                            {/if}
+                        {/if}
                             {/if}
                         </tr>
                     {/each}

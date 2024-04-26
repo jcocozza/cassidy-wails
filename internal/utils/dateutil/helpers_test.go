@@ -3,49 +3,41 @@ package dateutil
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestGenerateDateRange(t *testing.T) {
 	type args struct {
-		startDateStr string
-		endDateStr   string
+		startDateStr time.Time
+		endDateStr   time.Time
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    []*DateObject
-		wantErr bool
+		want    []time.Time
 	}{
-		{"case1", args{"2024-01-01", "2024-01-02"}, []*DateObject{{Date: "2024-01-01", DayOfWeek: Monday}, {Date: "2024-01-02", DayOfWeek: Tuesday}}, false},
-		{"case2", args{"2024-01-01", "2024-01-07"}, []*DateObject{
-			{Date: "2024-01-01", DayOfWeek: Monday},
-			{Date: "2024-01-02", DayOfWeek: Tuesday},
-			{Date: "2024-01-03", DayOfWeek: Wednesday},
-			{Date: "2024-01-04", DayOfWeek: Thursday},
-			{Date: "2024-01-05", DayOfWeek: Friday},
-			{Date: "2024-01-06", DayOfWeek: Saturday},
-			{Date: "2024-01-07", DayOfWeek: Sunday}},
-			false},
-		{"case3", args{"asdf1asd", "2024-01-02"}, nil, true},
-		{"case4", args{"2024-01-01", "asdf"}, nil, true},
-		{"case5", args{"2024-0101", "2024-01-02"}, nil, true},
-		{"case6", args{"2024-02-26", "2024-03-03"}, []*DateObject{
-			{DayOfWeek: Monday, Date: "2024-02-26"},
-			{DayOfWeek: Tuesday, Date: "2024-02-27"},
-			{DayOfWeek: Wednesday, Date: "2024-02-28"},
-			{DayOfWeek: Thursday, Date: "2024-02-29"},
-			{DayOfWeek: Friday, Date: "2024-03-01"},
-			{DayOfWeek: Saturday, Date: "2024-03-02"},
-			{DayOfWeek: Sunday, Date: "2024-03-03"},
-		}, false},
+		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC)}, []time.Time{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC)}},
+		{"case2", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC)}, []time.Time{
+			time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 3, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 4, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 5, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 6, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC)}},
+		{"case3", args{time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC)}, []time.Time{
+			time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.February, 27, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.February, 28, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.February, 29, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.March, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.March, 2, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC)},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GenerateDateRange(tt.args.startDateStr, tt.args.endDateStr)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GenerateDateRange() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := GenerateDateRange(tt.args.startDateStr, tt.args.endDateStr)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GenerateDateRange() = %v, want %v", got, tt.want)
 			}
@@ -85,28 +77,22 @@ func TestGetDayOfWeek(t *testing.T) {
 }
 func Test_daysDifference(t *testing.T) {
 	type args struct {
-		date1 string
-		date2 string
+		date1 time.Time
+		date2 time.Time
 	}
 	tests := []struct {
 		name    string
 		args    args
 		want    int
-		wantErr bool
 	}{
-		{"case1", args{"2024-01-01", "2024-01-01"}, 0, false},
-		{"case2", args{"2024-01-01", "2024-01-07"}, 6, false},
-		{"case3", args{"202-01-01", "2024-01-01"}, 0, true},
-		{"case4", args{"2024-01-01", "2asdf1"}, 0, true},
-		{"case 5", args{"2024-02-26", "2024-03-03"}, 6, false},
+		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)}, 0},
+		{"case2", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC)}, 6},
+		{"case 5", args{time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC)}, 6},
+		{"case 5", args{time.Date(2024, time.March, 4, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 10, 0, 0, 0, 0, time.UTC)}, 6},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := daysDifference(tt.args.date1, tt.args.date2)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("daysDifference() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := daysDifference(tt.args.date1, tt.args.date2)
 			if got != tt.want {
 				t.Errorf("daysDifference() = %v, want %v", got, tt.want)
 			}

@@ -27,6 +27,7 @@
                 user_already_exits = true;
             } else {
                 other_error = true;
+                console.error(error)
             }
         }
     }

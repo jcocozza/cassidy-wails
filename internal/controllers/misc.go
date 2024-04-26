@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	conversionrepo "github.com/jcocozza/cassidy-wails/internal/repository/conversionRepo"
@@ -25,7 +27,7 @@ func NewMiscHandler(db database.DbOperations, user *model.User) *MiscHandler {
 //
 // @param: start_date
 // @param: end_date
-func (mh *MiscHandler) GetNCycleSummary(startDate, endDate string) (*model.NCycleSummary, error) {
+func (mh *MiscHandler) GetNCycleSummary(startDate, endDate time.Time) (*model.NCycleSummary, error) {
 	ncycleSummary, err := mh.MiscRepository.ReadNCycleSummary(startDate, endDate, mh.User.Uuid)
 	if err != nil {
 		return nil, err
@@ -43,17 +45,13 @@ func (mh *MiscHandler) GetNCycleSummary(startDate, endDate string) (*model.NCycl
 // @param start_date
 // @param end_date
 type NextPrevious struct {
-	NextStartDate string `json:"next_start_date"`
-	NextEndDate string `json:"next_end_date"`
-	PreviousStartDate string `json:"previous_start_date"`
-	PreviousEndDate string `json:"previous_end_date"`
+	NextStartDate     time.Time `json:"next_start_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
+	NextEndDate       time.Time `json:"next_end_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
+	PreviousStartDate time.Time `json:"previous_start_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
+	PreviousEndDate   time.Time `json:"previous_end_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 }
-func (mh *MiscHandler) GetNextPrevious(startDate, endDate string) (*NextPrevious, error ){
-	nextStart, nextEnd, previousStart, previousEnd, err := dateutil.GetNextPrevious(startDate, endDate)
-
-	if err != nil {
-		return nil, err
-	}
+func (mh *MiscHandler) GetNextPrevious(startDate, endDate time.Time) (*NextPrevious){
+	nextStart, nextEnd, previousStart, previousEnd := dateutil.GetNextPrevious(startDate, endDate)
 
 	mp := &NextPrevious{
 		NextStartDate:     nextStart,
@@ -62,5 +60,5 @@ func (mh *MiscHandler) GetNextPrevious(startDate, endDate string) (*NextPrevious
 		PreviousEndDate:   previousEnd,
 	}
 
-	return mp, nil
+	return mp
 }

@@ -5,8 +5,8 @@
     import type { model } from "$lib/wailsjs/go/models";
     import { LoadUser } from "$lib/wailsjs/go/main/App";
 
-    let start_date: string = "";
-    let end_date: string = "";
+    let start_date: Date;
+    let end_date: Date;
     let usr: model.User;
     onMount(async () => {
         const [user, dates] = await Promise.all([LoadUser(), GetMicrocycleCurrentDates()]);

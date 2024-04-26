@@ -30,7 +30,6 @@ func main() {
 	app.DB = DB
 
 	stravaApp := strava.NewStravaApp(handlers)
-
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "cassidy",

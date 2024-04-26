@@ -9,7 +9,6 @@ import (
 	"github.com/jcocozza/cassidy-connector/strava/swagger"
 	"github.com/jcocozza/cassidy-wails/internal/controllers"
 	"github.com/jcocozza/cassidy-wails/internal/model"
-	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
 	"golang.org/x/oauth2"
 )
@@ -86,7 +85,7 @@ func (s *Strava) stravaActivityToCassidyActivity(activity swagger.SummaryActivit
 
 	act := &model.Activity{
 		Uuid: uuid,
-		Date: activity.StartDate.Format(dateutil.Layout),
+		Date: activity.StartDate,
 		Order: 1,
 		Name: activity.Name,
 		Description: "",

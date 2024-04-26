@@ -2,6 +2,7 @@ package sqlutil
 
 import (
 	"testing"
+	"time"
 )
 
 func TestgenerateDateRangesCTE(t *testing.T) {
@@ -14,10 +15,10 @@ func TestgenerateDateRangesCTE(t *testing.T) {
 		want string
 	}{
 		{"test", args{dateRanges: []*DateRange{
-			NewDateRange("2024-01-01", "2024-01-07"),
-			NewDateRange("2024-01-08", "2024-01-14"),
-			NewDateRange("2024-01-15", "2024-01-21"),
-			NewDateRange("2024-01-22", "2024-01-28"),
+			NewDateRange(time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC)),
+			NewDateRange(time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 14, 0, 0, 0, 0, time.UTC)),
+			NewDateRange(time.Date(2024, time.January, 15, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 21, 0, 0, 0, 0, time.UTC)),
+			NewDateRange(time.Date(2024, time.January, 22, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 28, 0, 0, 0, 0, time.UTC)),
 		}}, "WITH DateRanges AS (\nSELECT '2024-01-01' AS start_date, '2024-01-07' AS end_date\nUNION ALL\nSELECT '2024-01-08' AS start_date, '2024-01-14' AS end_date\nUNION ALL\nSELECT '2024-01-15' AS start_date, '2024-01-21' AS end_date\nUNION ALL\nSELECT '2024-01-22' AS start_date, '2024-01-28' AS end_date\n)"},
 	}
 	for _, tt := range tests {
@@ -31,8 +32,8 @@ func TestgenerateDateRangesCTE(t *testing.T) {
 
 func TestGenerateDateRangesPreviousCTE(t *testing.T) {
 	type args struct {
-		startDate string
-		endDate   string
+		startDate time.Time
+		endDate   time.Time
 		numTotals int
 	}
 	tests := []struct {
@@ -40,7 +41,7 @@ func TestGenerateDateRangesPreviousCTE(t *testing.T) {
 		args args
 		want string
 	}{
-		{"test", args{startDate: "2024-01-01", endDate: "2024-01-07", numTotals: 4}, "WITH DateRanges AS (\nSELECT '2024-01-01' AS start_date, '2024-01-07' AS end_date\nUNION ALL\nSELECT '2023-12-25', '2023-12-31'\nUNION ALL\nSELECT '2023-12-18', '2023-12-24'\nUNION ALL\nSELECT '2023-12-11', '2023-12-17'\nUNION ALL\nSELECT '2023-12-04', '2023-12-10'\n)"},
+		{"test", args{startDate: time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), endDate: time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC), numTotals: 4}, "WITH DateRanges AS (\nSELECT '2024-01-01' AS start_date, '2024-01-07' AS end_date\nUNION ALL\nSELECT '2023-12-25', '2023-12-31'\nUNION ALL\nSELECT '2023-12-18', '2023-12-24'\nUNION ALL\nSELECT '2023-12-11', '2023-12-17'\nUNION ALL\nSELECT '2023-12-04', '2023-12-10'\n)"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -53,8 +54,8 @@ func TestGenerateDateRangesPreviousCTE(t *testing.T) {
 
 func TestGenerateDateRangesNextCTE(t *testing.T) {
 	type args struct {
-		startDate string
-		endDate   string
+		startDate time.Time
+		endDate   time.Time
 		numTotals int
 	}
 	tests := []struct {
@@ -62,7 +63,7 @@ func TestGenerateDateRangesNextCTE(t *testing.T) {
 		args args
 		want string
 	}{
-		{"test", args{startDate: "2024-01-01", endDate: "2024-01-07", numTotals: 4}, "WITH DateRanges AS (\nSELECT '2024-01-01' AS start_date, '2024-01-07' AS end_date\nUNION ALL\nSELECT '2024-01-08', '2024-01-14'\nUNION ALL\nSELECT '2024-01-15', '2024-01-21'\nUNION ALL\nSELECT '2024-01-22', '2024-01-28'\nUNION ALL\nSELECT '2024-01-29', '2024-02-04'\n)"},
+		{"test", args{startDate: time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), endDate: time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC), numTotals: 4}, "WITH DateRanges AS (\nSELECT '2024-01-01' AS start_date, '2024-01-07' AS end_date\nUNION ALL\nSELECT '2024-01-08', '2024-01-14'\nUNION ALL\nSELECT '2024-01-15', '2024-01-21'\nUNION ALL\nSELECT '2024-01-22', '2024-01-28'\nUNION ALL\nSELECT '2024-01-29', '2024-02-04'\n)"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -1,5 +1,5 @@
 package dateutil
-
+/*
 import (
 	"fmt"
 	"time"
@@ -27,3 +27,4 @@ func CreateFromDate(date string) (*DateObject, error) {
 		Date: date,
 	}, nil
 }
+*/
