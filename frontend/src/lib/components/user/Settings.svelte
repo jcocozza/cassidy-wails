@@ -11,6 +11,7 @@
     let strava_token: oauth2.Token;
     let backfilling: boolean = false;
     let redirect_message: boolean = false;
+    let error_message: string = ""
 
     let now = new Date()
     let month: string = ""
@@ -47,7 +48,13 @@
     async function adf() {
         await OpenStravaAuth()
         redirect_message = true
-        strava_token = await StartListener()
+        try {
+            strava_token = await StartListener()
+        } catch (error) {
+            error_message = String(error)
+            redirect_message = false
+            return
+        }
         await CreateStravaToken(usr, strava_token)
         redirect_message = false
     }
@@ -122,6 +129,13 @@
     <div class="row">
         {#if redirect_message}
             <p>An authorization prompt should have opened in your browser, please check it and grant authorization.</p>
+        {/if}
+        {#if error_message}
+            <div class="container">
+                <div class="alert alert-danger" role="alert">
+                    {error_message}
+                </div>
+            </div>
         {/if}
     </div>
 </div>

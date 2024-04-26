@@ -3,7 +3,7 @@ module github.com/jcocozza/cassidy-wails
 go 1.22.0
 
 require (
-	github.com/jcocozza/cassidy-connector v0.0.0-20240415223449-ae2f10bb2ae4
+	github.com/jcocozza/cassidy-connector v0.0.0-20240426163730-d1f0db13ec44
 	github.com/wailsapp/wails/v2 v2.8.1
 	golang.org/x/oauth2 v0.19.0
 )

@@ -28,9 +28,8 @@ func (s *Strava) StartListener() (*oauth2.Token, error) {
 	// note this will also set the token in the app struct
 	token, err := s.App.AwaitInitialToken(-1)
 	if err != nil {
-		fmt.Println(err.Error())
+		return nil, err
 	}
-	fmt.Println(token)
 	return token, nil
 }
 // Open the authentication link in the user's browser
