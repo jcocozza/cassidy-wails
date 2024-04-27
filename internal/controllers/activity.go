@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
@@ -77,4 +78,12 @@ func (ah *ActivityHandler) DeleteActivity(activityUuid string) error {
 		return fmt.Errorf("failed to delete activity: %w", err)
 	}
 	return nil
+}
+func (ah *ActivityHandler) GetMostRecentDate() (time.Time, error) {
+	date, err := ah.ActivityRepository.GetMostRecentDate(ah.User.Uuid)
+	if err != nil {
+		return time.Time{}, err
+	}
+	fmt.Println("got most recent date: ", date)
+	return date, nil
 }

@@ -7,7 +7,7 @@ import (
 
 /*
 	This file holds file paths for all sql queries that are read in.
-	This way, if the paths change or need to be reused, everything is in once place and only needs to be changed once.
+	This way, if the paths change or need to be reused, everything is in one place and only needs to be changed once.
 */
 
 //go:embed all:sql
@@ -20,6 +20,7 @@ const (
 	Activity_create = "sql/activity/create.sql"
 	Activity_update = "sql/activity/update.sql"
 	Activity_delete = "sql/activity/delete.sql"
+	Activity_GetMostRecent = "sql/activity/most_recent_date.sql"
 
 	// Planned
 	Planned_create     = "sql/planned/create.sql"

@@ -10,6 +10,10 @@ export function DeleteActivity(arg1) {
   return window['go']['controllers']['ActivityHandler']['DeleteActivity'](arg1);
 }
 
+export function GetMostRecentDate() {
+  return window['go']['controllers']['ActivityHandler']['GetMostRecentDate']();
+}
+
 export function UpdateActivity(arg1) {
   return window['go']['controllers']['ActivityHandler']['UpdateActivity'](arg1);
 }

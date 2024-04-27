@@ -4,7 +4,9 @@
 
     import type { model, oauth2 } from "../../wailsjs/go/models";
     import { CreateStravaToken, UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
-    import { BackfillData, OpenStravaAuth, StartListener } from '$lib/wailsjs/go/strava/Strava';
+    import { BackfillData, GetNewData, OpenStravaAuth, StartListener } from '$lib/wailsjs/go/strava/Strava';
+    import { GetMostRecentDate } from '$lib/wailsjs/go/controllers/ActivityHandler';
+    import { get } from 'svelte/store';
 
     export let usr: model.User;
     let is_editing = false;
@@ -12,6 +14,8 @@
     let backfilling: boolean = false;
     let redirect_message: boolean = false;
     let error_message: string = ""
+
+    let getting_new_data: boolean = false;
 
     let now = new Date()
     let month: string = ""
@@ -64,6 +68,14 @@
         await BackfillData(usr)
         backfilling = false;
     }
+
+    async function updateStravaData() {
+        getting_new_data = true;
+        let latest = await GetMostRecentDate()
+        await GetNewData(usr, latest)
+        getting_new_data = false;
+    }
+
 </script>
 
 {#if usr}
@@ -143,9 +155,16 @@
 
 {#if strava_token}
     <button class="btn btn-primary" type="button" on:click={backfillStravaData} disabled={backfilling}>Backfill all strava data</button>
-
+    <button class="btn btn-primary" type="button" on:click={updateStravaData} disabled={getting_new_data}>Refresh Strava Data</button>
     {#if backfilling}
         <p>Currently backfilling strava data. This can take some time. Please be patient.</p>
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    {/if}
+
+    {#if getting_new_data}
+        <p>Currently getting new strava data. This can take some time. Please be patient.</p>
         <div class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>

@@ -2,6 +2,7 @@ package activityrepo
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
@@ -17,19 +18,17 @@ type ActivityRepository interface {
 	//Read(activityUuid string) (*model.Activity, error)
 	Update(completed *model.Activity) error
 	Delete(activityUuid string) error
+	GetMostRecentDate(userUuid string) (time.Time, error)
 }
-
 // Represents a database connection.
 type IActivityRepository struct {
 	DB database.DbOperations
 }
-
 func NewIActivityRepository(db database.DbOperations) *IActivityRepository {
 	return &IActivityRepository{
 		DB: db,
 	}
 }
-
 // Create an activity in the database.
 //
 // The creates a new row in the activity table, planned table, completed table, and optionally in the activity equipment and activity type subtype tables.
@@ -76,7 +75,6 @@ func (db *IActivityRepository) Create(userUuid string, activity *model.Activity)
 	}
 	return nil
 }
-
 // Update an activity
 //
 // Note: a change in the activity_type_id will trigger a delete of all activity type subtypes
@@ -122,7 +120,6 @@ func (db *IActivityRepository) Update(activity *model.Activity) error {
 	}
 	return nil
 }
-
 // Delete an activity from the database
 //
 // Note: A delete will trigger a procedure in the database that deletes other things
@@ -134,4 +131,21 @@ func (db *IActivityRepository) Delete(activityUuid string) error {
 		return fmt.Errorf("error deleting activity: %w", err)
 	}
 	return nil
+}
+// Get the most recent activity that has completed data
+func (db *IActivityRepository) GetMostRecentDate(userUuid string) (time.Time, error) {
+	sql := sqlcode.SQLReader(sqlcode.Activity_GetMostRecent)
+	row := db.DB.QueryRow(sql, userUuid)
+
+	var mostRecentDateStr string
+	err := row.Scan(&mostRecentDateStr)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	mostRecentDate, err := time.Parse(dateutil.Layout, mostRecentDateStr)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return mostRecentDate, nil
 }
