@@ -8,6 +8,7 @@ INSERT INTO activity_type (name) VALUES ("Hike");
 INSERT INTO activity_type (name) VALUES ("Rest Day");
 INSERT INTO activity_type (name) VALUES ("Strength");
 INSERT INTO activity_type (name) VALUES ("Other");
+INSERT INTO activity_type (name) VALUES ("Mountain Bike")
 -- activity subtypes
 -- run subtypes
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Long", 1);
@@ -15,17 +16,18 @@ INSERT INTO activity_subtype (name, supertype_id) VALUES ("Fartlek", 1);
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Tempo", 1);
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Track", 1);
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Intervals", 1);
-INSERT INTO activity_subtype (name, supertype_id) VALUES ("Recovery Run", 1);
+INSERT INTO activity_subtype (name, supertype_id) VALUES ("Recovery", 1);
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Indoor", 1);
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Trails", 1);
 -- bike subtypes
+INSERT INTO activity_subtype (name, supertype_id) VALUES ("Long", 2);
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Velodrome", 2);
-INSERT INTO activity_subtype (name, supertype_id) VALUES ("Long Ride", 2);
-INSERT INTO activity_subtype (name, supertype_id) VALUES ("Recovery Ride", 2);
+INSERT INTO activity_subtype (name, supertype_id) VALUES ("Recovery", 2);
+INSERT INTO activity_subtype (name, supertype_id) VALUES ("Indoor", 2);
 -- swim subtypes
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Drills", 3);
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Open Water", 3);
-INSERT INTO activity_subtype (name, supertype_id) VALUES ("Recovery Swim", 3);
+INSERT INTO activity_subtype (name, supertype_id) VALUES ("Recovery", 3);
 
 -- equipment types
 INSERT INTO equipment_type (name) VALUES ("Shoes");
