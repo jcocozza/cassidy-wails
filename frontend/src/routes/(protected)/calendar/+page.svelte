@@ -18,7 +18,7 @@
 </script>
 
 {#if start_date && end_date && usr}
-    <CalendarViewer bind:usr={usr} bind:initial_start_date={start_date} bind:initial_end_date={end_date} />
+    <CalendarViewer bind:usr={usr} />
 {:else}
     <p>Loading CalendarViewer...</p>
 {/if}

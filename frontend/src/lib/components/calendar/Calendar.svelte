@@ -13,8 +13,6 @@
     import { ListActivityTypes } from '../../wailsjs/go/controllers/ActivityTypeHandler'
     import NewActivityModal from '../activity/NewActivityModal.svelte';
 
-    export let initial_start_date: Date;
-    export let initial_end_date: Date;
     export let equipment_choices: model.Equipment[];
     export let usr: model.User;
     let microcycle_list: model.Microcycle[];
@@ -55,7 +53,6 @@
 
     onMount(async () => {
         activity_type_list = await ListActivityTypes()
-        //microcycle_list = await GetCalendar(initial_start_date, initial_end_date);
         microcycle_list = await GetCalendar();
     })
 
