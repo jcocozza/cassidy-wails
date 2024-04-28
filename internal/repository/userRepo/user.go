@@ -122,7 +122,7 @@ func (db *IUserRepository) ReadStravaToken(user *model.User) (*oauth2.Token, err
 	// there should only ever be 1 user token
 	row := db.DB.QueryRow(sql, user.Uuid)
 	var accessToken, tokenType, refreshToken, expiryStr string
-	err := row.Scan(accessToken, tokenType, refreshToken, expiryStr)
+	err := row.Scan(&accessToken, &tokenType, &refreshToken, &expiryStr)
 	if err != nil {
 		return nil, err
 	}

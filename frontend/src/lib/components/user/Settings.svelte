@@ -6,11 +6,11 @@
     import { CreateStravaToken, UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
     import { BackfillData, GetNewData, OpenStravaAuth, StartListener } from '$lib/wailsjs/go/strava/Strava';
     import { GetMostRecentDate } from '$lib/wailsjs/go/controllers/ActivityHandler';
-    import { get } from 'svelte/store';
 
     export let usr: model.User;
+    export let existing_strava_token: oauth2.Token;
     let is_editing = false;
-    let strava_token: oauth2.Token;
+    //let strava_token: oauth2.Token;
     let backfilling: boolean = false;
     let redirect_message: boolean = false;
     let error_message: string = ""
@@ -53,13 +53,14 @@
         await OpenStravaAuth()
         redirect_message = true
         try {
-            strava_token = await StartListener()
+            let strava_token = await StartListener()
+            await CreateStravaToken(usr, strava_token)
+            existing_strava_token = strava_token
         } catch (error) {
             error_message = String(error)
             redirect_message = false
             return
         }
-        await CreateStravaToken(usr, strava_token)
         redirect_message = false
     }
 
@@ -131,45 +132,56 @@
 </div>
 -->
 
-<div class="col">
-    <div class="row">
-        {@html compwstrava}
-    </div>
-    <div class="row">
-        <button class="btn btn-sm" type="button" on:click={adf}>{@html connectwstrava}</button>
-    </div>
-    <div class="row">
-        {#if redirect_message}
-            <p>An authorization prompt should have opened in your browser, please check it and grant authorization.</p>
-        {/if}
-        {#if error_message}
-            <div class="container">
-                <div class="alert alert-danger" role="alert">
-                    {error_message}
+<div class="container">
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                {@html compwstrava}
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <div class="col">
+                    {#if !existing_strava_token}
+                        <div class="row">
+                            <button class="btn btn-sm" type="button" on:click={adf}>{@html connectwstrava}</button>
+                        </div>
+                    {/if}
+                    <div class="row">
+                        {#if redirect_message}
+                            <p>An authorization prompt should have opened in your browser, please check it and grant authorization.</p>
+                        {/if}
+                        {#if error_message}
+                            <div class="container">
+                                <div class="alert alert-danger" role="alert">
+                                    {error_message}
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
                 </div>
+
+                {#if existing_strava_token}
+                    <button class="btn btn-primary" type="button" on:click={backfillStravaData} disabled={backfilling}>Backfill all strava data</button>
+                    <button class="btn btn-primary" type="button" on:click={updateStravaData} disabled={getting_new_data}>Refresh Strava Data</button>
+                    {#if backfilling}
+                        <p>Currently backfilling strava data. This can take some time. Please be patient.</p>
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    {/if}
+                    {#if getting_new_data}
+                        <p>Currently getting new strava data. This can take some time. Please be patient.</p>
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    {/if}
+                {/if}
             </div>
-        {/if}
+          </div>
+      </div>
     </div>
 </div>
-
-
-{#if strava_token}
-    <button class="btn btn-primary" type="button" on:click={backfillStravaData} disabled={backfilling}>Backfill all strava data</button>
-    <button class="btn btn-primary" type="button" on:click={updateStravaData} disabled={getting_new_data}>Refresh Strava Data</button>
-    {#if backfilling}
-        <p>Currently backfilling strava data. This can take some time. Please be patient.</p>
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    {/if}
-
-    {#if getting_new_data}
-        <p>Currently getting new strava data. This can take some time. Please be patient.</p>
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    {/if}
-
-{/if}
 
 {/if}
