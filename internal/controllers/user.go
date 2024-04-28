@@ -138,3 +138,10 @@ func (uh *UserHandler) GetStravaToken(user *model.User) (*oauth2.Token, error) {
 	}
 	return token, nil
 }
+func (uh *UserHandler) DeleteStravaToken(user *model.User) error {
+	err := uh.UserRepository.DeleteStravaToken(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}

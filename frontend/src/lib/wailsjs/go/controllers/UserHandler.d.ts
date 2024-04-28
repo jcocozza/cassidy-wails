@@ -10,6 +10,8 @@ export function CreateStravaToken(arg1:model.User,arg2:oauth2.Token):Promise<voi
 
 export function CreateUser(arg1:model.User):Promise<model.User>;
 
+export function DeleteStravaToken(arg1:model.User):Promise<void>;
+
 export function GetMicrocycleCurrentDates():Promise<controllers.MCCurrentDate>;
 
 export function GetStravaToken(arg1:model.User):Promise<oauth2.Token>;

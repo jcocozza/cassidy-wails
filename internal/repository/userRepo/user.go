@@ -23,6 +23,7 @@ type UserRepository interface {
 	CreateStravaToken(user *model.User, token *oauth2.Token) error
 	ReadStravaToken(user *model.User) (*oauth2.Token, error)
 	UpdateStravaToken(user *model.User, token *oauth2.Token) error
+	DeleteStravaToken(user *model.User) error
 }
 
 // Represents a database connection
@@ -143,6 +144,15 @@ func (db *IUserRepository) UpdateStravaToken(user *model.User, token *oauth2.Tok
 	err := db.DB.Execute(sql, token.AccessToken, token.TokenType, token.RefreshToken, token.Expiry.Format(dateutil.TokenLayout), user.Uuid)
 	if err != nil {
 		return fmt.Errorf("failed to update strava token: %w", err)
+	}
+	return nil
+}
+// Delete the user's strava token
+func (db *IUserRepository) DeleteStravaToken(user *model.User) error {
+	sql := sqlcode.SQLReader(sqlcode.Strava_token_delete)
+	err := db.DB.Execute(sql, user.Uuid)
+	if err != nil {
+		return fmt.Errorf("failed to delete strava token: %w", err)
 	}
 	return nil
 }

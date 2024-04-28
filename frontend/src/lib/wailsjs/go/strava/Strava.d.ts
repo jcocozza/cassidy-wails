@@ -10,4 +10,6 @@ export function GetNewData(arg1:model.User,arg2:time.Time):Promise<void>;
 
 export function OpenStravaAuth():Promise<void>;
 
+export function RevokeAccess(arg1:model.User):Promise<void>;
+
 export function StartListener():Promise<oauth2.Token>;

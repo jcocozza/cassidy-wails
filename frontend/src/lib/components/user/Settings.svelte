@@ -2,13 +2,13 @@
     import compwstrava from '$lib/static/strava/strava_api_logos/compatible with strava/cptblWith_strava_light/api_logo_cptblWith_strava_horiz_light.svg?raw'
     import connectwstrava from '$lib/static/strava/connect_with_strava/btn_strava_connectwith_orange/btn_strava_connectwith_orange.svg?raw'
 
-    import type { model, oauth2 } from "../../wailsjs/go/models";
+    import { oauth2, type model } from "../../wailsjs/go/models";
     import { CreateStravaToken, UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
-    import { BackfillData, GetNewData, OpenStravaAuth, StartListener } from '$lib/wailsjs/go/strava/Strava';
+    import { BackfillData, GetNewData, OpenStravaAuth, RevokeAccess, StartListener } from '$lib/wailsjs/go/strava/Strava';
     import { GetMostRecentDate } from '$lib/wailsjs/go/controllers/ActivityHandler';
 
     export let usr: model.User;
-    export let existing_strava_token: oauth2.Token;
+    export let existing_strava_token: oauth2.Token | null;
     let is_editing = false;
     //let strava_token: oauth2.Token;
     let backfilling: boolean = false;
@@ -165,6 +165,7 @@
                 {#if existing_strava_token}
                     <button class="btn btn-primary" type="button" on:click={backfillStravaData} disabled={backfilling}>Backfill all strava data</button>
                     <button class="btn btn-primary" type="button" on:click={updateStravaData} disabled={getting_new_data}>Refresh Strava Data</button>
+                    <button class="btn btn-primary" type="button" on:click={() => {RevokeAccess(usr); existing_strava_token = null}} disabled={getting_new_data}>Revoke Strava Access</button>
                     {#if backfilling}
                         <p>Currently backfilling strava data. This can take some time. Please be patient.</p>
                         <div class="spinner-border" role="status">

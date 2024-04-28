@@ -14,6 +14,10 @@ export function CreateUser(arg1) {
   return window['go']['controllers']['UserHandler']['CreateUser'](arg1);
 }
 
+export function DeleteStravaToken(arg1) {
+  return window['go']['controllers']['UserHandler']['DeleteStravaToken'](arg1);
+}
+
 export function GetMicrocycleCurrentDates() {
   return window['go']['controllers']['UserHandler']['GetMicrocycleCurrentDates']();
 }

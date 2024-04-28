@@ -42,6 +42,7 @@ const (
 	Strava_token_create = "sql/user/create_strava_token.sql"
 	Strava_token_update = "sql/user/update_strava_token.sql"
 	Strava_token_read   = "sql/user/read_strava_token.sql"
+	Strava_token_delete = "sql/user/delete_strava_token.sql"
 	// Equipment Type
 	EquipmentType_list = "sql/equipment_type/list.sql"
 	// Activity Equipment

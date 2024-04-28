@@ -14,6 +14,10 @@ export function OpenStravaAuth() {
   return window['go']['strava']['Strava']['OpenStravaAuth']();
 }
 
+export function RevokeAccess(arg1) {
+  return window['go']['strava']['Strava']['RevokeAccess'](arg1);
+}
+
 export function StartListener() {
   return window['go']['strava']['Strava']['StartListener']();
 }

@@ -36,6 +36,15 @@ func (s *Strava) StartListener() (*oauth2.Token, error) {
 func (s *Strava) OpenStravaAuth() {
 	s.App.OpenAuthorizationGrant()
 }
+// Open the strava app settings so user can revoke access. Then delete their strava token from database.
+func (s *Strava) RevokeAccess(user *model.User) error {
+	s.App.OpenStravaAppSettings()
+	err := s.Handlers.UserHandler.DeleteStravaToken(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func (s *Strava) sportTypeToActivityType(activityId string, sportType swagger.SportType) (*model.ActivityType, []*model.ActivityTypeSubtype) {
 
 	var actType *model.ActivityType
