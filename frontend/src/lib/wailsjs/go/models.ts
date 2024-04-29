@@ -330,6 +330,7 @@ export namespace model {
 	    color: string;
 	    is_race: boolean;
 	    num_strides: number;
+	    map: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Activity(source);
@@ -351,6 +352,7 @@ export namespace model {
 	        this.color = source["color"];
 	        this.is_race = source["is_race"];
 	        this.num_strides = source["num_strides"];
+	        this.map = source["map"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

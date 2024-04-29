@@ -18,6 +18,7 @@ const (
 
 	//Activity
 	Activity_create = "sql/activity/create.sql"
+	Activity_read   = "sql/activity/read.sql"
 	Activity_update = "sql/activity/update.sql"
 	Activity_delete = "sql/activity/delete.sql"
 	Activity_GetMostRecent = "sql/activity/most_recent_date.sql"

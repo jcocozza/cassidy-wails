@@ -15,7 +15,7 @@ type ActivityRepository interface {
 	// Activity
 
 	Create(userUuid string, activity *model.Activity) error
-	//Read(activityUuid string) (*model.Activity, error)
+	Read(activityUuid string) (*model.Activity, error)
 	Update(completed *model.Activity) error
 	Delete(activityUuid string) error
 	GetMostRecentDate(userUuid string) (time.Time, error)
@@ -34,7 +34,7 @@ func NewIActivityRepository(db database.DbOperations) *IActivityRepository {
 // The creates a new row in the activity table, planned table, completed table, and optionally in the activity equipment and activity type subtype tables.
 func (db *IActivityRepository) Create(userUuid string, activity *model.Activity) error {
 	sqlActivity := sqlcode.SQLReader(sqlcode.Activity_create)
-	err := db.DB.Execute(sqlActivity, activity.Uuid, userUuid, activity.Date.Format(dateutil.TimeLayout), activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides)
+	err := db.DB.Execute(sqlActivity, activity.Uuid, userUuid, activity.Date.Format(dateutil.TimeLayout), activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides, activity.Map)
 	if err != nil {
 		return fmt.Errorf("failed to insert into activity table: %w", err)
 	}
@@ -75,6 +75,37 @@ func (db *IActivityRepository) Create(userUuid string, activity *model.Activity)
 	}
 	return nil
 }
+// Read an activity
+func (db *IActivityRepository) Read(activityUuid string) (*model.Activity, error) {
+	sql := sqlcode.SQLReader(sqlcode.Activity_read)
+	row := db.DB.QueryRow(sql, activityUuid)
+
+	activity := model.EmptyActivity()
+	dateStr := ""
+	err := row.Scan(&activity.Uuid,
+		&dateStr, &activity.Order, &activity.Name, &activity.Description, &activity.Notes, &activity.IsRace, &activity.NumStrides, &activity.Map,
+		&activity.Type.Id, &activity.Type.Name,
+		&activity.Planned.Distance.Length, &activity.Planned.Distance.Unit, &activity.Planned.Duration, &activity.Planned.Vertical.Length, &activity.Planned.Vertical.Unit,
+		&activity.Completed.Distance.Length, &activity.Completed.Distance.Unit, &activity.Completed.Duration, &activity.Completed.Vertical.Length, &activity.Completed.Vertical.Unit,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error scanning row: %w", err)
+	} else {
+		tmpDate, err := time.Parse(dateutil.TimeLayout, dateStr)
+		if err != nil {
+			return nil, fmt.Errorf("activity date failed to parse: %w", err)
+		}
+		activity.Date = tmpDate
+		activity.SetUuid(activity.Uuid)
+		err2 := activity.Validate()
+		if err2 != nil {
+			return nil, fmt.Errorf("activity failed to validate: %w", err2)
+		}
+	}
+
+	return activity, nil
+}
+
 // Update an activity
 //
 // Note: a change in the activity_type_id will trigger a delete of all activity type subtypes

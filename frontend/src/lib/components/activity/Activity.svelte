@@ -7,6 +7,7 @@
 
     import { DeleteActivity } from '../../wailsjs/go/controllers/ActivityHandler'
     import type { model } from "../../wailsjs/go/models";
+    import { goto } from "$app/navigation";
 
     export let activity: model.Activity;
     export let activity_type_list: model.ActivityTypeWithSubtypes[]
@@ -33,10 +34,16 @@
     }
 
     const dispatch = createEventDispatcher();
+
+    function handleRightClick(event: { preventDefault: () => void; }) {
+        event.preventDefault();
+        goto("activity?uuid=" + activity.uuid)
+    }
 </script>
 
 {#if activity && activity.activity_type && activity.completed && activity.planned}
-    <div class="activity-card" style="position: relative;">
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="activity-card" style="position: relative;" on:contextmenu={handleRightClick}>
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <!-- svelte-ignore a11y-mouse-events-have-key-events -->
         <div class="card" on:mouseover={handleMouseOver} on:mouseleave={handleMouseLeave}>

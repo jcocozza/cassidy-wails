@@ -105,6 +105,7 @@ func (s *Strava) stravaActivityToCassidyActivity(activity swagger.SummaryActivit
 		Completed: completed,
 		IsRace: false,
 		NumStrides: 0,
+		Map: activity.Map_.SummaryPolyline,
 	}
 
 	return act
@@ -117,7 +118,9 @@ func (s *Strava) BackfillData(user *model.User) error {
 	}
 	for _, page := range activitiyPages {
 		for _, activity := range page {
+			fmt.Println("strava activity summary polyline", activity.Map_.SummaryPolyline)
 			act := s.stravaActivityToCassidyActivity(activity, user)
+			fmt.Println("cassidy activity polyline:", act.Map)
 			_, err := s.Handlers.ActivityHandler.CreateActivity(act)
 			if err != nil {
 				return err

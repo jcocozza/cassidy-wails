@@ -4,7 +4,10 @@
  * If Duration is 0, return an empty string
  * @param duration a duration in seconds
  */
-export function ConvertDuration(duration: number): string {
+export function ConvertDuration(duration: number | undefined): string {
+    if (duration === undefined) {
+        return "0 min"
+    }
 
     // Calculate hours, minutes, and remaining seconds
     const hours: number = Math.floor(duration / 3600);
@@ -36,7 +39,10 @@ export function ConvertDuration(duration: number): string {
  * @param duration A duration in seconds
  * @returns a string representation of the duration
  */
-export function FormatDurationSimple(duration: number): string {
+export function FormatDurationSimple(duration: number | undefined): string {
+    if (duration === undefined) {
+        return ""
+    }
     if (duration === 0) {
         return ""
     }

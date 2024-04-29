@@ -24,6 +24,7 @@ type Activity struct {
 	Color           colorutil.Color        `json:"color"`
 	IsRace          bool                   `json:"is_race"`
 	NumStrides      int                    `json:"num_strides"`
+	Map				string				   `json:"map"`
 }
 // An empty activity has no uuid, date, order of -1, no name, no description, no notes, empty type, empty typesubtype list, empty equipment list, empty planned, empty completed
 func EmptyActivity() *Activity {
@@ -41,6 +42,7 @@ func EmptyActivity() *Activity {
 		Completed:       EmptyCompleted(),
 		IsRace:          false,
 		NumStrides:      0,
+		Map: 			 "",
 	}
 }
 // Validate an activity

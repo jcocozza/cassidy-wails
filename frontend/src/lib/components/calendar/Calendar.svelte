@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
 
     import { overrideItemIdKeyNameBeforeInitialisingDndZones } from "svelte-dnd-action";
     overrideItemIdKeyNameBeforeInitialisingDndZones("uuid");
@@ -52,7 +52,7 @@
     }
 
     onMount(async () => {
-        activity_type_list = await ListActivityTypes()
+        activity_type_list = await ListActivityTypes();
         microcycle_list = await GetCalendar();
     })
 
