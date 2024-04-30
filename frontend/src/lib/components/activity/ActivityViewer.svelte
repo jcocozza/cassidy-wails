@@ -44,7 +44,8 @@
 
 <div class="container">
     <h1>{activity.activity_type?.name} - {activity.name}</h1>
-    <h3>{activity.completed?.distance?.length} {activity.completed?.distance?.unit}  {activity.completed?.pace}</h3>
+    <h3>{activity.completed?.distance?.length} {activity.completed?.distance?.unit}</h3>
+    <h3>{activity.completed?.pace}</h3>
     {#each activity.type_subtype_list as subtype}
         <span style="margin-right: 1px; margin-bottom: 1px;" class="badge rounded-pill text-bg-secondary tag">{subtype.activity_subtype.name}</span>
     {/each}
@@ -88,24 +89,26 @@
                 {/each}
             </div>
         </div>
-        <!-- Map goes here -->
-        <div class="col-lg-8" style="min-height: 70vh;">
-            <MapLibre
-                    center={map_center}
-                    style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-                    class="map"
-                    standardControls
-                    zoom={15}
-                    hash
-                    >
-                    <GeoJSON id="mapppp" {data}>
-                        <LineLayer
-                        layout={{ 'line-cap': 'round', 'line-join': 'round' }}
-                        paint={{ 'line-color': '#0000FF', 'line-width': 3 }}
-                        />
-                    </GeoJSON>
-                </MapLibre>
-        </div>
+        {#if activity.map}
+            <!-- Map goes here -->
+            <div class="col-lg-8" style="min-height: 70vh;">
+                <MapLibre
+                        center={map_center}
+                        style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+                        class="map"
+                        standardControls
+                        zoom={15}
+                        hash
+                        >
+                        <GeoJSON id="mapppp" {data}>
+                            <LineLayer
+                            layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+                            paint={{ 'line-color': '#0000FF', 'line-width': 3 }}
+                            />
+                        </GeoJSON>
+                    </MapLibre>
+            </div>
+        {/if}
     </div>
 </div>
 
@@ -115,7 +118,7 @@
     width: 100%;
   }
 
-  .tbl {
+  .tbl th, td {
     border: 1px solid lightgray;
   }
 
