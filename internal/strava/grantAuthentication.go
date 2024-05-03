@@ -111,7 +111,8 @@ func (s *Strava) stravaActivityToCassidyActivity(activity swagger.SummaryActivit
 	return act
 }
 // Get all strava data and load it into the database
-func (s *Strava) BackfillData(user *model.User) error {
+func (s *Strava) BackfillData(user *model.User, token *oauth2.Token) error {
+	s.App.LoadTokenDirect(token)
 	activitiyPages, err := s.App.Api.GetActivities(context.TODO(), 200, nil, nil)
 	if err != nil {
 		return err
@@ -129,7 +130,8 @@ func (s *Strava) BackfillData(user *model.User) error {
 	}
 	return nil
 }
-func (s *Strava) GetNewData(user *model.User, mostRecentActivityDate time.Time) error {
+func (s *Strava) GetNewData(user *model.User, mostRecentActivityDate time.Time, token *oauth2.Token) error {
+	s.App.LoadTokenDirect(token)
 	activityPages, err := s.App.Api.GetActivities(context.TODO(), 200, nil, &mostRecentActivityDate)
 	if err != nil {
 		return err
