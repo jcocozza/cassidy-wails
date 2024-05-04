@@ -8,7 +8,7 @@ INSERT INTO activity_type (name) VALUES ("Hike");
 INSERT INTO activity_type (name) VALUES ("Rest Day");
 INSERT INTO activity_type (name) VALUES ("Strength");
 INSERT INTO activity_type (name) VALUES ("Other");
-INSERT INTO activity_type (name) VALUES ("Mountain Bike")
+INSERT INTO activity_type (name) VALUES ("Mountain Bike");
 -- activity subtypes
 -- run subtypes
 INSERT INTO activity_subtype (name, supertype_id) VALUES ("Long", 1);

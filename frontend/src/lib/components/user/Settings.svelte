@@ -66,14 +66,14 @@
 
     async function backfillStravaData() {
         backfilling = true;
-        await BackfillData(usr)
+        await BackfillData(usr, existing_strava_token!)
         backfilling = false;
     }
 
     async function updateStravaData() {
         getting_new_data = true;
         let latest = await GetMostRecentDate()
-        await GetNewData(usr, latest)
+        await GetNewData(usr, latest, existing_strava_token!)
         getting_new_data = false;
     }
 

@@ -105,19 +105,23 @@ func (s *Strava) stravaActivityToCassidyActivity(activity swagger.SummaryActivit
 		Completed: completed,
 		IsRace: false,
 		NumStrides: 0,
+		Map: activity.Map_.SummaryPolyline,
 	}
 
 	return act
 }
 // Get all strava data and load it into the database
-func (s *Strava) BackfillData(user *model.User) error {
+func (s *Strava) BackfillData(user *model.User, token *oauth2.Token) error {
+	s.App.LoadTokenDirect(token)
 	activitiyPages, err := s.App.Api.GetActivities(context.TODO(), 200, nil, nil)
 	if err != nil {
 		return err
 	}
 	for _, page := range activitiyPages {
 		for _, activity := range page {
+			fmt.Println("strava activity summary polyline", activity.Map_.SummaryPolyline)
 			act := s.stravaActivityToCassidyActivity(activity, user)
+			fmt.Println("cassidy activity polyline:", act.Map)
 			_, err := s.Handlers.ActivityHandler.CreateActivity(act)
 			if err != nil {
 				return err
@@ -126,7 +130,8 @@ func (s *Strava) BackfillData(user *model.User) error {
 	}
 	return nil
 }
-func (s *Strava) GetNewData(user *model.User, mostRecentActivityDate time.Time) error {
+func (s *Strava) GetNewData(user *model.User, mostRecentActivityDate time.Time, token *oauth2.Token) error {
+	s.App.LoadTokenDirect(token)
 	activityPages, err := s.App.Api.GetActivities(context.TODO(), 200, nil, &mostRecentActivityDate)
 	if err != nil {
 		return err

@@ -51,6 +51,19 @@ func (ah *ActivityHandler) CreateActivity(createRequest *model.Activity) (*model
 		return createRequest, nil
 	}
 }
+// Get an activity
+func (ah *ActivityHandler) GetActivity(activityUuid string) (*model.Activity, error) {
+	activity, err := ah.ActivityRepository.Read(activityUuid)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get activity: %w", err)
+	}
+
+	err1 := ah.ConversionRepository.ConvertActivity(conversionrepo.Outgoing, activity, ah.User.Units)
+	if err1 != nil {
+		return nil, fmt.Errorf("activity failed to convert outgoing: %w", err1)
+	}
+	return activity, nil
+}
 // Update an activity
 func (ah *ActivityHandler) UpdateActivity(updateRequest *model.Activity) (*model.Activity, error) {
 	err0 := ah.ConversionRepository.ConvertActivity(conversionrepo.Incoming, updateRequest, ah.User.Units)
