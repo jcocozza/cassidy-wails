@@ -97,7 +97,7 @@
                         style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
                         class="map"
                         standardControls
-                        zoom={15}
+                        zoom={12}
                         hash
                         >
                         <GeoJSON id="mapppp" {data}>
