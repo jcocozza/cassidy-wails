@@ -11,7 +11,7 @@
 
     async function logout() {
         await Logout()
-        goto("/home")
+        goto("/auth/login")
     }
 
     onMount(async () => {
