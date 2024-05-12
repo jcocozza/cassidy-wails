@@ -11,7 +11,7 @@
     export let equipment_choices: model.Equipment[];
     export let activity_type_list: model.ActivityTypeWithSubtypes[]
     export let display_completion: boolean;
-    export let today: HTMLDivElement;
+    export let today: HTMLDivElement | null;
     export let is_hovering: boolean = false;
 
     const dispatch = createEventDispatcher()
@@ -53,7 +53,7 @@
         </div>
     </div>
     <!-- If it is today, assign an invisible div so that we can return to it later -->
-    {#if IsToday(activity_list.date.toString())}
+    {#if today !== null && IsToday(activity_list.date.toString())}
         <div bind:this={today}></div>
     {/if}
 </td>

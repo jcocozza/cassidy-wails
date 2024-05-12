@@ -6,6 +6,7 @@
 
     import { overrideItemIdKeyNameBeforeInitialisingDndZones } from "svelte-dnd-action";
     import NewActivityModal from '../activity/NewActivityModal.svelte';
+    import CalendarCell from './CalendarCell.svelte';
     overrideItemIdKeyNameBeforeInitialisingDndZones("uuid");
 
     export let activity_type_list: model.ActivityTypeWithSubtypes[];
@@ -73,17 +74,6 @@
                                         {ParseDateYYYYMMDD(cycle.date)}
                                     {/if}
                                 </div>
-                                <div class="col">
-                                    <NewActivityModal
-                                        bind:usr={usr}
-                                        bind:equipment_choices={equipment_choices}
-                                        bind:date={cycle.date}
-                                        bind:activity_list={cycle.activity_list}
-                                        bind:activity_type_list={activity_type_list}
-                                        is_hovering={true}
-                                        on:new={dispatchUpdate}
-                                    />
-                                </div>
                             </div>
                         </th>
                     {/each}
@@ -103,16 +93,16 @@
                 <tbody>
                     <tr>
                         {#each microcycle.cycle_activities as activity_list}
-                            <td>
-                                <ActivityList
-                                    bind:activity_list={activity_list}
-                                    bind:date={activity_list.date}
-                                    bind:activity_type_list={activity_type_list}
-                                    bind:display_completion={display_completion}
-                                    bind:equipment_choices={equipment_choices}
-                                    on:change={dispatchUpdate}
-                                />
-                            </td>
+                            <CalendarCell
+                                bind:activity_list={activity_list}
+                                bind:num_cycle_days={microcycle.cycle_activities.length}
+                                bind:usr={usr}
+                                bind:equipment_choices={equipment_choices}
+                                bind:activity_type_list={activity_type_list}
+                                bind:display_completion={display_completion}
+                                today={null}
+                                on:update={dispatchUpdate}
+                            />
                         {/each}
                         {#if summary_col_is_visible}
                             <td style="padding: 0;">
