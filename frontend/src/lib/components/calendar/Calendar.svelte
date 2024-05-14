@@ -183,8 +183,8 @@
                             Planning
                             <table class="summary">
                                 <tr>
-                                    <td>Realized <br> (%)</td>
-                                    <td>Actual <br> (%)</td>
+                                    <td>Completed</td>
+                                    <td>Planned</td>
                                 </tr>
                             </table>
                         </th>
