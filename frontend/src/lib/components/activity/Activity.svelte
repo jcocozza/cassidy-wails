@@ -43,7 +43,7 @@
 
 {#if activity && activity.activity_type && activity.completed && activity.planned}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="activity-card" style="position: relative;" on:contextmenu={handleRightClick}>
+    <div class="activity-card" style="position: relative; margin-bottom: 5px" on:contextmenu={handleRightClick}>
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <!-- svelte-ignore a11y-mouse-events-have-key-events -->
         <div class="card" on:mouseover={handleMouseOver} on:mouseleave={handleMouseLeave}>
