@@ -67,7 +67,7 @@
                                     <div class="input-group w-50">
                                         <label for="mileage">Mileage: </label>
                                         <input class="form-control" type="number" step="0.01" bind:value={equipment.mileage.length} disabled={!is_editing} readonly={!is_editing}>
-                                        <select id="activitylenunits" bind:value={equipment.mileage.unit} disabled={!is_editing}>
+                                        <select class="form-control" id="activitylenunits" bind:value={equipment.mileage.unit} disabled={!is_editing}>
                                             <option value="m">m</option>
                                             <option value="yd">yd</option>
                                             <option value="mi">mi</option>
@@ -81,12 +81,10 @@
                                     <label for="equipment_notes">Notes:</label>
                                     <input class="form-control" id="equipment_notes" type="text" bind:value={equipment.notes} aria-label="Disabled input example" disabled={!is_editing} readonly={!is_editing}>
 
-                                    <!--
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="equipment-{equipment.id}-is-retired" bind:checked={equipment.is_retired}>
                                         <label class="form-check-label text-danger" for="equipment-{equipment.id}-is-retired">Retire</label>
                                     </div>
-                                    -->
                                 </div>
 
                                 {#if is_editing}

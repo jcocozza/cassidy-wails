@@ -69,7 +69,7 @@
                                     <div class="input-group w-50">
                                         <label for="mileage">Initial mileage: </label>
                                         <input class="form-control" type="number" step="0.01" bind:value={new_equipment.mileage.length}>
-                                        <select id="activitylenunits" bind:value={new_equipment.mileage.unit}>
+                                        <select class="form-control" id="activitylenunits" bind:value={new_equipment.mileage.unit}>
                                             <option value="m">m</option>
                                             <option value="yd">yd</option>
                                             <option value="mi">mi</option>
@@ -83,8 +83,6 @@
                                     <label for="notes">Notes:</label>
                                     <input class="form-control" id="notes" type="text" bind:value={new_equipment.notes}>
 
-                                    <label for="retired">Retire</label>
-                                    <input class="form-control" id="retired" type="checkbox" bind:checked={new_equipment.is_retired}>
                                 </div>
 
                                 <button class="btn btn-primary" type="submit">Submit</button>
