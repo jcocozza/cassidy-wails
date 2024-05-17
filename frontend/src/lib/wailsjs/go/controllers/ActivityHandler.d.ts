@@ -5,6 +5,8 @@ import {time} from '../models';
 
 export function CreateActivity(arg1:model.Activity):Promise<model.Activity>;
 
+export function CreateOrMergeActivity(arg1:model.Activity):Promise<model.Activity>;
+
 export function DeleteActivity(arg1:string):Promise<void>;
 
 export function GetActivity(arg1:string):Promise<model.Activity>;

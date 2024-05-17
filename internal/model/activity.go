@@ -146,6 +146,57 @@ func (a *Activity) CompletionColor() (colorutil.Color, error) {
 	}
 	return colorutil.Grey, nil // default color is grey
 }
+// Logic for merging activities
+//
+// Check if the passed activity can be merged into the activity
+//
+// These checks should be redundant with proper database querying.
+// When merging activities, one can just query the database based on similar conditions.
+//
+// Check for the following:
+//  1. same date
+//  2. no completed data
+//  3. same activity type
+func (a *Activity) CanMerge(activity *Activity) bool {
+	// dates need to be the same
+	y1, m1, d1 := a.Date.Date()
+	y2, m2, d2 := activity.Date.Date()
+	if y1 != y2 || m1 != m2 || d1 != d2 {
+		return false
+	}
+	// shouldn't merge if there is already completed data
+	if !a.Completed.IsZero() {
+		return false
+	}
+	// only merge activities of the same type
+	if a.Type.Id != activity.Type.Id {
+		return false
+	}
+	return true
+}
+// Merge the passed activity into the activity
+//
+// This is typically used on import from external sources like Strava
+func (a *Activity) Merge(activity *Activity) {
+	a.Completed = activity.Completed
+
+	// A merge will not overwrite existing fields unless those fields are already empty
+	if a.Description == "" {
+		a.Description = activity.Description
+	}
+	if a.Name == "" {
+		a.Name = activity.Name
+	}
+	if a.Notes == "" {
+		a.Notes = activity.Notes
+	}
+    if a.Map == "" {
+        a.Map = activity.Map
+    }
+	// the new activity uuid will override the old one
+	// hopefully this will eventually facilitate easier look back to data sources
+    a.SetUuid(activity.Uuid)
+}
 // Represents a list of activities on a given day
 type ActivityList struct {
 	Date         time.Time   `json:"date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`

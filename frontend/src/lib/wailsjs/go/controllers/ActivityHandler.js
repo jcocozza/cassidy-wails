@@ -6,6 +6,10 @@ export function CreateActivity(arg1) {
   return window['go']['controllers']['ActivityHandler']['CreateActivity'](arg1);
 }
 
+export function CreateOrMergeActivity(arg1) {
+  return window['go']['controllers']['ActivityHandler']['CreateOrMergeActivity'](arg1);
+}
+
 export function DeleteActivity(arg1) {
   return window['go']['controllers']['ActivityHandler']['DeleteActivity'](arg1);
 }

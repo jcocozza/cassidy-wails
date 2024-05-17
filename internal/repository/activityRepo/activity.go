@@ -18,7 +18,8 @@ type ActivityRepository interface {
 	Read(activityUuid string) (*model.Activity, error)
 	Update(completed *model.Activity) error
 	Delete(activityUuid string) error
-	GetMostRecentDate(userUuid string) (time.Time, error)
+    GetMostRecentDate(userUuid string) (time.Time, error)
+	CreateOrMerge(activity *model.Activity, userUuid string) error
 }
 // Represents a database connection.
 type IActivityRepository struct {
@@ -179,4 +180,79 @@ func (db *IActivityRepository) GetMostRecentDate(userUuid string) (time.Time, er
 		return time.Time{}, err
 	}
 	return mostRecentDate, nil
+}
+// Create an activity with the possibility of a merge
+//
+// Check for activities with the following criteria:
+// 	1. same date as passed activity
+// 	2. same activity type
+// 	3. no completed data
+//
+// After that, if there is one activity, do the merge.
+func (db *IActivityRepository) CreateOrMerge(activity *model.Activity, userUuid string) error {
+    sql := sqlcode.SQLReader(sqlcode.Activity_CheckDate)
+    rows, err := db.DB.Query(sql, activity.Date.Format(dateutil.Layout), userUuid, activity.Type.Id)
+    if err != nil {
+        return fmt.Errorf("error create/merge activity: %w", err)
+    }
+    dateActivityList := []*model.Activity{}
+    for rows.Next() {
+        // do stuff here
+        tmpAct := model.EmptyActivity()
+        tmpDateStr := ""
+
+        err := rows.Scan(&tmpAct.Uuid,
+			&tmpDateStr, &tmpAct.Order, &tmpAct.Name, &tmpAct.Description, &tmpAct.Notes, &tmpAct.IsRace, &tmpAct.NumStrides, &tmpAct.Map,
+			&tmpAct.Type.Id, &tmpAct.Type.Name,
+			&tmpAct.Planned.Distance.Length, &tmpAct.Planned.Distance.Unit, &tmpAct.Planned.Duration, &tmpAct.Planned.Vertical.Length, &tmpAct.Planned.Vertical.Unit,
+			&tmpAct.Completed.Distance.Length, &tmpAct.Completed.Distance.Unit, &tmpAct.Completed.Duration, &tmpAct.Completed.Vertical.Length, &tmpAct.Completed.Vertical.Unit,
+		)
+		if err != nil {
+			return fmt.Errorf("error scanning row: %w", err)
+		} else {
+
+			tmpDate, err := time.Parse(dateutil.TimeLayout, tmpDateStr)
+			if err != nil {
+				return fmt.Errorf("activity date failed to parse: %w", err)
+			}
+			tmpAct.Date = tmpDate
+			tmpAct.SetUuid(tmpAct.Uuid)
+			err2 := tmpAct.Validate()
+			if err2 != nil {
+				return fmt.Errorf("activity failed to validate: %w", err2)
+			}
+			dateActivityList = append(dateActivityList, tmpAct)
+		}
+    }
+    if len(dateActivityList) != 0 {
+        fmt.Println("activity list is long enough to consider activity merging")
+    }
+    // once we have all the existing activities for the day, we can check if any of them are eligible for merging.
+    for _, act := range dateActivityList {
+        // TODO: unsure if this logic is entirely correct.
+        // probably need to be more sophisticated about the merging logic
+        // two activities could be eligible for merger, but the first one gets chosen just b/c is appears first
+        // it would make sense to extent the logic to merge based on which activity appears more similar in the planned data
+        // e.g. 2 activities can be merged into an activity that has 5 miles planned
+        // if one of the activities has 10 miles completed and the other has 4 miles completed
+        // we should merge the 4 mile one with the 5 mile planned one
+        // (all else being equal)
+        fmt.Println("activity can merge value: ", act.CanMerge(activity))
+        if act.CanMerge(activity) {
+            oldUuid := act.Uuid
+            fmt.Println("************* ACTIVITY MERGE *****************")
+            fmt.Println("merging activity: " + act.Uuid + " -> " + activity.Uuid)
+            act.Merge(activity)
+            // replace the old uuid with the one that comes from the activity
+            updateUuidSQL := sqlcode.SQLReader(sqlcode.Activity_UpdateUuid)
+            err := db.DB.Execute(updateUuidSQL, activity.Uuid, oldUuid, activity.Uuid, oldUuid, activity.Uuid, oldUuid)
+            if err != nil {
+                return fmt.Errorf("failed to update uuid during merge: %w", err)
+            }
+
+            return db.Update(act)
+        }
+    }
+    // if there are no merges, or the activity cannot be merged, then we need to create a new activity
+    return db.Create(userUuid, activity)
 }

@@ -22,7 +22,8 @@ const (
 	Activity_update = "sql/activity/update.sql"
 	Activity_delete = "sql/activity/delete.sql"
 	Activity_GetMostRecent = "sql/activity/most_recent_date.sql"
-
+    Activity_CheckDate = "sql/activity/check_date_for_activity.sql"
+    Activity_UpdateUuid = "sql/activity/update_activity_uuid.sql"
 	// Planned
 	Planned_create     = "sql/planned/create.sql"
 	Planned_read       = "sql/planned/read.sql"

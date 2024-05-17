@@ -100,3 +100,34 @@ func (ah *ActivityHandler) GetMostRecentDate() (time.Time, error) {
 	fmt.Println("got most recent date: ", date)
 	return date, nil
 }
+
+// Create an activity
+func (ah *ActivityHandler) CreateOrMergeActivity(createRequest *model.Activity) (*model.Activity, error) {
+	err0 := ah.ConversionRepository.ConvertActivity(conversionrepo.Incoming, createRequest, ah.User.Units)
+	if err0 != nil {
+		return nil, err0
+	}
+
+	if createRequest.Uuid == "" {
+		newActUuid := uuidgen.GenerateUUID()
+		createRequest.SetUuid(newActUuid)
+	}
+
+	err := createRequest.Validate()
+	if err != nil {
+		return nil, fmt.Errorf("activity failed to validate: %w", err)
+	}
+
+	err2 := ah.ActivityRepository.CreateOrMerge(createRequest, ah.User.Uuid)
+	if err2 != nil {
+		return nil, fmt.Errorf("failed to create activity: %w", err2)
+	} else {
+		err3 := ah.ConversionRepository.ConvertActivity(conversionrepo.Outgoing, createRequest, ah.User.Units)
+		if err3 != nil {
+			return nil, fmt.Errorf("activity failed to convert: %w", err3)
+		}
+		return createRequest, nil
+	}
+}
+
+

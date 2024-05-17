@@ -111,6 +111,8 @@ func (s *Strava) stravaActivityToCassidyActivity(activity swagger.SummaryActivit
 	return act
 }
 // Get all strava data and load it into the database
+//
+// Will not attempt to merge prior activity data
 func (s *Strava) BackfillData(user *model.User, token *oauth2.Token) error {
 	s.App.LoadTokenDirect(token)
 	activitiyPages, err := s.App.Api.GetActivities(context.TODO(), 200, nil, nil)
@@ -119,9 +121,7 @@ func (s *Strava) BackfillData(user *model.User, token *oauth2.Token) error {
 	}
 	for _, page := range activitiyPages {
 		for _, activity := range page {
-			fmt.Println("strava activity summary polyline", activity.Map_.SummaryPolyline)
 			act := s.stravaActivityToCassidyActivity(activity, user)
-			fmt.Println("cassidy activity polyline:", act.Map)
 			_, err := s.Handlers.ActivityHandler.CreateActivity(act)
 			if err != nil {
 				return err
@@ -140,7 +140,8 @@ func (s *Strava) GetNewData(user *model.User, mostRecentActivityDate time.Time, 
 	for _, page := range activityPages {
 		for _, activity := range page {
 			act := s.stravaActivityToCassidyActivity(activity, user)
-			_, err := s.Handlers.ActivityHandler.CreateActivity(act)
+			//_, err := s.Handlers.ActivityHandler.CreateActivity(act)
+            _, err := s.Handlers.ActivityHandler.CreateOrMergeActivity(act)
 			if err != nil {
 				return err
 			}

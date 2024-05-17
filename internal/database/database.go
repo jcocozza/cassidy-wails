@@ -17,14 +17,14 @@ type Database struct {
 //
 // Pass in args for placeholders in query.
 func (d *Database) Execute(sql string, args ...any) error {
-	slog.Info(runningSql + sql)
-    slog.Info("Args: " + fmt.Sprint(args...))
+	slog.Debug(runningSql + sql)
+    slog.Debug("Args: " + fmt.Sprint(args...))
 
 	_, err := d.DB.Exec(sql, args...)
 	if err != nil {
 		return err
 	}
-	slog.Info(completedSql)
+	slog.Debug(completedSql)
 	return nil
 }
 // Execute sql and return the inserted row id.
