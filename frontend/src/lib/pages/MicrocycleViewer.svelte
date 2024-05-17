@@ -22,7 +22,6 @@
     let next_previous: controllers.NextPrevious;
 
     let is_loading: boolean = false;
-
     function loadPage(direction: string) {
         if (direction == "next") {
             start_date = next_previous.next_start_date;
@@ -117,8 +116,9 @@
         <div class="col">
             <div class="container">
                 <NCycleLineChart
-                    bind:start_date={microcycle.start_date}
-                    bind:end_date={microcycle.end_date}
+                    bind:microcycle={microcycle}
+                    bind:start_date={start_date}
+                    bind:end_date={end_date}
                 />
             </div>
         </div>

@@ -8,6 +8,7 @@
 
     export let start_date: Date;
     export let end_date: Date;
+    export let microcycle: model.Microcycle;
 
     let chart_type: string = "distance"
     let ctx;

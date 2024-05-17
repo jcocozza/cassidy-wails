@@ -48,7 +48,7 @@
                 bind:activity_type_list={activity_type_list}
                 bind:display_completion={display_completion}
                 bind:equipment_choices={equipment_choices}
-                on:new={() => {dispatch("update")}}
+                on:change={() => {dispatch("update")}}
             />
         </div>
     </div>
