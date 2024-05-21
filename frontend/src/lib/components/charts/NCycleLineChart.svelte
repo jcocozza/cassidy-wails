@@ -1,13 +1,14 @@
 <script lang="ts">
     import Chart from "chart.js/auto";
     import { afterUpdate, onMount } from "svelte";
-    import { ConvertDuration } from "../../model/date";
+    import { ConvertDuration, ParseDateYYYYMMDD } from "../../model/date";
     import { model } from "../../wailsjs/go/models";
     import { GetMicrocycleCurrentDates } from "../../wailsjs/go/controllers/UserHandler";
     import { GetNCycleSummary } from '../../wailsjs/go/controllers/MiscHandler'
 
-    export let start_date: string = "";
-    export let end_date: string = "";
+    export let start_date: Date;
+    export let end_date: Date;
+    export let microcycle: model.Microcycle;
 
     let chart_type: string = "distance"
     let ctx;
@@ -17,7 +18,7 @@
     let yAxisTitle = "";
 
     function updateChart(type: string) {
-        chart.data.labels = n_cycle_summary.start_date_list.map(d => d.date)
+        chart.data.labels = n_cycle_summary.start_date_list.map(d => ParseDateYYYYMMDD(d))
         if (type == "distance") {
             chart.data.datasets = [
                 {
@@ -36,7 +37,7 @@
             ]
             yAxisTitle = "distance (" + n_cycle_summary.completed_distances[0].unit + ")";
             // the error is not a problem here?
-            chart.options.scales.y.title = { display: true, text: yAxisTitle }
+            chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
         } else if (type == "duration") {
             chart.data.datasets = [
                 {
@@ -55,7 +56,7 @@
             ]
             yAxisTitle = ""
             // the error is not a problem here?
-            chart.options.scales.y.title = { display: true, text: yAxisTitle }
+            chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
         } else if (type == "vertical") {
             chart.data.datasets = [
                 {
@@ -74,7 +75,7 @@
             ]
             yAxisTitle = "vertical (" + n_cycle_summary.completed_verticals[0].unit + ")";
             // the error is not a problem here?
-            chart.options.scales.y.title = { display: true, text: yAxisTitle }
+            chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
         }
         chart.update()
     }
@@ -85,7 +86,7 @@
         chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: n_cycle_summary.start_date_list.map(d => d.date),
+                labels: n_cycle_summary.start_date_list.map(d => ParseDateYYYYMMDD(d)),
                 datasets: [
                     {
                         label: "Completed Distance: " + n_cycle_summary.completed_distances[0].unit,
@@ -141,7 +142,7 @@
     }
 
     onMount(async () => {
-        if (start_date == "" || end_date == "") {
+        if (start_date.toString() == "" || end_date.toString() == "") {
             let d = await GetMicrocycleCurrentDates()
             n_cycle_summary = await GetNCycleSummary(d.start_date, d.end_date);
         } else {

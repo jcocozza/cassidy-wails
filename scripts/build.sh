@@ -8,3 +8,5 @@ sudo bash setup_db.sh
 cd ../build/bin
 tar -cvf cassidy.app.tar cassidy.app
 mv cassidy.app.tar ~/Downloads
+cd ../..
+wails dev

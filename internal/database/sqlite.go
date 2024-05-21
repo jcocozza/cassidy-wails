@@ -92,6 +92,9 @@ func TableCreate(db *sql.DB) {
 	}
 
 	for _, file := range files {
+		if file == "init" {
+			continue
+		}
 		sql := utils.SQLReader(dir + file)
 		_, err := db.Exec(sql)
 		if err != nil {

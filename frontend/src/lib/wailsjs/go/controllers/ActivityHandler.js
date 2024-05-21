@@ -6,8 +6,20 @@ export function CreateActivity(arg1) {
   return window['go']['controllers']['ActivityHandler']['CreateActivity'](arg1);
 }
 
+export function CreateOrMergeActivity(arg1) {
+  return window['go']['controllers']['ActivityHandler']['CreateOrMergeActivity'](arg1);
+}
+
 export function DeleteActivity(arg1) {
   return window['go']['controllers']['ActivityHandler']['DeleteActivity'](arg1);
+}
+
+export function GetActivity(arg1) {
+  return window['go']['controllers']['ActivityHandler']['GetActivity'](arg1);
+}
+
+export function GetMostRecentDate() {
+  return window['go']['controllers']['ActivityHandler']['GetMostRecentDate']();
 }
 
 export function UpdateActivity(arg1) {

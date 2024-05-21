@@ -1,6 +1,6 @@
 -- get all activities for a user between two dates
 SELECT DISTINCT activity.uuid,
-        activity.date, activity.`order`, activity.name, activity.description, activity.notes, activity.is_race, activity.num_strides,
+        activity.date, activity.`order`, activity.name, activity.description, activity.notes, activity.is_race, activity.num_strides, activity.map,
         activity_type.id, activity_type.name,
         planned.distance, planned.distance_unit, planned.duration, planned.vertical, planned.vertical_unit,
         completed.distance, completed.distance_unit, completed.duration, completed.vertical, completed.vertical_unit

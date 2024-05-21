@@ -17,8 +17,8 @@ const (
 type MeasurementRepository interface {
 	ConvertActivity(direction, *model.Activity, measurement.UnitClass) error
 
-	ConvertPlanned(direction, *model.Planned) error
-	ConvertCompleted(direction, *model.Completed) error
+	ConvertPlanned(direction, *model.Planned, measurement.UnitClass) error
+	ConvertCompleted(direction, *model.Completed, measurement.UnitClass) error
 
 	ConvertEquipment(direction, *model.Equipment) error
 	ConvertActivityEquipment(direction, *model.ActivityEquipment) error
@@ -46,7 +46,6 @@ func NewIMeasurementRepository() *IMeasurementRepository {
 
 // Convert an activity
 func (mr *IMeasurementRepository) ConvertActivity(direction direction, activity *model.Activity, userUnitClass measurement.UnitClass) error {
-
 	// before conversion, we calculate activity paces
 	activity.CalculatePace(userUnitClass)
 	color, err := activity.CompletionColor()
@@ -55,11 +54,11 @@ func (mr *IMeasurementRepository) ConvertActivity(direction direction, activity 
 	}
 	activity.Color = color
 
-	err1 := mr.ConvertPlanned(direction, activity.Planned)
+	err1 := mr.ConvertPlanned(direction, activity.Planned, userUnitClass)
 	if err1 != nil {
 		return fmt.Errorf("failed to convert planned during activity conversion: %w", err1)
 	}
-	err2 := mr.ConvertCompleted(direction, activity.Completed)
+	err2 := mr.ConvertCompleted(direction, activity.Completed, userUnitClass)
 	if err2 != nil {
 		return fmt.Errorf("failed to convert completed during activity conversion: %w", err2)
 	}
@@ -73,7 +72,7 @@ func (mr *IMeasurementRepository) ConvertActivity(direction direction, activity 
 }
 
 // Convert a planned object
-func (mr *IMeasurementRepository) ConvertPlanned(direction direction, planned *model.Planned) error {
+func (mr *IMeasurementRepository) ConvertPlanned(direction direction, planned *model.Planned, userUnitClass measurement.UnitClass) error {
 	if direction == Incoming {
 		err1 := measurement.IntoDatabaseConversion(planned.Distance)
 		if err1 != nil {
@@ -84,11 +83,11 @@ func (mr *IMeasurementRepository) ConvertPlanned(direction direction, planned *m
 			return fmt.Errorf("failed to convert incoming planned vertical: %w", err2)
 		}
 	} else if direction == Outgoing {
-		err1 := measurement.LeavingDatabaseConversion(planned.Distance)
+		err1 := measurement.LeavingDatabaseConversionUnitClass(planned.Distance, userUnitClass, measurement.Distance)
 		if err1 != nil {
 			return fmt.Errorf("failed to convert outgoing planned distance: %w", err1)
 		}
-		err2 := measurement.LeavingDatabaseConversion(planned.Vertical)
+		err2 := measurement.LeavingDatabaseConversionUnitClass(planned.Vertical, userUnitClass, measurement.Vertical)
 		if err2 != nil {
 			return fmt.Errorf("failed to convert outgoing planned vertical: %w", err2)
 		}
@@ -97,7 +96,7 @@ func (mr *IMeasurementRepository) ConvertPlanned(direction direction, planned *m
 }
 
 // Convert a completed object
-func (mr *IMeasurementRepository) ConvertCompleted(direction direction, completed *model.Completed) error {
+func (mr *IMeasurementRepository) ConvertCompleted(direction direction, completed *model.Completed, userUnitClass measurement.UnitClass) error {
 	if direction == Incoming {
 		err1 := measurement.IntoDatabaseConversion(completed.Distance)
 		if err1 != nil {
@@ -108,11 +107,11 @@ func (mr *IMeasurementRepository) ConvertCompleted(direction direction, complete
 			return fmt.Errorf("failed to convert completed: %w", err2)
 		}
 	} else if direction == Outgoing {
-		err1 := measurement.LeavingDatabaseConversion(completed.Distance)
+		err1 := measurement.LeavingDatabaseConversionUnitClass(completed.Distance, userUnitClass, measurement.Distance)
 		if err1 != nil {
 			return fmt.Errorf("failed to convert completed: %w", err1)
 		}
-		err2 := measurement.LeavingDatabaseConversion(completed.Vertical)
+		err2 := measurement.LeavingDatabaseConversionUnitClass(completed.Vertical, userUnitClass, measurement.Vertical)
 		if err2 != nil {
 			return fmt.Errorf("failed to convert completed: %w", err2)
 		}

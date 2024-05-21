@@ -7,7 +7,7 @@ import (
 
 /*
 	This file holds file paths for all sql queries that are read in.
-	This way, if the paths change or need to be reused, everything is in once place and only needs to be changed once.
+	This way, if the paths change or need to be reused, everything is in one place and only needs to be changed once.
 */
 
 //go:embed all:sql
@@ -18,9 +18,12 @@ const (
 
 	//Activity
 	Activity_create = "sql/activity/create.sql"
+	Activity_read   = "sql/activity/read.sql"
 	Activity_update = "sql/activity/update.sql"
 	Activity_delete = "sql/activity/delete.sql"
-
+	Activity_GetMostRecent = "sql/activity/most_recent_date.sql"
+    Activity_CheckDate = "sql/activity/check_date_for_activity.sql"
+    Activity_UpdateUuid = "sql/activity/update_activity_uuid.sql"
 	// Planned
 	Planned_create     = "sql/planned/create.sql"
 	Planned_read       = "sql/planned/read.sql"
@@ -37,6 +40,11 @@ const (
 	User_update        = "sql/user/update.sql"
 	User_delete        = "sql/user/delete.sql"
 	User_preferences   = "sql/user/read_preferences.sql"
+	// User strava token
+	Strava_token_create = "sql/user/create_strava_token.sql"
+	Strava_token_update = "sql/user/update_strava_token.sql"
+	Strava_token_read   = "sql/user/read_strava_token.sql"
+	Strava_token_delete = "sql/user/delete_strava_token.sql"
 	// Equipment Type
 	EquipmentType_list = "sql/equipment_type/list.sql"
 	// Activity Equipment

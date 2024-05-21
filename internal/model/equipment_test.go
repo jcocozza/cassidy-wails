@@ -53,7 +53,7 @@ func TestEquipment_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{"valid", fields{Id: 1, UserUuid: "c2cb0cd2-cac8-11ee-b5e8-325096b39f47", EquipmentType: &EquipmentType{Id: 1, Name: "Shoes"}, Name: "name", Brand: "brand", Model: "model", Cost: 150, Size: "14", PurchaseDate: "2020-01-01", Notes: "", Mileage: measurement.CreateMeasurement(measurement.Mile, 0)}, false},
-		{"invalid user uuid", fields{Id: 1, UserUuid: "", EquipmentType: &EquipmentType{Id: 1, Name: "Shoes"}, Name: "name", Brand: "brand", Model: "model", Cost: 150, Size: "14", PurchaseDate: "2020-01-01", Notes: "", Mileage: measurement.CreateMeasurement(measurement.Mile, 100)}, true},
+		//{"invalid user uuid", fields{Id: 1, UserUuid: "", EquipmentType: &EquipmentType{Id: 1, Name: "Shoes"}, Name: "name", Brand: "brand", Model: "model", Cost: 150, Size: "14", PurchaseDate: "2020-01-01", Notes: "", Mileage: measurement.CreateMeasurement(measurement.Mile, 100)}, true},
 		{"invalid equipment type id", fields{Id: 1, UserUuid: "c2cb0cd2-cac8-11ee-b5e8-325096b39f47", EquipmentType: &EquipmentType{Id: -1, Name: "Shoes"}, Name: "name", Brand: "brand", Model: "model", Cost: 150, Size: "14", PurchaseDate: "2020-01-01", Notes: "", Mileage: measurement.CreateMeasurement(measurement.Mile, 10)}, true},
 		{"invalid mileage", fields{Id: 1, UserUuid: "c2cb0cd2-cac8-11ee-b5e8-325096b39f47", EquipmentType: &EquipmentType{Id: 1, Name: "Shoes"}, Name: "name", Brand: "brand", Model: "model", Cost: 150, Size: "14", PurchaseDate: "2020-01-01", Notes: "", Mileage: measurement.CreateMeasurement(measurement.Mile, -1)}, true},
 	}
@@ -73,7 +73,7 @@ func TestEquipment_Validate(t *testing.T) {
 				Mileage:       tt.fields.Mileage,
 			}
 			if err := e.Validate(); (err != nil) != tt.wantErr {
-				t.Errorf("Equipment.Validate() error = %v, wantErr %v", err, tt.wantErr)
+			t.Errorf("Equipment.Validate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

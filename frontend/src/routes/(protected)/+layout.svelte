@@ -6,12 +6,12 @@
     import { controllers } from "$lib/wailsjs/go/models";
     import { onMount } from "svelte";
 
-    let dates: controllers.MCCurrentDate = { start_date: '', end_date: '' }; // Initialize with empty values
+    let dates: controllers.MCCurrentDate = { start_date: new Date(), end_date: new Date() }; // Initialize with empty values
     let has_usr: boolean = false;
 
     async function logout() {
         await Logout()
-        goto("/home")
+        goto("/auth/login")
     }
 
     onMount(async () => {

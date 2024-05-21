@@ -1,10 +1,12 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { ConvertDuration, } from '$lib/model/date';
+    import { ConvertDuration, GetWeekday, ParseDateYYYYMMDD, } from '$lib/model/date';
     import { model } from '../../wailsjs/go/models';
     import ActivityList from '../activity/ActivityList.svelte';
 
     import { overrideItemIdKeyNameBeforeInitialisingDndZones } from "svelte-dnd-action";
+    import NewActivityModal from '../activity/NewActivityModal.svelte';
+    import CalendarCell from './CalendarCell.svelte';
     overrideItemIdKeyNameBeforeInitialisingDndZones("uuid");
 
     export let activity_type_list: model.ActivityTypeWithSubtypes[];
@@ -27,7 +29,7 @@
 
 </script>
 
-{#if microcycle}
+{#if microcycle && microcycle.cycle_activities && microcycle.summary && microcycle.summary.totals}
     <div class="calendar container">
 
         <div class="row">
@@ -61,17 +63,20 @@
 
         <div class="overflow-scroll" style="max-height:50vh">
             <table class="table">
-
                 <thead>
-                    {#if microcycle.cycle_activities.length == 7}
-                        {#each microcycle.cycle_activities as cycle}
-                            <th> {cycle.date_object.day_of_week} </th>
-                        {/each}
-                    {:else}
-                        {#each microcycle.cycle_activities as cycle}
-                            <th></th>
-                        {/each}
-                    {/if}
+                    {#each microcycle.cycle_activities as cycle}
+                        <th>
+                            <div class="row">
+                                <div class="col">
+                                    {#if microcycle.cycle_activities.length == 7}
+                                        {GetWeekday(cycle.date)}
+                                    {:else}
+                                        {ParseDateYYYYMMDD(cycle.date)}
+                                    {/if}
+                                </div>
+                            </div>
+                        </th>
+                    {/each}
 
                     {#if summary_col_is_visible}
                         <th>
@@ -88,41 +93,37 @@
                 <tbody>
                     <tr>
                         {#each microcycle.cycle_activities as activity_list}
-                            <td>
-                                {#if microcycle.cycle_activities.length != 7}
-                                    {activity_list.date_object.day_of_week}
-                                {/if}
-                                <ActivityList
-                                    bind:user={usr}
-                                    bind:activity_list={activity_list}
-                                    bind:date={activity_list.date_object.date}
-                                    bind:activity_type_list={activity_type_list}
-                                    bind:display_completion={display_completion}
-                                    bind:equipment_choices={equipment_choices}
-                                    on:change={dispatchUpdate}
-                                />
-                            </td>
+                            <CalendarCell
+                                bind:activity_list={activity_list}
+                                bind:num_cycle_days={microcycle.cycle_activities.length}
+                                bind:usr={usr}
+                                bind:equipment_choices={equipment_choices}
+                                bind:activity_type_list={activity_type_list}
+                                bind:display_completion={display_completion}
+                                today={null}
+                                on:update={dispatchUpdate}
+                            />
                         {/each}
                         {#if summary_col_is_visible}
                             <td style="padding: 0;">
                                 <ul class="list-group list-group-flush striped-list summary">
                                     {#each microcycle.summary.totals_by_activity_type as act_type_total}
                                         <!-- This is a hacky way to check for which activities types are in the current microcyle. This way we can distinguish between totals and planning better -->
-                                        {#if microcycle.summary.totals_by_activity_type_and_date.some(atd => atd.activity_type.id === act_type_total.activity_type.id)}
+                                        {#if microcycle.summary.totals_by_activity_type_and_date.some(atd => atd.activity_type?.id === act_type_total.activity_type?.id)}
                                             <li class="list-group-item">
                                                 <div class="row">
                                                     <div class="col">
                                                         <!-- The type -->
                                                         <div class="col-md-auto d-flex align-items-center">
-                                                            <strong>{act_type_total.activity_type.name}</strong>
+                                                            <strong>{act_type_total.activity_type?.name}</strong>
                                                         </div>
                                                         <div style="margin-left: -12px;">
                                                             <table>
                                                                 <tbody>
                                                                     <!-- Distance -->
                                                                     <tr>
-                                                                        <td>{act_type_total.total_completed_distance.length} {act_type_total.total_completed_distance.unit}</td>
-                                                                        <td class="text-secondary">{act_type_total.total_planned_distance.length} {act_type_total.total_planned_distance.unit}</td>
+                                                                        <td>{act_type_total.total_completed_distance?.length} {act_type_total.total_completed_distance?.unit}</td>
+                                                                        <td class="text-secondary">{act_type_total.total_planned_distance?.length} {act_type_total.total_planned_distance?.unit}</td>
                                                                     </tr>
                                                                     <!-- Duration -->
                                                                     <tr>
@@ -136,8 +137,8 @@
                                                                     </tr>
                                                                     <!-- Vertical -->
                                                                     <tr>
-                                                                        <td>{act_type_total.total_completed_vertical.length} {act_type_total.total_completed_vertical.unit}</td>
-                                                                        <td class="text-secondary">{act_type_total.total_planned_vertical.length} {act_type_total.total_planned_vertical.unit}</td>
+                                                                        <td>{act_type_total.total_completed_vertical?.length} {act_type_total.total_completed_vertical?.unit}</td>
+                                                                        <td class="text-secondary">{act_type_total.total_planned_vertical?.length} {act_type_total.total_planned_vertical?.unit}</td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -159,8 +160,8 @@
                                                     <tbody>
                                                         <!-- Distance -->
                                                         <tr>
-                                                            <td>{microcycle.summary.totals.total_planned_distance.length} {microcycle.summary.totals.total_planned_distance.unit}</td>
-                                                            <td class="text-secondary">{microcycle.summary.totals.total_planned_distance.length} {microcycle.summary.totals.total_planned_distance.unit}</td>
+                                                            <td>{microcycle.summary.totals.total_completed_distance?.length} {microcycle.summary.totals.total_completed_distance?.unit}</td>
+                                                            <td class="text-secondary">{microcycle.summary.totals.total_planned_distance?.length} {microcycle.summary.totals.total_planned_distance?.unit}</td>
                                                         </tr>
                                                         <!-- Duration -->
                                                         <tr>
@@ -169,8 +170,8 @@
                                                         </tr>
                                                         <!-- Vertical -->
                                                         <tr>
-                                                            <td>{microcycle.summary.totals.total_completed_vertical.length} {microcycle.summary.totals.total_completed_vertical.unit}</td>
-                                                            <td class="text-secondary">{microcycle.summary.totals.total_planned_vertical.length} {microcycle.summary.totals.total_planned_vertical.unit}</td>
+                                                            <td>{microcycle.summary.totals.total_completed_vertical?.length} {microcycle.summary.totals.total_completed_vertical?.unit}</td>
+                                                            <td class="text-secondary">{microcycle.summary.totals.total_planned_vertical?.length} {microcycle.summary.totals.total_planned_vertical?.unit}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -191,9 +192,9 @@
     .calendar th {
       border: 1px solid lightgray;
       text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 2;
+      /*position: sticky;*/
+      /*top: 0;*/
+      /*z-index: 2;*/
     }
     .calendar td {
       border: 1px solid lightgray;

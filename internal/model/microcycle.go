@@ -2,9 +2,9 @@ package model
 
 import (
 	"math"
+	"time"
 
 	"github.com/jcocozza/cassidy-wails/internal/utils"
-	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/measurement"
 )
 
@@ -119,7 +119,7 @@ type TotalByActivityTypeDifferences struct {
 // The set of totals for an activity type on a given date.
 type TotalByActivityTypeAndDate struct {
 	ActivityType         *ActivityType            `json:"activity_type"`
-	Date                 *dateutil.DateObject     `json:"date"`
+	Date                 time.Time			      `json:"date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 	TotalPlannedDistance *measurement.Measurement `json:"total_planned_distance"`
 	TotalPlannedDuration float64                  `json:"total_planned_duration"`
 	TotalPlannedVertical *measurement.Measurement `json:"total_planned_vertical"`
@@ -134,7 +134,7 @@ func EmptyTotalByActivityTypeAndDate(userUnitClass measurement.UnitClass) *Total
 	distanceUnit, verticalUnit := measurement.DistanceVerticalFromClass(userUnitClass)
 	return &TotalByActivityTypeAndDate{
 		ActivityType:         EmptyActivityType(),
-		Date:                 dateutil.EmptyDateObject(),
+		Date:                 time.Now(),
 		TotalPlannedDistance: measurement.CreateMeasurement(distanceUnit, 0),
 		TotalPlannedDuration: 0,
 		TotalPlannedVertical: measurement.CreateMeasurement(verticalUnit, 0),
@@ -289,7 +289,7 @@ func (ms *MicrocycleSummary) CalculateCycleChanges() error {
 					return err2
 				}
 				tmpTotalCompletedDistanceActTypePercentChange, _ := measurement.PercentChange(tat.TotalCompletedDistance, ptat.TotalCompletedDistance)
-				tmpTotalCompletedDurationActTypeChange := tat.TotalPlannedDuration - ptat.TotalPlannedDuration
+				tmpTotalCompletedDurationActTypeChange := tat.TotalCompletedDuration - ptat.TotalCompletedDuration
 				tmpTotalCompletedDurationActTypePercentChange := utils.PercentChange(tat.TotalCompletedDuration, ptat.TotalCompletedDuration)
 				tmpTotalCompletedVerticalActTypeChange, err3 := measurement.DifferenceSI(tat.TotalCompletedVertical, ptat.TotalCompletedVertical)
 				if err3 != nil {
@@ -327,8 +327,8 @@ func (ms *MicrocycleSummary) CalculateCycleChanges() error {
 
 // Represents a set number of days (typically between 1 week and 10 days).
 type Microcycle struct {
-	StartDate       string             `json:"start_date"`
-	EndDate         string             `json:"end_date"`
+	StartDate       time.Time          `json:"start_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
+	EndDate         time.Time          `json:"end_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 	CycleActivities *Cycle             `json:"cycle_activities"`
 	Summary         *MicrocycleSummary `json:"summary"`
 }

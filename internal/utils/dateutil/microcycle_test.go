@@ -4,49 +4,55 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
 	gostructstringify "github.com/jcocozza/go_struct_stringify"
 )
 
 func TestGetDateMicrocycle(t *testing.T) {
 	type args struct {
-		date                     string
+		date                     time.Time
 		microcycleStartDayOfWeek string
 		microcycleLength         int
 	}
 	tests := []struct {
 		name string
 		args args
-		want []*DateObject
+		want []time.Time
 	}{
-		{"case1", args{"2024-01-01", Monday, 1}, []*DateObject{{DayOfWeek: Monday, Date: "2024-01-01"}}},
-		{"case2", args{"2024-01-01", Monday, 2}, []*DateObject{{DayOfWeek: Monday, Date: "2024-01-01"}, {DayOfWeek: Tuesday, Date: "2024-01-02"}}},
-		{"case3", args{"2024-01-05", Sunday, 7}, []*DateObject{
-			{DayOfWeek: Sunday, Date: "2023-12-31"},
-			{DayOfWeek: Monday, Date: "2024-01-01"},
-			{DayOfWeek: Tuesday, Date: "2024-01-02"},
-			{DayOfWeek: Wednesday, Date: "2024-01-03"},
-			{DayOfWeek: Thursday, Date: "2024-01-04"},
-			{DayOfWeek: Friday, Date: "2024-01-05"},
-			{DayOfWeek: Saturday, Date: "2024-01-06"},
+		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), Monday, 1}, []time.Time{
+			time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)},
+		},
+		{"case2", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), Monday, 2}, []time.Time{
+			time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC),
 		}},
-		{"case4", args{"2024-01-06", Sunday, 7}, []*DateObject{
-			{DayOfWeek: Sunday, Date: "2023-12-31"},
-			{DayOfWeek: Monday, Date: "2024-01-01"},
-			{DayOfWeek: Tuesday, Date: "2024-01-02"},
-			{DayOfWeek: Wednesday, Date: "2024-01-03"},
-			{DayOfWeek: Thursday, Date: "2024-01-04"},
-			{DayOfWeek: Friday, Date: "2024-01-05"},
-			{DayOfWeek: Saturday, Date: "2024-01-06"},
+		{"case3", args{time.Date(2024, time.January, 5, 0, 0, 0, 0, time.UTC), Sunday, 7}, []time.Time{
+			time.Date(2023, time.December, 31, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 3, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 4, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 5, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 6, 0, 0, 0, 0, time.UTC),
 		}},
-		{"case5", args{"2024-02-26", Monday, 7}, []*DateObject{
-			{DayOfWeek: Monday, Date: "2024-02-26"},
-			{DayOfWeek: Tuesday, Date: "2024-02-27"},
-			{DayOfWeek: Wednesday, Date: "2024-02-28"},
-			{DayOfWeek: Thursday, Date: "2024-02-29"},
-			{DayOfWeek: Friday, Date: "2024-03-01"},
-			{DayOfWeek: Saturday, Date: "2024-03-02"},
-			{DayOfWeek: Sunday, Date: "2024-03-03"},
+		{"case4", args{time.Date(2024, time.January, 6, 0, 0, 0, 0, time.UTC), Sunday, 7}, []time.Time{
+			time.Date(2023, time.December, 31, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 3, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 4, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 5, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.January, 6, 0, 0, 0, 0, time.UTC),
+		}},
+		{"case5", args{time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC), Monday, 7}, []time.Time{
+			time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.February, 27, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.February, 28, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.February, 29, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.March, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.March, 2, 0, 0, 0, 0, time.UTC),
+			time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC),
 		}},
 	}
 	for _, tt := range tests {
@@ -60,17 +66,17 @@ func TestGetDateMicrocycle(t *testing.T) {
 }
 func TestGetNextCycle(t *testing.T) {
 	type args struct {
-		startDate string
-		endDate   string
+		startDate time.Time
+		endDate   time.Time
 	}
 	tests := []struct {
 		name  string
 		args  args
-		want  string
-		want1 string
+		want  time.Time
+		want1 time.Time
 	}{
-		{"case1", args{"2024-01-01", "2024-01-02"}, "2024-01-03", "2024-01-04"},
-		{"case2", args{"2024-01-01", "2024-01-06"}, "2024-01-07", "2024-01-12"},
+		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.January, 3, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 4, 0, 0, 0, 0, time.UTC)},
+		{"case2", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 6, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 12, 0, 0, 0, 0, time.UTC)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -88,25 +94,21 @@ func TestGetNextCycle(t *testing.T) {
 // TODO
 func TestGetNextNCycles(t *testing.T) {
 	type args struct {
-		startDate      string
-		endDate        string
+		startDate      time.Time
+		endDate        time.Time
 		numberOfCycles int
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    [][]*DateObject
+		want    [][]time.Time
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetNextNCycles(tt.args.startDate, tt.args.endDate, tt.args.numberOfCycles)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetNextNCycles() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := GetNextNCycles(tt.args.startDate, tt.args.endDate, tt.args.numberOfCycles)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetNextNCycles() = %v, want %v", got, tt.want)
 			}
@@ -116,17 +118,18 @@ func TestGetNextNCycles(t *testing.T) {
 
 func TestGetPreviousCycle(t *testing.T) {
 	type args struct {
-		startDate string
-		endDate   string
+		startDate time.Time
+		endDate   time.Time
 	}
 	tests := []struct {
 		name  string
 		args  args
-		want  string
-		want1 string
+		want  time.Time
+		want1 time.Time
 	}{
-		{"case1", args{"2024-01-01", "2024-01-02"}, "2023-12-30", "2023-12-31"},
-		{"case2", args{"2024-01-07", "2024-01-12"}, "2024-01-01", "2024-01-06"},
+		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC)}, time.Date(2023, time.December, 30, 0, 0, 0, 0, time.UTC), time.Date(2023, time.December, 31, 0, 0, 0, 0, time.UTC)},
+		{"case2", args{time.Date(2024, time.January, 7, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 12, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 6, 0, 0, 0, 0, time.UTC)},
+		{"case3", args{time.Date(2024, time.March, 4, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 10, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -144,25 +147,21 @@ func TestGetPreviousCycle(t *testing.T) {
 // TODO
 func TestGetPreviousNCycles(t *testing.T) {
 	type args struct {
-		startDate      string
-		endDate        string
+		startDate      time.Time
+		endDate        time.Time
 		numberOfCycles int
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    [][]*DateObject
+		want    [][]time.Time
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetPreviousNCycles(tt.args.startDate, tt.args.endDate, tt.args.numberOfCycles)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetPreviousNCycles() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := GetPreviousNCycles(tt.args.startDate, tt.args.endDate, tt.args.numberOfCycles)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetPreviousNCycles() = %v, want %v", got, tt.want)
 			}
@@ -172,29 +171,23 @@ func TestGetPreviousNCycles(t *testing.T) {
 
 func TestGetNextPrevious(t *testing.T) {
 	type args struct {
-		startDate string
-		endDate   string
+		startDate time.Time
+		endDate   time.Time
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    string
-		want1   string
-		want2   string
-		want3   string
-		wantErr bool
+		want    time.Time
+		want1   time.Time
+		want2   time.Time
+		want3   time.Time
 	}{
-		{"case1", args{"2024-01-01", "2024-01-02"}, "2024-01-03", "2024-01-04", "2023-12-30", "2023-12-31", false},
-		{"case2", args{"asdf-01", "2024-01-02"}, "", "", "", "", true},
-		{"case3", args{"2024-01-01", "asdf2"}, "", "", "", "", true},
+		{"case1", args{time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.January, 3, 0, 0, 0, 0, time.UTC), time.Date(2024, time.January, 4, 0, 0, 0, 0, time.UTC), time.Date(2023, time.December, 30, 0, 0, 0, 0, time.UTC), time.Date(2023, time.December, 31, 0, 0, 0, 0, time.UTC)},
+		{"case1", args{time.Date(2024, time.March, 4, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 10, 0, 0, 0, 0, time.UTC)}, time.Date(2024, time.March, 11, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 17, 0, 0, 0, 0, time.UTC), time.Date(2024, time.February, 26, 0, 0, 0, 0, time.UTC), time.Date(2024, time.March, 3, 0, 0, 0, 0, time.UTC)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2, got3, err := GetNextPrevious(tt.args.startDate, tt.args.endDate)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetNextPrevious() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got, got1, got2, got3 := GetNextPrevious(tt.args.startDate, tt.args.endDate)
 			if got != tt.want {
 				t.Errorf("GetNextPrevious() got = %v, want %v", got, tt.want)
 			}
@@ -214,13 +207,13 @@ func TestGetNextPrevious(t *testing.T) {
 // so I'm not writing any tests for now.
 func TestGetCurrentCycleFromInitialDate(t *testing.T) {
 	type args struct {
-		initialDate      string
+		initialDate      time.Time
 		microcycleLength int
 	}
 	tests := []struct {
 		name string
 		args args
-		want []*DateObject
+		want []time.Time
 	}{
 		//{"test", args{initialDate: "2024-02-26", microcycleLength: 10}, nil},
 	}

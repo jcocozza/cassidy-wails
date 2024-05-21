@@ -11,6 +11,7 @@ import (
 	userrepo "github.com/jcocozza/cassidy-wails/internal/repository/userRepo"
 	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/uuidgen"
+	"golang.org/x/oauth2"
 )
 
 type UserHandler struct {
@@ -72,13 +73,13 @@ func (uh *UserHandler) AuthenticateUser(authRequest authRequest) (*model.User, e
 }
 
 type MCCurrentDate struct {
-	StartDate string `json:"start_date"`
-	EndDate   string `json:"end_date"`
+	StartDate time.Time `json:"start_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
+	EndDate   time.Time `json:"end_date" ts_type:"Date" ts_transform:"new Date(__VALUE__)"`
 }
 // Return the start date and end date of the current microcycle
 func (uh *UserHandler) GetMicrocycleCurrentDates() *MCCurrentDate {
-	currentDate := time.Now().Format(dateutil.Layout)
-	var mc []*dateutil.DateObject
+	currentDate := time.Now()
+	var mc []time.Time
 	if uh.User.CycleDays == 7 {
 		mc = dateutil.GetDateMicrocycle(currentDate, uh.User.CycleStart, uh.User.CycleDays)
 	} else {
@@ -86,8 +87,8 @@ func (uh *UserHandler) GetMicrocycleCurrentDates() *MCCurrentDate {
 	}
 
 	mp := &MCCurrentDate{
-		StartDate: mc[0].Date,
-		EndDate:   mc[len(mc)-1].Date,
+		StartDate: mc[0],
+		EndDate:   mc[len(mc)-1],
 	}
 
 	fmt.Println("CURRENT MICROCYCLE DATES:", mp)
@@ -102,4 +103,45 @@ func (uh *UserHandler) UpdateUser(updateRequest *model.User) (*model.User, error
 	}
 
 	return updateRequest, nil
+}
+// Strava functions
+func (uh *UserHandler) CreateStravaToken(user *model.User, token *oauth2.Token) error {
+	err := uh.UserRepository.CreateStravaToken(user, token)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+// if the token does not exist for the user, create it
+func (uh *UserHandler) UpdateorCreateStravaToken(user *model.User, token *oauth2.Token) error {
+	err := uh.UserRepository.UpdateStravaToken(user, token)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err := uh.UserRepository.CreateStravaToken(user, token)
+			if err != nil {
+				return fmt.Errorf("failed to create strava token after attempted update: %w", err)
+			}
+		} else {
+			return err
+		}
+	}
+	return nil
+}
+func (uh *UserHandler) GetStravaToken(user *model.User) (*oauth2.Token, error) {
+	token, err := uh.UserRepository.ReadStravaToken(user)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("no user token exists: %w", err)
+		} else {
+			return nil, err
+		}
+	}
+	return token, nil
+}
+func (uh *UserHandler) DeleteStravaToken(user *model.User) error {
+	err := uh.UserRepository.DeleteStravaToken(user)
+	if err != nil {
+		return err
+	}
+	return nil
 }

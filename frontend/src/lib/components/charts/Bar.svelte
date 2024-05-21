@@ -1,16 +1,16 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Chart from "chart.js/auto";
-    import { ConvertDuration } from "../../model/date";
+    import { ConvertDuration, ParseDateYYYYMMDD } from "../../model/date";
     import type { model } from "../../wailsjs/go/models";
 
     export let microcycle: model.Microcycle;
     $: start_date = microcycle.start_date;
     $: end_date = microcycle.end_date;
-    $: date_list = createLabels(microcycle.cycle_activities)
+    $: date_list = createLabels(microcycle.cycle_activities!)
 
     let chartType: string = "distance"
-    let yAxisTitle: string = "distance(" + microcycle.summary.totals.total_completed_distance.unit + ")"
+    let yAxisTitle: string = "distance(" + microcycle.summary!.totals!.total_completed_distance?.unit + ")"
     let ctx;
     let canvas: { getContext: (arg0: string) => any; };
     let chart: Chart
@@ -18,7 +18,8 @@
     function createLabels(cycle_activities: model.ActivityList[]): string[] {
         let date_labels: string[] = []
         cycle_activities.forEach((act_list) => {
-            date_labels = [...date_labels, act_list.date_object.date]
+            date_labels = [...date_labels, ParseDateYYYYMMDD(act_list.date)]
+            // date_labels = [...date_labels, act_list.date.toString()]
         })
         return date_labels
     }
@@ -36,20 +37,21 @@
 
     function MakeDatasets(mc: model.Microcycle, type: string) {
         let act_type_dict: {[key: string]: number[]} = {};
-        mc.summary.totals_by_activity_type_and_date.forEach((t) => {
+        mc.summary!.totals_by_activity_type_and_date.forEach((t) => {
             const stackData: number[] = Array(date_list.length).fill(0);  // Initialize with zeros for all labels
-            appendOrCreateKey(act_type_dict, t.activity_type.name, stackData)
+            appendOrCreateKey(act_type_dict, t.activity_type!.name, stackData)
         })
-        mc.summary.totals_by_activity_type_and_date.forEach((t) => {
-            const index = date_list.indexOf(t.date.date);
-            let act_type = t.activity_type.name;
+        mc.summary!.totals_by_activity_type_and_date.forEach((t) => {
+            //const index = date_list.indexOf(t.date.toString());
+            const index = date_list.indexOf(ParseDateYYYYMMDD(t.date));
+            let act_type = t.activity_type!.name;
             let lst =  act_type_dict[act_type];
             if (type == "distance") {
-                lst[index] = t.total_completed_distance.length;
+                lst[index] = t.total_completed_distance!.length;
             } else if (type == "duration") {
                 lst[index] = t.total_completed_duration;
             } else if (type == "vertical") {
-                lst[index] = t.total_completed_vertical.length;
+                lst[index] = t.total_completed_vertical!.length;
             }
         })
 
@@ -66,24 +68,24 @@
 
     function updateChart(type: string) {
         if (chart) {
-            chart.data.labels = createLabels(microcycle.cycle_activities)
+            chart.data.labels = createLabels(microcycle.cycle_activities!)
             chart.data.datasets = MakeDatasets(microcycle, type);
             //let yAxis = chart.options?.scales?.y;
 
             if (type == "distance") {
-                yAxisTitle = "distance (" + microcycle.summary.totals.total_completed_distance.unit + ")"
+                yAxisTitle = "distance (" + microcycle.summary!.totals!.total_completed_distance?.unit + ")"
                 // the error is not a problem here?
-                chart.options.scales.y.title = { display: true, text: yAxisTitle }
+                chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
                 //chart.options.scales.suggestedMax = microcycle.summary.totals.total_completed_distance.length + 5
             } else if (type == "vertical") {
-                yAxisTitle = "vertical (" + microcycle.summary.totals.total_completed_vertical.unit + ")"
+                yAxisTitle = "vertical (" + microcycle.summary!.totals!.total_completed_vertical?.unit + ")"
                 // the error is not a problem here?
-                chart.options.scales.y.title = { display: true, text: yAxisTitle }
+                chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
                 //chart.options.scales.suggestedMax = microcycle.summary.totals.total_completed_vertical.length + 10
             } else {
                 yAxisTitle = ""
                 // the error is not a problem here?
-                chart.options.scales.y.title = { display: true, text: yAxisTitle }
+                chart.options.scales!.y!.title = { display: true, text: yAxisTitle }
                 //chart.options.scales.suggestedMax = microcycle.summary.totals.total_completed_duration + 10
             }
             chart.update()

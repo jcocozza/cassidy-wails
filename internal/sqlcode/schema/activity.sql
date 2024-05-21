@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS activity (
     activity_type_id INTEGER,
     is_race BOOLEAN CHECK (is_race IN (0, 1)),
     num_strides INTEGER,
+    map TEXT,
     -- is_template BOOLEAN NOT NULL CHECK (is_template IN (0, 1))
     FOREIGN KEY (activity_type_id) REFERENCES activity_type(id),
     FOREIGN KEY (user_uuid) REFERENCES user(uuid)

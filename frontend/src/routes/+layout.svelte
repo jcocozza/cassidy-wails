@@ -7,7 +7,7 @@
     import { goto } from '$app/navigation';
 
     onMount(() => {
-        goto("/home")
+        goto("/auth/login")
     })
 </script>
 

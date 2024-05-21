@@ -1,5 +1,5 @@
-INSERT INTO activity (uuid, user_uuid, date, `order`, name, description, notes, activity_type_id, is_race, num_strides)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT OR IGNORE INTO activity (uuid, user_uuid, date, `order`, name, description, notes, activity_type_id, is_race, num_strides, map)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- The following queries need to be run to fully create an activity
 

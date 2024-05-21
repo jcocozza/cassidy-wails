@@ -5,8 +5,8 @@
     import type { model } from "$lib/wailsjs/go/models";
     import { onMount } from "svelte";
 
-    let start_date: string = "";
-    let end_date: string = "";
+    let start_date: Date;
+    let end_date: Date;
     let usr: model.User;
 
     onMount(async () => {
@@ -18,7 +18,7 @@
 </script>
 
 {#if start_date && end_date && usr}
-    <CalendarViewer bind:usr={usr} bind:initial_start_date={start_date} bind:initial_end_date={end_date} />
+    <CalendarViewer bind:usr={usr} />
 {:else}
     <p>Loading CalendarViewer...</p>
 {/if}
