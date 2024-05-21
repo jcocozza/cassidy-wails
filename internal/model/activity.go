@@ -179,7 +179,7 @@ func (a *Activity) CanMerge(activity *Activity) bool {
 // This is typically used on import from external sources like Strava
 func (a *Activity) Merge(activity *Activity) {
 	a.Completed = activity.Completed
-
+    a.Map = activity.Map
 	// A merge will not overwrite existing fields unless those fields are already empty
 	if a.Description == "" {
 		a.Description = activity.Description
@@ -190,9 +190,6 @@ func (a *Activity) Merge(activity *Activity) {
 	if a.Notes == "" {
 		a.Notes = activity.Notes
 	}
-    if a.Map == "" {
-        a.Map = activity.Map
-    }
 	// the new activity uuid will override the old one
 	// hopefully this will eventually facilitate easier look back to data sources
     a.SetUuid(activity.Uuid)

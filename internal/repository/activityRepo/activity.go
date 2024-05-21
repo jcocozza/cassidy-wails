@@ -114,7 +114,7 @@ func (db *IActivityRepository) Read(activityUuid string) (*model.Activity, error
 // Updates the activity and its planned/completed
 func (db *IActivityRepository) Update(activity *model.Activity) error {
 	sqlActivity := sqlcode.SQLReader(sqlcode.Activity_update)
-	err := db.DB.Execute(sqlActivity, activity.Date.Format(dateutil.TimeLayout), activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides, activity.Uuid)
+	err := db.DB.Execute(sqlActivity, activity.Date.Format(dateutil.TimeLayout), activity.Order, activity.Name, activity.Description, activity.Notes, activity.Type.Id, activity.IsRace, activity.NumStrides, activity.Map, activity.Uuid)
 
 	if err != nil {
 		return fmt.Errorf("error updating activity in database: %w", err)
