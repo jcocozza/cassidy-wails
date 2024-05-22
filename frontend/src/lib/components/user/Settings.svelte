@@ -3,7 +3,7 @@
     import connectwstrava from '$lib/static/strava/connect_with_strava/btn_strava_connectwith_orange/btn_strava_connectwith_orange.svg?raw'
 
     import { oauth2, type model } from "../../wailsjs/go/models";
-    import { CreateStravaToken, UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
+    import { CreateStravaToken, OpenSupport, UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
     import { BackfillData, GetNewData, OpenStravaAuth, RevokeAccess, StartListener } from '$lib/wailsjs/go/strava/Strava';
     import { GetMostRecentDate } from '$lib/wailsjs/go/controllers/ActivityHandler';
     import { ExportDatabase } from '$lib/wailsjs/go/main/App';
@@ -196,11 +196,10 @@
 </div>
 
 <button class="btn btn-primary" on:click={exportData}>Export Data</button>
-
 {#if export_error}
     <div class="alert alert-danger" role="alert">
         {export_error}
     </div>
 {/if}
-
+<button class="btn btn-primary" on:click={OpenSupport}>Support</button>
 {/if}

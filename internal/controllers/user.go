@@ -9,6 +9,7 @@ import (
 	"github.com/jcocozza/cassidy-wails/internal/database"
 	"github.com/jcocozza/cassidy-wails/internal/model"
 	userrepo "github.com/jcocozza/cassidy-wails/internal/repository/userRepo"
+	"github.com/jcocozza/cassidy-wails/internal/utils"
 	"github.com/jcocozza/cassidy-wails/internal/utils/dateutil"
 	"github.com/jcocozza/cassidy-wails/internal/utils/uuidgen"
 	"golang.org/x/oauth2"
@@ -144,4 +145,11 @@ func (uh *UserHandler) DeleteStravaToken(user *model.User) error {
 		return err
 	}
 	return nil
+}
+func (uh *UserHandler) OpenSupport() error {
+    err := utils.OpenURL("https://github.com/jcocozza/cassidy-wails/issues")
+    if err != nil {
+        return err
+    }
+    return nil
 }

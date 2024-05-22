@@ -26,6 +26,10 @@ export function GetStravaToken(arg1) {
   return window['go']['controllers']['UserHandler']['GetStravaToken'](arg1);
 }
 
+export function OpenSupport() {
+  return window['go']['controllers']['UserHandler']['OpenSupport']();
+}
+
 export function UpdateUser(arg1) {
   return window['go']['controllers']['UserHandler']['UpdateUser'](arg1);
 }
