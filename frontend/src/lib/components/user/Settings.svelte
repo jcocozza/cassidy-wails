@@ -6,6 +6,7 @@
     import { CreateStravaToken, UpdateUser } from "$lib/wailsjs/go/controllers/UserHandler";
     import { BackfillData, GetNewData, OpenStravaAuth, RevokeAccess, StartListener } from '$lib/wailsjs/go/strava/Strava';
     import { GetMostRecentDate } from '$lib/wailsjs/go/controllers/ActivityHandler';
+    import { ExportDatabase } from '$lib/wailsjs/go/main/App';
 
     export let usr: model.User;
     export let existing_strava_token: oauth2.Token | null;
@@ -22,6 +23,8 @@
     let day: string = ""
     let year: number
     let dateString: string
+
+    let export_error: string = ""
 
     $: if (usr) {
         now = new Date(usr.initial_cycle_start)
@@ -77,6 +80,14 @@
         getting_new_data = false;
     }
 
+    async function exportData() {
+        try {
+            await ExportDatabase()
+        } catch (error) {
+            export_error = String(error);
+        }
+    }
+
 </script>
 
 {#if usr}
@@ -88,7 +99,6 @@
                 <option value="imperial"> Imperial (mile, ft, etc)</option>
                 <option value="metric"> Metric (km, m, etc)</option>
             </select>
-
 
             <label for="cycle_start">Cycle Start Day:</label>
             <select class="form-control" id="cycle_start" name="cycle_start" bind:value={usr.cycle_start} disabled={!is_editing} required>
@@ -184,5 +194,13 @@
       </div>
     </div>
 </div>
+
+<button class="btn btn-primary" on:click={exportData}>Export Data</button>
+
+{#if export_error}
+    <div class="alert alert-danger" role="alert">
+        {export_error}
+    </div>
+{/if}
 
 {/if}

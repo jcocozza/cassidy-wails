@@ -56,3 +56,7 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) shutdown(ctx context.Context) {
 	a.DB.DB.Close()
 }
+func (a *App) ExportDatabase() error {
+    err := database.ExportDatabase()
+    return err
+}
