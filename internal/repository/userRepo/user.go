@@ -17,6 +17,7 @@ import (
 type UserRepository interface {
 	Create(user *model.User) error
 	Read(username string) (*model.User, error)
+	ReadByUuid(uuid string) (*model.User, error)
 	//ReadPreferences(userUuid string) (string, int, string, error)
 	Update(user *model.User) error
 	//Delete(user *User) error
@@ -24,6 +25,9 @@ type UserRepository interface {
 	ReadStravaToken(user *model.User) (*oauth2.Token, error)
 	UpdateStravaToken(user *model.User, token *oauth2.Token) error
 	DeleteStravaToken(user *model.User) error
+    PersistUserLogin(uuid string) error
+	CheckForPersistedUser() (string, error)
+    ForgetUser() error
 }
 
 // Represents a database connection
@@ -54,6 +58,35 @@ func (db *IUserRepository) Create(user *model.User) error {
 func (db *IUserRepository) Read(username string) (*model.User, error) {
 	query := sqlcode.SQLReader(sqlcode.User_read)
 	row := db.DB.QueryRow(query, username)
+	usr := model.EmptyUser()
+
+	var initialCycleStartStr string
+	err := row.Scan(&usr.Uuid, &usr.Username, &usr.Password, &usr.Units, &usr.CycleStart, &usr.CycleDays, &initialCycleStartStr)
+	if err != nil {
+		// in the case that no results are returned, we want to know that b/c that means there are no users with that username
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, err
+		}
+		return nil, fmt.Errorf("user read failed: %w", err)
+	}
+
+	if initialCycleStartStr != "" {
+		initialCycleStart, err15 := time.Parse(dateutil.TimeLayout, initialCycleStartStr)
+		if err15 != nil {
+			return nil, fmt.Errorf("initial cycle start failed to parse: %w", err15)
+		}
+		usr.InitialCycleStart = initialCycleStart
+	}
+
+	err2 := usr.Validate()
+	if err2 != nil {
+		return nil, fmt.Errorf("user validation failed: %w", err2)
+	}
+	return usr, nil
+}
+func (db *IUserRepository) ReadByUuid(uuid string) (*model.User, error) {
+	query := sqlcode.SQLReader(sqlcode.User_read_by_uuid)
+	row := db.DB.QueryRow(query, uuid)
 	usr := model.EmptyUser()
 
 	var initialCycleStartStr string
@@ -155,4 +188,33 @@ func (db *IUserRepository) DeleteStravaToken(user *model.User) error {
 		return fmt.Errorf("failed to delete strava token: %w", err)
 	}
 	return nil
+}
+// Update the persisted_user_login table to keep that user logged in
+func (db *IUserRepository) PersistUserLogin(uuid string) error {
+    sql := sqlcode.SQLReader(sqlcode.User_persist)
+    err := db.DB.Execute(sql, uuid)
+    if err != nil {
+        return fmt.Errorf("failed to persist user login: %w", err)
+    }
+    return nil
+}
+// check if a user is in the persisted user login table
+func (db *IUserRepository) CheckForPersistedUser() (string, error) {
+    sql := sqlcode.SQLReader(sqlcode.User_saved)
+    row := db.DB.QueryRow(sql)
+
+    var uuid string
+    err := row.Scan(&uuid)
+    if err != nil {
+        return "", err
+    }
+    return uuid, nil
+}
+func (db *IUserRepository) ForgetUser() error {
+    sql := sqlcode.SQLReader(sqlcode.User_forget)
+    err := db.DB.Execute(sql)
+    if err != nil {
+        return err
+    }
+    return nil
 }

@@ -43,15 +43,26 @@ func (a *App) SetUser(usr *model.User) {
 func (a *App) HasUser() bool {
 	return a.UserSettings != nil
 }
-func (a *App) Logout() {
+func (a *App) Logout() error {
 	a.UserSettings = nil
 	a.DB.AppUser = nil
 	a.Handlers.SetUser(nil)
+    return a.Handlers.UserHandler.UserRepository.ForgetUser()
 }
+
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+    // if err is not null then just do things the normal way
+    userUuid, _ := a.Handlers.UserHandler.UserRepository.CheckForPersistedUser()
+
+    if userUuid != "" {
+        usr, err := a.Handlers.UserHandler.UserRepository.ReadByUuid(userUuid)
+        if err == nil {
+            a.SetUser(usr)
+        }
+    }
 }
 func (a *App) shutdown(ctx context.Context) {
 	a.DB.DB.Close()

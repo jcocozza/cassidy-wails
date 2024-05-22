@@ -33,3 +33,6 @@ INSERT INTO activity_subtype (name, supertype_id) VALUES ("Recovery", 3);
 INSERT INTO equipment_type (name) VALUES ("Shoes");
 INSERT INTO equipment_type (name) VALUES ("Bike");
 INSERT INTO equipment_type (name) VALUES ("Vest");
+
+-- persisted user row
+INSERT INTO persisted_user_login (id, user_uuid) VALUES (0, "");

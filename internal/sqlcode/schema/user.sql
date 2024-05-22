@@ -15,3 +15,9 @@ CREATE TABLE IF NOT EXISTS strava_token (
     expiry TEXT NOT NULL,
     FOREIGN KEY (user_uuid) REFERENCES user(uuid)
 );
+CREATE TABLE IF NOT EXISTS persisted_user_login (
+    -- ensure that there can only ever be 1 row
+    id INTEGER PRIMARY KEY NOT NULL CHECK (id = 0),
+    user_uuid TEXT,
+    FOREIGN KEY (user_uuid) REFERENCES user(uuid)
+);

@@ -153,3 +153,10 @@ func (uh *UserHandler) OpenSupport() error {
     }
     return nil
 }
+func (uh *UserHandler) PersistUser(user *model.User) error {
+    err := uh.UserRepository.PersistUserLogin(user.Uuid)
+    if err != nil {
+        return err
+    }
+    return nil
+}

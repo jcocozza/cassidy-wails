@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { CreateUser } from "$lib/wailsjs/go/controllers/UserHandler";
+    import { CreateUser, PersistUser } from "$lib/wailsjs/go/controllers/UserHandler";
     import { SetUser } from "$lib/wailsjs/go/main/App";
     import { model } from "../../wailsjs/go/models";
 
@@ -15,12 +15,17 @@
         initial_cycle_start: ""
     });
 
+    let keep_logged_in: boolean = false;
+
     async function signup() {
         try {
             user_already_exits = false;
             other_error = false;
             let usr = await CreateUser(new_user)
             await SetUser(usr)
+            if (keep_logged_in) {
+				await PersistUser(usr)
+			}
             goto("/microcycle")
         } catch (error) {
             if (error === "user already exists") {
@@ -84,6 +89,11 @@
             <label for="initial_cycle_start">Initial Cycle Start Date:</label>
             <input class="form-control" id="initial_cycle_start" name="initial_cycle_start" type="date" bind:value={new_user.initial_cycle_start} required>
         {/if}
+
+        <div class="form-check form-switch">
+			<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" bind:value={keep_logged_in}>
+			<label class="form-check-label" for="flexSwitchCheckDefault">Keep Me Logged In</label>
+		</div>
 
         <button class="btn btn-primary" on:click={async () => {await signup()}}>Sign Up</button>
     </form>

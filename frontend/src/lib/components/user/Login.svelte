@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { AuthenticateUser } from "$lib/wailsjs/go/controllers/UserHandler";
+    import { AuthenticateUser, PersistUser } from "$lib/wailsjs/go/controllers/UserHandler";
     import { SetUser } from "$lib/wailsjs/go/main/App";
     import type { controllers } from "$lib/wailsjs/go/models";
 
@@ -10,6 +10,7 @@
     	username: "",
     	password: ""
     };
+	let keep_logged_in: boolean = false
 
     function toSignUp() {
     	goto("/auth/signup")
@@ -21,6 +22,9 @@
         	other_auth_error = false;
         	let usr = await AuthenticateUser(authRequest)
         	await SetUser(usr)
+			if (keep_logged_in) {
+				await PersistUser(usr)
+			}
         	goto("/microcycle")
       } catch (error) {
     	console.error(error)
@@ -44,6 +48,12 @@
 		{#if other_auth_error}
 			<p style="color: red;">Authentication Error</p>
 		{/if}
+
+		<div class="form-check form-switch">
+			<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" bind:value={keep_logged_in}>
+			<label class="form-check-label" for="flexSwitchCheckDefault">Keep Me Logged In</label>
+		</div>
+
 		<button class="btn btn-primary" on:click={async () => {await login()}}>Login</button>
   	</form>
   	<p>

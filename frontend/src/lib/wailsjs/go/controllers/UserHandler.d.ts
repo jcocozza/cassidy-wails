@@ -18,6 +18,8 @@ export function GetStravaToken(arg1:model.User):Promise<oauth2.Token>;
 
 export function OpenSupport():Promise<void>;
 
+export function PersistUser(arg1:model.User):Promise<void>;
+
 export function UpdateUser(arg1:model.User):Promise<model.User>;
 
 export function UpdateorCreateStravaToken(arg1:model.User,arg2:oauth2.Token):Promise<void>;
