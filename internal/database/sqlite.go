@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+    "runtime"
 	"fmt"
 	"log/slog"
 	"os"
@@ -54,7 +55,21 @@ func ConnectToCassidyDB() (*Database, error) {
 		return nil, err
 	}
 	exeDir := filepath.Dir(filepath.Dir(exePath))
-	dbPath := filepath.Join(exeDir,"Resources", cassidyDB)
+
+    o := runtime.GOOS
+    var dbPath string
+	switch o {
+	case "windows":
+		fmt.Println("Running on Windows")
+        dbPath = filepath.Join(exeDir, cassidyDB)
+	case "darwin":
+		fmt.Println("Running on macOS")
+	    dbPath = filepath.Join(exeDir,"Resources", cassidyDB)
+	default:
+		fmt.Println("Running on", o)
+        panic("no os options")
+	}
+
 	fmt.Println("database dir: " + dbPath)
 
 	// Check if the database file exists, if not, create it
