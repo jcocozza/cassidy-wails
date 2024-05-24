@@ -61,7 +61,7 @@ func ConnectToCassidyDB() (*Database, error) {
 	switch o {
 	case "windows":
 		fmt.Println("Running on Windows")
-        dbPath = filepath.Join(exeDir, cassidyDB)
+        dbPath = filepath.Join(exeDir,"cassidy",cassidyDB)
 	case "darwin":
 		fmt.Println("Running on macOS")
 	    dbPath = filepath.Join(exeDir,"Resources", cassidyDB)
