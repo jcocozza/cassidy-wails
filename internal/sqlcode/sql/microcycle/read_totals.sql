@@ -4,7 +4,7 @@ SELECT
     COALESCE(SUM(planned.vertical), 0) AS total_planned_vertical,
 
     COALESCE(SUM(completed.distance), 0) AS total_completed_distance,
-    COALESCE(SUM(completed.duration), 0) AS total_completed_duration,
+    COALESCE(SUM(completed.moving_duration), 0) AS total_completed_duration,
     COALESCE(SUM(completed.vertical), 0) AS total_completed_vertical
 FROM planned
 INNER JOIN activity ON planned.activity_uuid = activity.uuid

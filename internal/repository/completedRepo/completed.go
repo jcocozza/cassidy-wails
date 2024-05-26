@@ -30,7 +30,7 @@ func (db *ICompletedRepository) Create(completed *model.Completed) error {
 		return fmt.Errorf("completed creation failed to validate: %w", err1)
 	}
 
-	err := db.DB.Execute(sql, completed.ActivityUuid, completed.Distance.Length, completed.Distance.Unit, completed.Duration, completed.Vertical.Length, completed.Vertical.Unit)
+	err := db.DB.Execute(sql, completed.ActivityUuid, completed.Distance.Length, completed.Distance.Unit, completed.MovingDuration, completed.ElapsedDuration, completed.Vertical.Length, completed.Vertical.Unit)
 	if err != nil {
 		return fmt.Errorf("completed creation failed: %w", err)
 	}
@@ -45,7 +45,7 @@ func (db *ICompletedRepository) Read(activityUuid string) (*model.Completed, err
 
 	completed := model.EmptyCompleted()
 
-	err := row.Scan(&completed.ActivityUuid, &completed.Distance.Length, &completed.Distance.Unit, &completed.Duration, &completed.Vertical.Length, &completed.Vertical.Unit)
+	err := row.Scan(&completed.ActivityUuid, &completed.Distance.Length, &completed.Distance.Unit, &completed.MovingDuration, &completed.ElapsedDuration, &completed.Vertical.Length, &completed.Vertical.Unit)
 	if err != nil {
 		return nil, fmt.Errorf("completed read failed: %w", err)
 	}
@@ -64,7 +64,7 @@ func (db *ICompletedRepository) Update(completed *model.Completed) error {
 	}
 
 	sql := sqlcode.SQLReader(sqlcode.Completed_update)
-	err := db.DB.Execute(sql, completed.Distance.Length, completed.Distance.Unit, completed.Duration, completed.Vertical.Length, completed.Vertical.Unit, completed.ActivityUuid)
+	err := db.DB.Execute(sql, completed.Distance.Length, completed.Distance.Unit, completed.MovingDuration, completed.ElapsedDuration, completed.Vertical.Length, completed.Vertical.Unit, completed.ActivityUuid)
 	if err != nil {
 		return fmt.Errorf("completed update failed: %w", err)
 	}

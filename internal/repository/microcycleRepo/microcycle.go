@@ -180,7 +180,7 @@ func (db *IMicrocycleRepository) ReadCycle(startDate, endDate time.Time, userUui
 			&tmpDateStr, &tmpAct.Order, &tmpAct.Name, &tmpAct.Description, &tmpAct.Notes, &tmpAct.IsRace, &tmpAct.NumStrides, &tmpAct.Map,
 			&tmpAct.Type.Id, &tmpAct.Type.Name,
 			&tmpAct.Planned.Distance.Length, &tmpAct.Planned.Distance.Unit, &tmpAct.Planned.Duration, &tmpAct.Planned.Vertical.Length, &tmpAct.Planned.Vertical.Unit,
-			&tmpAct.Completed.Distance.Length, &tmpAct.Completed.Distance.Unit, &tmpAct.Completed.Duration, &tmpAct.Completed.Vertical.Length, &tmpAct.Completed.Vertical.Unit,
+			&tmpAct.Completed.Distance.Length, &tmpAct.Completed.Distance.Unit, &tmpAct.Completed.MovingDuration, &tmpAct.Completed.ElapsedDuration, &tmpAct.Completed.Vertical.Length, &tmpAct.Completed.Vertical.Unit,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)

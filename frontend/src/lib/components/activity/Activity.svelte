@@ -88,7 +88,7 @@
                     {/if}
                 </div>
                 <!-- If there is completed, just display that. If there is planned, just display that. Otherwise don't display anything. -->
-                {#if activity.completed.distance?.length != 0 || activity.completed.duration != 0 || activity.completed.vertical?.length != 0}
+                {#if activity.completed.distance?.length != 0 || activity.completed.moving_duration != 0 || activity.completed.vertical?.length != 0}
                     <div class="row text-nowrap">
                         <div class="col">
                             {activity.completed.distance?.length} {activity.completed.distance?.unit}
@@ -101,7 +101,7 @@
                         <div class="col">
                             <span>{activity.completed.pace}</span>
                             <br>
-                            {ConvertDuration(activity.completed.duration)}
+                            {ConvertDuration(activity.completed.moving_duration)}
                         </div>
                     </div>
                     <br>

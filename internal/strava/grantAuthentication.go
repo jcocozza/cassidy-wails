@@ -87,7 +87,8 @@ func (s *Strava) stravaActivityToCassidyActivity(activity swagger.SummaryActivit
 	completed := &model.Completed{
 		ActivityUuid: uuid,
 		Distance: measurement.CreateMeasurement(measurement.Meter, float64(activity.Distance)),
-		Duration: float64(activity.MovingTime),
+		MovingDuration: float64(activity.MovingTime),
+        ElapsedDuration: float64(activity.ElapsedTime),
 		Vertical: measurement.CreateMeasurement(measurement.Meter, float64(activity.TotalElevationGain)),
 	}
 

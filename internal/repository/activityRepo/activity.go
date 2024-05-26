@@ -52,7 +52,8 @@ func (db *IActivityRepository) Create(userUuid string, activity *model.Activity)
 	sqlCompleted := sqlcode.SQLReader(sqlcode.Completed_create)
 	err2 := db.DB.Execute(sqlCompleted, activity.Completed.ActivityUuid,
 		activity.Completed.Distance.Length, activity.Completed.Distance.Unit,
-		activity.Completed.Duration,
+		activity.Completed.MovingDuration,
+        activity.Completed.ElapsedDuration,
 		activity.Completed.Vertical.Length, activity.Completed.Vertical.Unit)
 	if err2 != nil {
 		return fmt.Errorf("failed to insert into completed table: %w", err)
@@ -87,7 +88,7 @@ func (db *IActivityRepository) Read(activityUuid string) (*model.Activity, error
 		&dateStr, &activity.Order, &activity.Name, &activity.Description, &activity.Notes, &activity.IsRace, &activity.NumStrides, &activity.Map,
 		&activity.Type.Id, &activity.Type.Name,
 		&activity.Planned.Distance.Length, &activity.Planned.Distance.Unit, &activity.Planned.Duration, &activity.Planned.Vertical.Length, &activity.Planned.Vertical.Unit,
-		&activity.Completed.Distance.Length, &activity.Completed.Distance.Unit, &activity.Completed.Duration, &activity.Completed.Vertical.Length, &activity.Completed.Vertical.Unit,
+		&activity.Completed.Distance.Length, &activity.Completed.Distance.Unit, &activity.Completed.MovingDuration, &activity.Completed.ElapsedDuration, &activity.Completed.Vertical.Length, &activity.Completed.Vertical.Unit,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error scanning row: %w", err)
@@ -128,7 +129,7 @@ func (db *IActivityRepository) Update(activity *model.Activity) error {
 	}
 
 	sqlCompleted := sqlcode.SQLReader(sqlcode.Completed_update)
-	err2 := db.DB.Execute(sqlCompleted, activity.Completed.Distance.Length, activity.Completed.Distance.Unit, activity.Completed.Duration, activity.Completed.Vertical.Length, activity.Completed.Vertical.Unit, activity.Completed.ActivityUuid)
+	err2 := db.DB.Execute(sqlCompleted, activity.Completed.Distance.Length, activity.Completed.Distance.Unit, activity.Completed.MovingDuration, activity.Completed.ElapsedDuration, activity.Completed.Vertical.Length, activity.Completed.Vertical.Unit, activity.Completed.ActivityUuid)
 
 	if err2 != nil {
 		return fmt.Errorf("error updating completed in database: %w", err2)
@@ -205,7 +206,7 @@ func (db *IActivityRepository) CreateOrMerge(activity *model.Activity, userUuid 
 			&tmpDateStr, &tmpAct.Order, &tmpAct.Name, &tmpAct.Description, &tmpAct.Notes, &tmpAct.IsRace, &tmpAct.NumStrides, &tmpAct.Map,
 			&tmpAct.Type.Id, &tmpAct.Type.Name,
 			&tmpAct.Planned.Distance.Length, &tmpAct.Planned.Distance.Unit, &tmpAct.Planned.Duration, &tmpAct.Planned.Vertical.Length, &tmpAct.Planned.Vertical.Unit,
-			&tmpAct.Completed.Distance.Length, &tmpAct.Completed.Distance.Unit, &tmpAct.Completed.Duration, &tmpAct.Completed.Vertical.Length, &tmpAct.Completed.Vertical.Unit,
+			&tmpAct.Completed.Distance.Length, &tmpAct.Completed.Distance.Unit, &tmpAct.Completed.MovingDuration, &tmpAct.Completed.ElapsedDuration, &tmpAct.Completed.Vertical.Length, &tmpAct.Completed.Vertical.Unit,
 		)
 		if err != nil {
 			return fmt.Errorf("error scanning row: %w", err)

@@ -27,14 +27,14 @@ SELECT
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN planned.duration ELSE 0 END), 0) AS previous_planned_duration,
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN planned.vertical ELSE 0 END), 0) AS previous_planned_vertical,
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN completed.distance ELSE 0 END), 0) AS previous_completed_distance,
-    COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN completed.duration ELSE 0 END), 0) AS previous_completed_duration,
+    COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN completed.moving_duration ELSE 0 END), 0) AS previous_completed_duration,
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN completed.vertical ELSE 0 END), 0) AS previous_completed_vertical,
 
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN planned.distance ELSE 0 END), 0) AS current_planned_distance,
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN planned.duration ELSE 0 END), 0) AS current_planned_duration,
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN planned.vertical ELSE 0 END), 0) AS current_planned_vertical,
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN completed.distance ELSE 0 END), 0) AS current_completed_distance,
-    COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN completed.duration ELSE 0 END), 0) AS current_completed_duration,
+    COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN completed.moving_duration ELSE 0 END), 0) AS current_completed_duration,
     COALESCE(SUM(CASE WHEN DATE(activity.date) BETWEEN ? AND ? THEN completed.vertical ELSE 0 END), 0) AS current_completed_vertical
     --planned.distance_unit AS distance_unit,
     --planned.vertical_unit AS vertical_unit
