@@ -5,14 +5,13 @@
     overrideItemIdKeyNameBeforeInitialisingDndZones("uuid");
 
     import { FormatPercent } from '$lib/misc/percent';
-    import ActivityList from '../activity/ActivityList.svelte';
     import { CreateObserver } from '../../../functions/infiniteScroll';
     import { ConvertDuration, GetWeekday, IsToday, ParseDateYYYYMMDD } from '../../model/date';
     import type { model } from '../../wailsjs/go/models';
     import { GetMicrocycle, GetCalendar, GetNextNMicrocycles, GetPreviousNMicrocycles } from '../../wailsjs/go/controllers/MicrocycleHandler'
     import { ListActivityTypes } from '../../wailsjs/go/controllers/ActivityTypeHandler'
-    import NewActivityModal from '../activity/NewActivityModal.svelte';
     import CalendarCell from './CalendarCell.svelte';
+    import { AddAlert, AlertType } from '../../../stores/alert';
 
     export let equipment_choices: model.Equipment[];
     export let usr: model.User;
@@ -45,6 +44,7 @@
             microcycle_list = [...microcycle_list.slice(0, index), updatedMicrocycle, ...microcycle_list.slice(index + 1)];
         } catch (error) {
             console.log(error)
+            AddAlert(String(error), AlertType.Danger)
         }
     }
     // scroll to the today div

@@ -8,3 +8,5 @@ test
 .vscode
 config.go
 build/.cassidy.db
+build/windows/.cassidy.db
+build/windows/installer/tmp
