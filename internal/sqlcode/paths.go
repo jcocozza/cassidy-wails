@@ -37,9 +37,13 @@ const (
 	// User
 	User_create        = "sql/user/create.sql"
 	User_read          = "sql/user/read.sql"
+    User_read_by_uuid  = "sql/user/read_by_uuid.sql"
 	User_update        = "sql/user/update.sql"
 	User_delete        = "sql/user/delete.sql"
 	User_preferences   = "sql/user/read_preferences.sql"
+    User_persist       = "sql/user/persist_user_login.sql"
+    User_saved         = "sql/user/saved.sql"
+    User_forget        = "sql/user/forget.sql"
 	// User strava token
 	Strava_token_create = "sql/user/create_strava_token.sql"
 	Strava_token_update = "sql/user/update_strava_token.sql"

@@ -74,13 +74,14 @@
                     </tr>
                     <tr>
                         <td>{ConvertDuration(activity.planned?.duration)}</td>
-                        <td>{ConvertDuration(activity.completed?.duration)}</td>
+                        <td>{ConvertDuration(activity.completed?.moving_duration)}</td>
                     </tr>
                     <tr>
                         <td>{activity.planned?.vertical?.length} {activity.planned?.vertical?.unit}</td>
                         <td>{activity.completed?.vertical?.length} {activity.completed?.vertical?.unit}</td>
                     </tr>
                 </table>
+                <p>Elapsed: {ConvertDuration(activity.completed?.elapsed_duration)}</p>
             </div>
 
             <div class="row">

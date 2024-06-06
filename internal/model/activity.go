@@ -126,9 +126,9 @@ func (a *Activity) CompletionColor() (colorutil.Color, error) {
 	}
 
 	if a.Planned.Duration != 0 {
-		if (a.Completed.Duration >= a.Planned.Duration*.8) && (a.Completed.Duration <= a.Planned.Duration*1.2) {
+		if (a.Completed.MovingDuration >= a.Planned.Duration*.8) && (a.Completed.MovingDuration <= a.Planned.Duration*1.2) {
 			return colorutil.Green, nil
-		} else if ((a.Completed.Duration < a.Planned.Duration*.8) && (a.Completed.Duration >= a.Planned.Duration*.5)) || ((a.Completed.Duration > a.Planned.Duration*1.2) && (a.Completed.Duration <= a.Planned.Duration*1.5)) {
+		} else if ((a.Completed.MovingDuration < a.Planned.Duration*.8) && (a.Completed.MovingDuration >= a.Planned.Duration*.5)) || ((a.Completed.MovingDuration > a.Planned.Duration*1.2) && (a.Completed.MovingDuration <= a.Planned.Duration*1.5)) {
 			return colorutil.Yellow, nil
 		} else {
 			return colorutil.Red, nil

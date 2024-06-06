@@ -5,6 +5,7 @@
     import { model } from "../../wailsjs/go/models";
     import { GetMicrocycleCurrentDates } from "../../wailsjs/go/controllers/UserHandler";
     import { GetNCycleSummary } from '../../wailsjs/go/controllers/MiscHandler'
+    import { AddAlert, AlertType } from "../../../stores/alert";
 
     export let start_date: Date;
     export let end_date: Date;
@@ -163,6 +164,7 @@
             }
         } catch (error) {
             console.error("Error fetching data:", error);
+            AddAlert(String(error), AlertType.Danger)
         }
         })();
     });

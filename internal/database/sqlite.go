@@ -2,13 +2,14 @@ package database
 
 import (
 	"database/sql"
+    "runtime"
 	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 
 	"github.com/jcocozza/cassidy-wails/internal/utils"
-	_ "github.com/mattn/go-sqlite3"
+    _ "modernc.org/sqlite"
 )
 
 const (
@@ -17,7 +18,7 @@ const (
 )
 // Connect to a SQLite database.
 func connectToSQLite(path string) (*sql.DB, error) {
-    db, err := sql.Open("sqlite3", path)
+    db, err := sql.Open("sqlite", path)
     if err != nil {
         slog.Error("Failed to open database")
         return nil, err
@@ -46,15 +47,35 @@ func createDatabaseFile(dbPath string) error {
     fmt.Println("Database file created at:", dbPath)
     return nil
 }
+
+// return the path of the database file
+func getCassidyDBPath() (string, error) {
+    exePath, err := os.Executable()
+    if err != nil {
+        return "", err
+    }
+    exeDir := filepath.Dir(filepath.Dir(exePath))
+
+    o := runtime.GOOS
+    var dbPath string
+    switch o {
+    case "windows":
+        dbPath = filepath.Join(exeDir, "cassidy",cassidyDB)
+    case "darwin":
+        dbPath = filepath.Join(exeDir, "Resources", cassidyDB)
+    default:
+        return "", fmt.Errorf("unsupported platform")
+    }
+    return dbPath, nil
+}
+
 // Will attempt to connect to the application database that is packaged with the app.
 func ConnectToCassidyDB() (*Database, error) {
-	exePath, err := os.Executable()
-	fmt.Println("os exe dir: " + exePath)
-	if err != nil {
-		return nil, err
-	}
-	exeDir := filepath.Dir(filepath.Dir(exePath))
-	dbPath := filepath.Join(exeDir,"Resources", cassidyDB)
+    dbPath, err := getCassidyDBPath()
+    if err != nil {
+        return nil, err
+    }
+
 	fmt.Println("database dir: " + dbPath)
 
 	// Check if the database file exists, if not, create it

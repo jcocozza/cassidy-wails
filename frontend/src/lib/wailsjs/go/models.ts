@@ -73,7 +73,8 @@ export namespace model {
 	export class Completed {
 	    activity_uuid: string;
 	    distance?: measurement.Measurement;
-	    duration: number;
+	    moving_duration: number;
+	    elapsed_duration: number;
 	    vertical?: measurement.Measurement;
 	    pace: string;
 	
@@ -85,7 +86,8 @@ export namespace model {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.activity_uuid = source["activity_uuid"];
 	        this.distance = this.convertValues(source["distance"], measurement.Measurement);
-	        this.duration = source["duration"];
+	        this.moving_duration = source["moving_duration"];
+	        this.elapsed_duration = source["elapsed_duration"];
 	        this.vertical = this.convertValues(source["vertical"], measurement.Measurement);
 	        this.pace = source["pace"];
 	    }

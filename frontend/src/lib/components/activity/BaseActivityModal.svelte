@@ -28,7 +28,7 @@
     let subtype_bool_list: boolean[] = []; // this list corresponds to subtype_list and tells you if the activity has that subtype or not
     let activity_type_id: number = activity.activity_type!.id;
     let duration_planned: string = FormatDurationSimple(activity.planned!.duration);
-    let duration_completed: string = FormatDurationSimple(activity.completed!.duration);
+    let duration_completed: string = FormatDurationSimple(activity.completed!.moving_duration);
 
     let form_error: string = ""
 
@@ -105,7 +105,7 @@
         }
         is_hidden = false;
         edited_activity.planned!.duration = planned_duration;
-        edited_activity.completed!.duration = completed_duration;
+        edited_activity.completed!.moving_duration = completed_duration;
 
         /* <!-- TODO: enable time -->
         if (time.trim() !== "") {

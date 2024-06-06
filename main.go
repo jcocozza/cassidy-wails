@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"os"
 
 	"github.com/jcocozza/cassidy-wails/internal/controllers"
 	"github.com/jcocozza/cassidy-wails/internal/database"
@@ -15,6 +16,19 @@ import (
 //go:embed all:frontend/build
 var assets embed.FS
 
+func writeErrToFile(e error) {
+    file, err := os.OpenFile("err_log.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+    if err != nil {
+        return
+    }
+    defer file.Close()
+
+    _, err1 := file.WriteString(e.Error())
+    if err1 != nil {
+        return
+    }
+}
+
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()
@@ -22,6 +36,7 @@ func main() {
 	//DB := database.InitTestDB()
 	DB, err0 := database.ConnectToCassidyDB()
 	if err0 != nil { // if we can't find the application database, something has gone very wrong
+        writeErrToFile(err0)
 		panic("app database not found" + err0.Error())
 	}
 	handlers := controllers.NewControllers(DB, model.EmptyUser())
@@ -55,5 +70,6 @@ func main() {
 
 	if err != nil {
 		println("Error:", err.Error())
+        writeErrToFile(err)
 	}
 }

@@ -30,6 +30,10 @@ export function OpenSupport() {
   return window['go']['controllers']['UserHandler']['OpenSupport']();
 }
 
+export function PersistUser(arg1) {
+  return window['go']['controllers']['UserHandler']['PersistUser'](arg1);
+}
+
 export function UpdateUser(arg1) {
   return window['go']['controllers']['UserHandler']['UpdateUser'](arg1);
 }

@@ -2,7 +2,11 @@ build/bin
 node_modules
 frontend/dist
 .depreciated
+depreciated
 test
 .DS_Store
 .vscode
 config.go
+build/.cassidy.db
+build/windows/.cassidy.db
+build/windows/installer/tmp

@@ -5,6 +5,7 @@
     import '@popperjs/core/dist/umd/popper.min.js'
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
+    import AlertContainer from '$lib/components/Alerts/AlertContainer.svelte';
 
     onMount(() => {
         goto("/auth/login")
@@ -12,3 +13,5 @@
 </script>
 
 <slot />
+
+<AlertContainer />

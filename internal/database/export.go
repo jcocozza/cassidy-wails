@@ -35,16 +35,6 @@ func getDownloadDir() (string, error) {
     downloadsPath := filepath.Join(homeDir, "Downloads")
     return downloadsPath, nil
 }
-// return the path of the database file
-func getCassidyDBPath() (string, error) {
-    exePath, err := os.Executable()
-    if err != nil {
-        return "", nil
-    }
-    exeDir := filepath.Dir(filepath.Dir(exePath))
-    dbPath := filepath.Join(exeDir, "Resources", cassidyDB)
-    return dbPath, nil
-}
 // copy the app database to the downloads folder
 func ExportDatabase() error {
     downloadDir, err := getDownloadDir()
