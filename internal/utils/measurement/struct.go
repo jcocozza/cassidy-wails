@@ -157,13 +157,6 @@ const (
 func PaceUnitByActivityType(activityTypeId int, userUnitClass UnitClass) PaceUnit {
 	paceUnit := PaceUnit("")
 	switch activityTypeId {
-	case Run, Hike, RestDay, Strength, Recovery:
-		switch userUnitClass {
-		case Imperial:
-			paceUnit = MinutesPerMile
-		case Metric:
-			paceUnit = MinutesPerKilometer
-		}
 	case Bike:
 		switch userUnitClass {
 		case Imperial:
@@ -178,9 +171,14 @@ func PaceUnitByActivityType(activityTypeId int, userUnitClass UnitClass) PaceUni
 		case Metric:
 			paceUnit = MintuesPer100Meters
 		}
-	default:
-		panic("unknown pace")
-	}
+    default: // Run, Hike, RestDay, Strength, Recovery and others
+		switch userUnitClass {
+		case Imperial:
+			paceUnit = MinutesPerMile
+		case Metric:
+			paceUnit = MinutesPerKilometer
+		}
+    }
 	return paceUnit
 }
 func PaceUnitByDistanceUnit(activityTypeId int, distanceUnit Unit) PaceUnit {
@@ -191,13 +189,7 @@ func PaceUnitByDistanceUnit(activityTypeId int, distanceUnit Unit) PaceUnit {
 		paceUnit = MintuesPer100Meters
 	case Yard:
 		paceUnit = MintuesPer100Yards
-	case Mile:
-		switch activityTypeId {
-		case Bike:
-			paceUnit = MilesPerHour
-		default:
-			paceUnit = MinutesPerMile
-		}
+	
 	case Kilometer:
 		switch activityTypeId {
 		case Bike:
@@ -205,8 +197,13 @@ func PaceUnitByDistanceUnit(activityTypeId int, distanceUnit Unit) PaceUnit {
 		default:
 			paceUnit = MinutesPerKilometer
 		}
-	default:
-		panic("unknown pace unit error")
-	}
+    default: // Mile is default	
+		switch activityTypeId {
+		case Bike:
+			paceUnit = MilesPerHour
+		default:
+			paceUnit = MinutesPerMile
+		}
+    }
 	return paceUnit
 }

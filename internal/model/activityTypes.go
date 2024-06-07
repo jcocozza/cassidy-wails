@@ -147,3 +147,4 @@ type ActivityTypeWithSubtypes struct {
 func (atws *ActivityTypeWithSubtypes) AddSubtype(sub *ActivitySubtype) {
 	atws.SubtypeList = append(atws.SubtypeList, sub)
 }
+
