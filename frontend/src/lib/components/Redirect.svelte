@@ -14,6 +14,6 @@
         }
         else goto(redirect);
     }});
-    </script>
+</script>
 
 {#if passcondition} <slot /> {/if}
